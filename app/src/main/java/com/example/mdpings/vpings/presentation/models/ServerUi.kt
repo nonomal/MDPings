@@ -117,7 +117,7 @@ private fun Host.toHostUi(): HostUi {
         arch = arch,
         virtualization = virtualization,
         bootTime = bootTime,
-        countryCode = countryCode,
+        countryCode = countryCode.toCountryCodeToEmojiFlag(),
         version = version
     )
 }
@@ -141,5 +141,19 @@ private fun Status.toStatusUi(): StatusUi {
         processCount = processCount,
         gpu = gpu
     )
+}
+
+fun String.toCountryCodeToEmojiFlag(): String {
+    return this
+        .uppercase(Locale.US)
+        .map { char ->
+            Character.codePointAt("$char", 0) - 0x41 + 0x1F1E6
+        }
+        .map { codePoint ->
+            Character.toChars(codePoint)
+        }
+        .joinToString(separator = "") { charArray ->
+            String(charArray)
+        }
 }
 
