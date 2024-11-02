@@ -56,7 +56,7 @@ fun LoginScreen(
 
     val stateApi = dataStore.getApi.collectAsState("")
     val stateToken = dataStore.getToken.collectAsState("")
-    val isSettingsIsnull = stateApi.value!!.isEmpty() && stateApi.value!!.isEmpty()
+    val isSettingsIsnull = stateApi.value!!.isEmpty() && stateToken.value!!.isEmpty()
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -194,11 +194,12 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.CenterHorizontally),
-            contentAlignment = Alignment.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             if (state.isLoading) {
                 CircularProgressIndicator()
@@ -214,6 +215,17 @@ fun LoginScreen(
                     color = MaterialTheme.colorScheme.primary,
                     fontSize = 16.sp,
                     maxLines = 2,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    modifier = Modifier
+                        .padding(16.dp, 0.dp)
+                        .alpha(0.6f),
+                    text = state.servers.last().toString(),
+                    fontWeight = FontWeight.Light,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    fontSize = 8.sp,
                     textAlign = TextAlign.Center
                 )
             }

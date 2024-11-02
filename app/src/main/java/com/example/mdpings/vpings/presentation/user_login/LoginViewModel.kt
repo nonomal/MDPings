@@ -38,24 +38,24 @@ class LoginViewModel(
     }
 
     fun testConnection(apiUrl: String, token: String) {
+
         viewModelScope.launch{
             _state.update { it.copy(
                 isLoading = true
             ) }
-
-            serverDataSource
-                .getServers(apiUrl, token)
-                .onSuccess { servers ->
-                    _state.update { it.copy(
-                        isLoading = false,
-                        servers = servers.map { it.toServerUi() }
-                    ) }
-                }
-                .onError { error ->
-                    _state.update { it.copy(isLoading = false) }
-                    _events.send(LoginEvent.Error(error))
-                }
+        serverDataSource
+            .getServers(apiUrl, token)
+            .onSuccess { servers ->
+                _state.update { it.copy(
+                    isLoading = false,
+                    servers = servers.map { it.toServerUi() }
+                ) }
+            }
+            .onError { error ->
+                _state.update { it.copy(isLoading = false) }
+                _events.send(LoginEvent.Error(error))
+            }
         }
-    }
 
+    }
 }

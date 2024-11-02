@@ -21,7 +21,7 @@ class StoreSettings(private val context: Context) {
 
     val getApi: Flow<String?> = context.dataStore.data
         .map { preferences ->
-            preferences[USER_API_BACKEND] ?: "https://api.example.com"
+            preferences[USER_API_BACKEND] ?: ""
         }
 
     suspend fun saveApi(api: String) {
@@ -32,7 +32,7 @@ class StoreSettings(private val context: Context) {
 
     val getToken: Flow<String?> = context.dataStore.data
         .map { preferences ->
-            preferences[USER_API_TOKEN] ?: "ExampleToken"
+            preferences[USER_API_TOKEN] ?: ""
         }
 
     suspend fun saveToken(token: String) {

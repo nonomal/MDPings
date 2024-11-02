@@ -1,8 +1,10 @@
 package com.example.mdpings.vpings.presentation.models
 
+import android.icu.text.NumberFormat
 import com.example.mdpings.vpings.domain.Host
 import com.example.mdpings.vpings.domain.Server
 import com.example.mdpings.vpings.domain.Status
+import java.util.Locale
 
 data class ServerUi(
     val id: Int,
@@ -40,12 +42,12 @@ data class StatusUi(
     val diskUsed: Long,
     val netInTransfer: Long,
     val netOutTransfer: Long,
-    val netInSpeed: Int,
-    val netOutSpeed: Int,
+    val netInSpeed: NetIOSpeedDisplayableString,
+    val netOutSpeed: NetIOSpeedDisplayableString,
     val uptime: Int,
-    val load1: Double,
-    val load5: Double,
-    val load15: Double,
+    val load1: DoubleDisplayableNumber,
+    val load5: DoubleDisplayableNumber,
+    val load15: DoubleDisplayableNumber,
     val tcpConnCount: Int,
     val udpConnCount: Int,
     val processCount: Int,
@@ -53,10 +55,40 @@ data class StatusUi(
     val gpu: Int
 )
 
-data class DisplayableNumber(
+data class DoubleDisplayableNumber(
     val value: Double,
     val formatted: String
 )
+
+fun Double.toDisplayableNumber(): DoubleDisplayableNumber {
+    val formatter = NumberFormat.getNumberInstance(java.util.Locale.getDefault()).apply {
+        minimumFractionDigits = 2
+        maximumFractionDigits = 2
+    }
+    return DoubleDisplayableNumber(
+        value = this,
+        formatted = formatter.format(this)
+    )
+}
+
+data class NetIOSpeedDisplayableString(
+    val value: Int,
+    val formatted: String
+)
+
+fun Int.toNetIOSpeedDisplayableString(): NetIOSpeedDisplayableString {
+    val speed = if (this / 1024 < 1024) {
+        "${String.format(Locale.US, "%.2f", this / 1024.0)} K/s"
+    } else if (this / 1024 / 1024 < 1024) {
+        "${String.format(Locale.US, "%.2f", this / 1024 / 1024.0)} M/s"
+    } else {
+        "${String.format(Locale.US, "%.2f", this / 1024 / 1024 / 1024.0)} G/s"
+    }
+    return NetIOSpeedDisplayableString(
+        value = this,
+        formatted = speed
+    )
+}
 
 fun Server.toServerUi(): ServerUi {
     return ServerUi(
@@ -98,12 +130,12 @@ private fun Status.toStatusUi(): StatusUi {
         diskUsed = diskUsed,
         netInTransfer = netInTransfer,
         netOutTransfer = netOutTransfer,
-        netInSpeed = netInSpeed,
-        netOutSpeed = netOutSpeed,
+        netInSpeed = netInSpeed.toNetIOSpeedDisplayableString(),
+        netOutSpeed = netOutSpeed.toNetIOSpeedDisplayableString(),
         uptime = uptime,
-        load1 = load1,
-        load5 = load5,
-        load15 = load15,
+        load1 = load1.toDisplayableNumber(),
+        load5 = load5.toDisplayableNumber(),
+        load15 = load15.toDisplayableNumber(),
         tcpConnCount = tcpConnCount,
         udpConnCount = udpConnCount,
         processCount = processCount,

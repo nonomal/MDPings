@@ -30,7 +30,9 @@ class RemoteServerDataSource(
                 header("Authorization", token)
             }
         }.map { response ->
-            response.result.map { it.toServer() }
+            response.result
+                .sortedBy { it.id }
+                .map { it.toServer() }
         }
     }
 
