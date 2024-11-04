@@ -4,9 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
@@ -20,8 +18,6 @@ import com.example.mdpings.ui.theme.MDPingsTheme
 import com.example.mdpings.vpings.presentation.server_list.components.MDAppTopBar
 import com.example.mdpings.vpings.presentation.server_list.components.ServerListItem
 import com.example.mdpings.vpings.presentation.server_list.components.previewListServers
-import com.example.mdpings.vpings.presentation.user_login.LoginScreen
-import com.example.mdpings.vpings.presentation.user_login.LoginState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,14 +41,7 @@ fun ServerListScreen(
             )
         }
     ) { innerPadding ->
-        // Loading
-//        if (state.isLoading) {
-//            LinearProgressIndicator(
-//                modifier = Modifier
-//                    .padding(top = innerPadding.calculateTopPadding() + 4.dp)
-//                    .fillMaxWidth()
-//            )
-//        }
+
         LazyColumn(
             contentPadding = PaddingValues(
                 top = innerPadding.calculateTopPadding() + 4.dp

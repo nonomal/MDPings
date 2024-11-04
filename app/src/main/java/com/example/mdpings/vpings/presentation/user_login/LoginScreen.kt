@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mdpings.ui.theme.MDPingsTheme
 import com.example.mdpings.vpings.data.StoreSettings
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -60,7 +61,7 @@ fun LoginScreen(
 
     Column(
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
@@ -69,7 +70,7 @@ fun LoginScreen(
         var token by rememberSaveable { mutableStateOf("") }
 
         Text(
-            modifier = Modifier
+            modifier = modifier
                 .padding(16.dp, 0.dp)
                 .alpha(0.6f),
             text = "Login",
@@ -79,7 +80,7 @@ fun LoginScreen(
         )
 
         Text(
-            modifier = Modifier
+            modifier = modifier
                 .padding(16.dp, 0.dp)
                 .alpha(0.6f),
             text = "API BACKEND",
@@ -95,13 +96,13 @@ fun LoginScreen(
                 keyboardType
                 = KeyboardType.Uri
             ),
-            modifier = Modifier
+            modifier = modifier
                 .padding(16.dp, 0.dp, 16.dp, 0.dp)
                 .fillMaxWidth(),
         )
 
         Text(
-            modifier = Modifier
+            modifier = modifier
                 .padding(16.dp, 0.dp)
                 .alpha(0.6f),
             text = "TOKEN",
@@ -117,15 +118,15 @@ fun LoginScreen(
                 keyboardType
                 = KeyboardType.Text
             ),
-            modifier = Modifier
+            modifier = modifier
                 .padding(16.dp, 0.dp, 16.dp, 0.dp)
                 .fillMaxWidth(),
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = modifier.height(16.dp))
 
         Row(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .padding(16.dp, 0.dp, 16.dp, 0.dp)
         ) {
@@ -135,7 +136,7 @@ fun LoginScreen(
                         LoginAction.OnTestClick(api, token)
                     )
                 },
-                modifier = Modifier
+                modifier = modifier
                     .height(60.dp)
                     .weight(1f)
 
@@ -167,15 +168,16 @@ fun LoginScreen(
                     }
                 }
             }
-            Spacer(modifier = Modifier.weight(0.2f))
+            Spacer(modifier = modifier.weight(0.2f))
             Button(
                 enabled = !state.servers.isEmpty(),
                 onClick = {
                     scope.launch {
                         dataStore.saveApi(api)
                         dataStore.saveToken(token)
+                        delay(1000)
+                        onNavigateToServer()
                     }
-                    onNavigateToServer
                 },
                 modifier = Modifier
                     .height(60.dp)
@@ -186,7 +188,7 @@ fun LoginScreen(
                         style = MaterialTheme.typography.titleMedium,
                         text = "Save"
                     )
-                    Spacer(Modifier.width(4.dp))
+                    Spacer(modifier.width(4.dp))
                     Icon(
                         imageVector = Icons.Filled.Save,
                         contentDescription = "Save"
