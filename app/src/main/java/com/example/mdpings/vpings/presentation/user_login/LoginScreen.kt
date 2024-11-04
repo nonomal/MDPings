@@ -61,7 +61,7 @@ fun LoginScreen(
 
     Column(
         verticalArrangement = Arrangement.Center,
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
@@ -70,7 +70,7 @@ fun LoginScreen(
         var token by rememberSaveable { mutableStateOf("") }
 
         Text(
-            modifier = modifier
+            modifier = Modifier
                 .padding(16.dp, 0.dp)
                 .alpha(0.6f),
             text = "Login",
@@ -80,7 +80,7 @@ fun LoginScreen(
         )
 
         Text(
-            modifier = modifier
+            modifier = Modifier
                 .padding(16.dp, 0.dp)
                 .alpha(0.6f),
             text = "API BACKEND",
@@ -96,13 +96,13 @@ fun LoginScreen(
                 keyboardType
                 = KeyboardType.Uri
             ),
-            modifier = modifier
+            modifier = Modifier
                 .padding(16.dp, 0.dp, 16.dp, 0.dp)
                 .fillMaxWidth(),
         )
 
         Text(
-            modifier = modifier
+            modifier = Modifier
                 .padding(16.dp, 0.dp)
                 .alpha(0.6f),
             text = "TOKEN",
@@ -118,15 +118,15 @@ fun LoginScreen(
                 keyboardType
                 = KeyboardType.Text
             ),
-            modifier = modifier
+            modifier = Modifier
                 .padding(16.dp, 0.dp, 16.dp, 0.dp)
                 .fillMaxWidth(),
         )
 
-        Spacer(modifier = modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         Row(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp, 0.dp, 16.dp, 0.dp)
         ) {
@@ -136,7 +136,7 @@ fun LoginScreen(
                         LoginAction.OnTestClick(api, token)
                     )
                 },
-                modifier = modifier
+                modifier = Modifier
                     .height(60.dp)
                     .weight(1f)
 
@@ -168,7 +168,7 @@ fun LoginScreen(
                     }
                 }
             }
-            Spacer(modifier = modifier.weight(0.2f))
+            Spacer(modifier = Modifier.weight(0.2f))
             Button(
                 enabled = !state.servers.isEmpty(),
                 onClick = {
@@ -188,7 +188,7 @@ fun LoginScreen(
                         style = MaterialTheme.typography.titleMedium,
                         text = "Save"
                     )
-                    Spacer(modifier.width(4.dp))
+                    Spacer(Modifier.width(4.dp))
                     Icon(
                         imageVector = Icons.Filled.Save,
                         contentDescription = "Save"
