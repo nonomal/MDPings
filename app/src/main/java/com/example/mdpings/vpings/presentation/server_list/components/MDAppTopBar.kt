@@ -63,7 +63,7 @@ fun MDAppTopBar(
                 Spacer(Modifier.width(8.dp))
                 if (isLoading) {
                     CircularProgressIndicator(
-                        modifier = Modifier.size(16.dp),
+                        modifier = Modifier.size(18.dp),
                         color = LocalContentColor.current
                     )
                 }

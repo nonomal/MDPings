@@ -2,35 +2,55 @@ package com.example.mdpings.vpings.presentation.server_list.components
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.animation.with
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Upload
+import androidx.compose.material.icons.rounded.ArrowDownward
+import androidx.compose.material.icons.rounded.ArrowUpward
+import androidx.compose.material.icons.rounded.Download
+import androidx.compose.material.icons.rounded.MonitorHeart
+import androidx.compose.material.icons.rounded.Upload
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -47,11 +67,11 @@ import com.example.mdpings.vpings.presentation.models.toNetIOSpeedDisplayableStr
 import kotlin.random.Random
 
 private fun String.toLetterSpacing() = when(this) {
-    "CPU" -> 4.7.sp
-    "RAM" -> 3.8.sp
-    "SWAP" -> 0.5.sp
-    "DISK" -> 2.5.sp
-    "NetIO" -> 1.sp
+    "CPU" -> 5.5.sp
+    "RAM" -> 4.5.sp
+    "SWAP" -> 0.7.sp
+    "DISK" -> 3.sp
+    "NetIO" -> 1.2.sp
     "NetTR" -> 0.sp
     "LOAD" -> 1.5.sp
     else -> 0.sp
@@ -105,7 +125,13 @@ private fun ServerTitle(server: ServerUi) {
         horizontalArrangement = Arrangement.Start
     ) {
         Text(
-            text = "${server.host.countryCode} ${server.name}",
+            text = server.host.countryCode,
+            style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.weight(0.2f)
+        )
+        Text(
+            text = server.name,
             style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.Start,
             modifier = Modifier.weight(1f)
@@ -157,40 +183,51 @@ fun ProgressBar(text: String, total: Float, used: Float) {
         animationSpec = tween(durationMillis = 1000),
         label = "AnimationProgressBar"
     )
+    val progressBarColor =
+        if (animatedProgress <= 0.25f) MaterialTheme.colorScheme.tertiary
+        else if (animatedProgress <= 0.75f) MaterialTheme.colorScheme.secondary
+        else MaterialTheme.colorScheme.error
+    val animatedColor by animateColorAsState(
+        animationSpec = tween(durationMillis = 1000),
+        targetValue = progressBarColor,
+        label = "AnimationColorProgressBar"
+    )
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start,
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        Text(
-            text = text,
-            textAlign = TextAlign.Start,
-            fontWeight = FontWeight.SemiBold,
-            style = MaterialTheme.typography.bodyMedium.copy(
-                letterSpacing = text.toLetterSpacing()
-            ),
+        Box(
             modifier = Modifier
                 .weight(1f)
-                .alpha(0.8f)
-        )
-
+        ) {
+            Text(
+                text = text,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    letterSpacing = text.toLetterSpacing()
+                ),
+                modifier = Modifier
+                    .width(48.dp)
+                    .alpha(0.8f)
+            )
+        }
         LinearProgressIndicator(
-            progress = animatedProgress,
-            color = if (animatedProgress <= 0.25f) MaterialTheme.colorScheme.tertiary
-                else if (animatedProgress <= 0.75f) MaterialTheme.colorScheme.secondary
-                else MaterialTheme.colorScheme.error,
+            progress = { animatedProgress },
+            color = animatedColor,
             modifier = Modifier
+                .fillMaxWidth()
                 .weight(4f)
                 .height(4.5.dp)
         )
-
         Text(
             text = "${(progress * 100).toInt()}%",
             style = MaterialTheme.typography.bodyMedium,
             maxLines = 1,
             modifier = Modifier
-                .weight(1f),
+                .width(48.dp),
             textAlign = TextAlign.End
         )
     }
@@ -201,54 +238,57 @@ fun ProgressBar(text: String, total: Float, used: Float) {
 private fun LoadAndUptime(server: ServerUi) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
     ) {
-        Row(
-            modifier = Modifier.weight(4f)
+        Box(
+            modifier = Modifier
         ) {
             Text(
                 text = "LOAD",
+                textAlign = TextAlign.Center,
                 fontWeight = FontWeight.SemiBold,
                 style = MaterialTheme.typography.bodyMedium.copy(
                     letterSpacing = "LOAD".toLetterSpacing()
                 ),
-                modifier = Modifier.alpha(0.8f)
-            )
-            Spacer(Modifier.weight(0.8f))
-            AnimatedContent(
-                targetState = server.status,
-                label = "AnimatedNetworkIO",
-                transitionSpec = {
-                    fadeIn() + slideInVertically(animationSpec = tween(1000),
-                        initialOffsetY = { fullHeight -> fullHeight }) with
-                            fadeOut(animationSpec = tween(200))
-                },
                 modifier = Modifier
-                    .weight(3.2f)
-            ) { it ->
-                Text(
-                    text = "${it.load1.formatted} | ${it.load5.formatted} | ${it.load15.formatted}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-        }
-        Row(
-            modifier = Modifier.weight(2f)
-        ) {
-            Text(
-                text = "UPTIME",
-                fontWeight = FontWeight.SemiBold,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.alpha(0.8f)
-            )
-            Spacer(Modifier.weight(0.5f))
-            Text(
-                text = "${server.status.uptime / 86400} D",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier
-                    .weight(1.5f)
+                    .width(48.dp)
+                    .alpha(0.8f)
             )
         }
+        AnimatedContent(
+            targetState = server.status,
+            label = "AnimatedNetworkIO",
+            transitionSpec = {
+                fadeIn() + slideInVertically(
+                    animationSpec = tween(1000),
+                    initialOffsetY = { fullHeight -> fullHeight }
+                ) togetherWith fadeOut(animationSpec = tween(200))
+            },
+            modifier = Modifier
+                .weight(3.2f)
+        ) { it ->
+            Text(
+                textAlign = TextAlign.Center,
+                text = "${it.load1.formatted} | ${it.load5.formatted} | ${it.load15.formatted}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+        Text(
+            text = "UPTIME",
+            fontWeight = FontWeight.SemiBold,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier
+                .alpha(0.8f)
+        )
+        Text(
+            textAlign = TextAlign.Center,
+            text = "${server.status.uptime / 86400} D",
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier
+                .weight(1f)
+        )
     }
 }
 
@@ -258,19 +298,26 @@ private fun NetworkTransfer(server: ServerUi) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(
-            text = "NetTR",
-            fontWeight = FontWeight.SemiBold,
-            style = MaterialTheme.typography.bodyMedium,
+        Box(
             modifier = Modifier
                 .weight(1f)
-                .alpha(0.8f)
-        )
+        ) {
+            Text(
+                text = "NetTR",
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier
+                    .width(48.dp)
+                    .alpha(0.8f)
+            )
+        }
         Icon(
-            imageVector = Icons.Default.KeyboardArrowDown,
+            imageVector = Icons.Rounded.Download,
             contentDescription = null,
             modifier = Modifier
                 .weight(0.5f)
+                .alpha(0.7f)
         )
         Text(
             text = server.status.netInTransfer.formatted,
@@ -279,10 +326,11 @@ private fun NetworkTransfer(server: ServerUi) {
                 .weight(1f)
         )
         Icon(
-            imageVector = Icons.Default.KeyboardArrowUp,
+            imageVector = Icons.Rounded.Upload,
             contentDescription = null,
             modifier = Modifier
                 .weight(0.5f)
+                .alpha(0.7f)
         )
         Text(
             text = server.status.netOutTransfer.formatted,
@@ -300,29 +348,37 @@ private fun NetworkIO(server: ServerUi) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(
-            text = "NetIO",
-            fontWeight = FontWeight.SemiBold,
-            style = MaterialTheme.typography.bodyMedium.copy(
-                letterSpacing = "NetIO".toLetterSpacing()
-            ),
+        Box(
             modifier = Modifier
                 .weight(1f)
-                .alpha(0.8f)
-        )
+        ) {
+            Text(
+                text = "NetIO",
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    letterSpacing = "NetIO".toLetterSpacing()
+                ),
+                modifier = Modifier
+                    .width(48.dp)
+                    .alpha(0.8f)
+            )
+        }
         Icon(
-            imageVector = Icons.Default.KeyboardArrowDown,
+            imageVector = Icons.Rounded.ArrowDownward,
             contentDescription = null,
             modifier = Modifier
                 .weight(0.5f)
+                .alpha(0.7f)
         )
         AnimatedContent(
             targetState = server.status.netInSpeed,
-            label = "AnimatedNetworkIO",
+            label = "AnimatedNetworkIn",
             transitionSpec = {
-                fadeIn() + slideInVertically(animationSpec = tween(1000),
-                    initialOffsetY = { fullHeight -> fullHeight }) with
-                        fadeOut(animationSpec = tween(200))
+                fadeIn() + slideInVertically(
+                    animationSpec = tween(1000),
+                    initialOffsetY = { fullHeight -> fullHeight }
+                ) togetherWith fadeOut(animationSpec = tween(200))
             },
             modifier = Modifier
                 .weight(1f)
@@ -333,18 +389,20 @@ private fun NetworkIO(server: ServerUi) {
             )
         }
         Icon(
-            imageVector = Icons.Default.KeyboardArrowUp,
+            imageVector = Icons.Rounded.ArrowUpward,
             contentDescription = null,
             modifier = Modifier
                 .weight(0.5f)
+                .alpha(0.7f)
         )
         AnimatedContent(
             targetState = server.status.netOutSpeed,
-            label = "AnimatedNetworkIO",
+            label = "AnimatedNetworkOut",
             transitionSpec = {
-                fadeIn() + slideInVertically(animationSpec = tween(1000),
-                    initialOffsetY = { fullHeight -> fullHeight }) with
-                        fadeOut(animationSpec = tween(200))
+                fadeIn() + slideInVertically(
+                    animationSpec = tween(1000),
+                    initialOffsetY = { fullHeight -> fullHeight }
+                ) togetherWith fadeOut(animationSpec = tween(200))
             },
             modifier = Modifier
                 .weight(1f)
