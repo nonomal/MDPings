@@ -9,7 +9,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.animation.with
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,25 +18,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Download
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.Download
-import androidx.compose.material.icons.rounded.MonitorHeart
 import androidx.compose.material.icons.rounded.Upload
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -48,14 +40,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.trace
 import com.example.mdpings.ui.theme.MDPingsTheme
 import com.example.mdpings.vpings.presentation.models.HostUi
 import com.example.mdpings.vpings.presentation.models.ServerUi
@@ -73,7 +66,7 @@ private fun String.toLetterSpacing() = when(this) {
     "DISK" -> 3.sp
     "NetIO" -> 1.2.sp
     "NetTR" -> 0.sp
-    "LOAD" -> 1.5.sp
+    "LOAD" -> 1.7.sp
     else -> 0.sp
 }
 
@@ -84,17 +77,19 @@ fun ServerListItem(
     modifier: Modifier = Modifier
 ) {
     Card(
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer),
         modifier = modifier.wrapContentHeight(),
+        shape = ShapeDefaults.Medium,
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
+        ServerTitle(serverUi)
         Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier
-                .padding(12.dp)
+                .padding(horizontal = 12.dp)
+                .padding(bottom = 8.dp)
         ) {
-            ServerTitle(serverUi)
-            HorizontalDivider()
-            Spacer(modifier = Modifier.height(2.dp))
             Status(serverUi)
             Spacer(modifier = Modifier.height(2.dp))
             NetworkIO(serverUi)
@@ -120,31 +115,70 @@ fun ServerCardPreview() {
 
 @Composable
 private fun ServerTitle(server: ServerUi) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
-    ) {
-        Text(
-            text = server.host.countryCode,
-            style = MaterialTheme.typography.titleMedium,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.weight(0.2f)
-        )
-        Text(
-            text = server.name,
-            style = MaterialTheme.typography.titleMedium,
-            textAlign = TextAlign.Start,
-            modifier = Modifier.weight(1f)
-        )
-        Text(
-            text = "${server.host.platform}${server.host.platformVersion}",
-            style = MaterialTheme.typography.titleSmall,
-            textAlign = TextAlign.End,
-            modifier = Modifier
-                .weight(1f)
-                .alpha(0.7f)
-        )
-    }
+    FilterChip(
+//        colors = FilterChipDefaults.filterChipColors().copy(
+//            if (server.lastActive)
+//        ),
+        modifier = Modifier
+            .padding(horizontal = 12.dp),
+        leadingIcon = {
+            Text(text = server.host.countryCode)
+        },
+        trailingIcon = {
+            Text(
+                text = "${server.host.platform}${server.host.platformVersion}",
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.titleSmall,
+                textAlign = TextAlign.End,
+                modifier = Modifier
+                    .alpha(0.7f)
+            )
+        },
+        shape = ShapeDefaults.Large,
+        selected = true,
+        onClick = {},
+        label = {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = server.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+    )
+// Normal Row
+//    Row(
+//        verticalAlignment = Alignment.CenterVertically,
+//        horizontalArrangement = Arrangement.Start
+//    ) {
+//        Text(
+//            text = server.host.countryCode,
+//            style = MaterialTheme.typography.titleMedium,
+//            textAlign = TextAlign.Center,
+//            modifier = Modifier.weight(0.2f)
+//        )
+//        Text(
+//            text = server.name,
+//            style = MaterialTheme.typography.titleMedium,
+//            textAlign = TextAlign.Start,
+//            modifier = Modifier.weight(1f)
+//        )
+//        Text(
+//            text = "${server.host.platform}${server.host.platformVersion}",
+//            style = MaterialTheme.typography.titleSmall,
+//            textAlign = TextAlign.End,
+//            modifier = Modifier
+//                .weight(1f)
+//                .alpha(0.7f)
+//        )
+//    }
 }
 
 @Composable
@@ -416,42 +450,49 @@ private fun NetworkIO(server: ServerUi) {
 }
 
 // PreviewData
-internal val previewHostUi = HostUi(
-    platform = "ubuntu",
-    platformVersion = "22.04",
-    cpu = listOf("AMD EPYC 7543P 32-Core Processor 4 Virtual Core"),
-    memTotal = 8323002368,
-    diskTotal = 2164154892288,
-    swapTotal = 267362304,
-    arch = "x86_64",
-    virtualization = "kvm",
-    bootTime = 1725353936,
-    countryCode = "nl".toCountryCodeToEmojiFlag(),
-    version = "0.20.3"
-)
+private fun previewHostUi(): HostUi {
+    return HostUi(
+        platform = "ubuntu",
+        platformVersion = "22.04",
+        cpu = listOf("AMD EPYC 7543P 32-Core Processor 4 Virtual Core"),
+        memTotal = 8323002368,
+        diskTotal = 2164154892288,
+        swapTotal = 267362304,
+        arch = "x86_64",
+        virtualization = "kvm",
+        bootTime = 1725353936,
+        countryCode = listOf<String>(
+            "hk", "nl", "us", "cn", "ru", "jp"
+        )[Random.nextInt(until = 6)]
+            .toCountryCodeToEmojiFlag(),
+        version = "0.20.3"
+    )
+}
 
-internal val previewStatusUi = StatusUi(
-    cpu = 1.5970223416354114,
-    memUsed = Random.nextLong(until = 8323002368),
-    swapUsed = Random.nextInt(until = 267362304),
-    diskUsed = Random.nextLong(until = 2164154892288),
-    netInTransfer = 1976106961615.toLongDisplayableString(),
-    netOutTransfer = 520080984594.toLongDisplayableString(),
-    netInSpeed = Random.nextInt(until = 102400000).toNetIOSpeedDisplayableString(),
-    netOutSpeed = Random.nextInt(until = 102400000).toNetIOSpeedDisplayableString(),
-    uptime = 5201009,
-    load1 = Random.nextDouble(until = 200.0).toDisplayableNumber(),
-    load5 = Random.nextDouble(until = 200.0).toDisplayableNumber(),
-    load15 = Random.nextDouble(until = 200.0).toDisplayableNumber(),
-    tcpConnCount = 63,
-    udpConnCount = 97,
-    processCount = 296,
-    gpu = 0
-)
+private fun previewStatusUi(): StatusUi {
+    return StatusUi(
+        cpu = Random.nextDouble(from = 0.0, until = 10.0),
+        memUsed = Random.nextLong(until = 8323002368),
+        swapUsed = Random.nextInt(until = 267362304),
+        diskUsed = Random.nextLong(until = 2164154892288),
+        netInTransfer = Random.nextLong(from = 0, until = 1024000000000000).toLongDisplayableString(),
+        netOutTransfer = Random.nextLong(from = 0, until = 1024000000000000000).toLongDisplayableString(),
+        netInSpeed = Random.nextInt(until = 1024000000).toNetIOSpeedDisplayableString(),
+        netOutSpeed = Random.nextInt(until = 1024000000).toNetIOSpeedDisplayableString(),
+        uptime = Random.nextInt(until = 102400000),
+        load1 = Random.nextDouble(until = 200.0).toDisplayableNumber(),
+        load5 = Random.nextDouble(until = 200.0).toDisplayableNumber(),
+        load15 = Random.nextDouble(until = 200.0).toDisplayableNumber(),
+        tcpConnCount = 63,
+        udpConnCount = 97,
+        processCount = 296,
+        gpu = 0
+    )
+}
 
 internal val previewServerUi0 = ServerUi(
     id = 0,
-    name = "Preview Server0",
+    name = "Server0",
     tag = "",
     lastActive = 1730554945,
     ipv4 = "1.1.1.1",
@@ -459,13 +500,13 @@ internal val previewServerUi0 = ServerUi(
     validIp = "1.1.1.1",
     displayIndex = 0,
     hideForGuest = false,
-    host = previewHostUi,
-    status = previewStatusUi
+    host = previewHostUi(),
+    status = previewStatusUi()
 )
 
 internal val previewServerUi1 = ServerUi(
     id = 1,
-    name = "Preview Server1",
+    name = "Server1",
     tag = "",
     lastActive = 1730554945,
     ipv4 = "1.1.1.1",
@@ -473,13 +514,13 @@ internal val previewServerUi1 = ServerUi(
     validIp = "1.1.1.1",
     displayIndex = 0,
     hideForGuest = false,
-    host = previewHostUi,
-    status = previewStatusUi
+    host = previewHostUi(),
+    status = previewStatusUi()
 )
 
 internal val previewServerUi2 = ServerUi(
     id = 2,
-    name = "Preview Server2",
+    name = "Server2",
     tag = "",
     lastActive = 1730554945,
     ipv4 = "1.1.1.1",
@@ -487,13 +528,13 @@ internal val previewServerUi2 = ServerUi(
     validIp = "1.1.1.1",
     displayIndex = 0,
     hideForGuest = false,
-    host = previewHostUi,
-    status = previewStatusUi
+    host = previewHostUi(),
+    status = previewStatusUi()
 )
 
 internal val previewServerUi3 = ServerUi(
     id = 3,
-    name = "Preview Server3",
+    name = "Server3",
     tag = "",
     lastActive = 1730554945,
     ipv4 = "1.1.1.1",
@@ -501,8 +542,8 @@ internal val previewServerUi3 = ServerUi(
     validIp = "1.1.1.1",
     displayIndex = 0,
     hideForGuest = false,
-    host = previewHostUi,
-    status = previewStatusUi
+    host = previewHostUi(),
+    status = previewStatusUi()
 )
 
 internal val previewListServers = listOf<ServerUi>(

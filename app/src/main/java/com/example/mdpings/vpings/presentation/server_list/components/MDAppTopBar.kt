@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -13,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -29,8 +31,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.mdpings.ui.theme.MDPingsTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,12 +48,13 @@ fun MDAppTopBar(
     onMenuClick: () -> Unit,
 ) {
     TopAppBar(
+        expandedHeight = 56.dp,
         modifier = modifier
-            .padding(horizontal = 8.dp)
+            .padding(vertical = 8.dp, horizontal = 8.dp)
             .clip(RoundedCornerShape(100.dp)),
         scrollBehavior = scrollBehavior,
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
+            containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
         windowInsets = WindowInsets(top = 0.dp),
         title = {
@@ -58,6 +64,8 @@ fun MDAppTopBar(
             ) {
                 Text(
                     text = title,
+                    textAlign = TextAlign.Center,
+                    fontSize = 18.sp,
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Spacer(Modifier.width(8.dp))
@@ -80,13 +88,17 @@ fun MDAppTopBar(
             }
         },
         actions = {
-            IconButton(onClick = { }) {
+            IconButton(
+                onClick = { }
+            ) {
                 Icon(
                     imageVector = Icons.Rounded.Search,
                     contentDescription = "Search"
                 )
             }
-            IconButton(onClick = { }) {
+            IconButton(
+                onClick = { }
+            ) {
                 Icon(
                     imageVector = Icons.Rounded.AccountCircle,
                     contentDescription = "Account"

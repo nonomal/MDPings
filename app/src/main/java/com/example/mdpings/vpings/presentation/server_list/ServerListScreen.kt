@@ -44,7 +44,7 @@ fun ServerListScreen(
 
         LazyColumn(
             contentPadding = PaddingValues(
-                top = innerPadding.calculateTopPadding() + 4.dp
+                top = innerPadding.calculateTopPadding() - 4.dp
             ),
             modifier = Modifier
                 .fillMaxSize()
