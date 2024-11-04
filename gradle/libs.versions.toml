@@ -52,6 +52,7 @@ compose-material-icons-extended = { group = "androidx.compose.material", name = 
 #datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 #datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

@@ -5,6 +5,7 @@ import com.example.mdpings.vpings.domain.Host
 import com.example.mdpings.vpings.domain.Server
 import com.example.mdpings.vpings.domain.Status
 import java.util.Locale
+import kotlin.math.pow
 
 data class ServerUi(
     val id: Int,
@@ -40,8 +41,8 @@ data class StatusUi(
     val memUsed: Long,
     val swapUsed: Int,
     val diskUsed: Long,
-    val netInTransfer: Long,
-    val netOutTransfer: Long,
+    val netInTransfer: LongDisplayableString,
+    val netOutTransfer: LongDisplayableString,
     val netInSpeed: NetIOSpeedDisplayableString,
     val netOutSpeed: NetIOSpeedDisplayableString,
     val uptime: Int,
@@ -77,16 +78,33 @@ data class NetIOSpeedDisplayableString(
 )
 
 fun Int.toNetIOSpeedDisplayableString(): NetIOSpeedDisplayableString {
-    val speed = if (this / 1024 < 1024) {
-        "${String.format(Locale.US, "%.2f", this / 1024.0)} K/s"
-    } else if (this / 1024 / 1024 < 1024) {
-        "${String.format(Locale.US, "%.2f", this / 1024 / 1024.0)} M/s"
-    } else {
-        "${String.format(Locale.US, "%.2f", this / 1024 / 1024 / 1024.0)} G/s"
+    val speed = when {
+        this / 1024 < 1024 -> "${String.format(Locale.US, "%.2f", this / 1024.0)} K/s"
+        this / 1024 / 1024 < 1024 -> "${String.format(Locale.US, "%.2f", this / 1024.0.pow(2.0))} M/s"
+        else -> "${String.format(Locale.US, "%.2f", this / 1024.0.pow(3.0))} G/s"
     }
     return NetIOSpeedDisplayableString(
         value = this,
         formatted = speed
+    )
+}
+
+data class LongDisplayableString(
+    val value: Long,
+    val formatted: String
+)
+
+fun Long.toLongDisplayableString(): LongDisplayableString {
+    val transfer = when {
+        this / 1024 < 1024 -> "${String.format(Locale.US, "%.2f", this / 1024.0)} K"
+        this / 1024.0.pow(2.0) < 1024 -> "${String.format(Locale.US, "%.2f", this / 1024.0.pow(2.0))} M"
+        this / 1024.0.pow(3.0) < 1024 -> "${String.format(Locale.US, "%.2f", this / 1024.0.pow(3.0))} G"
+        this / 1024.0.pow(4.0) < 1024 -> "${String.format(Locale.US, "%.2f", this / 1024.0.pow(4.0))} T"
+        else -> "${String.format(Locale.US, "%.2f", this / 1024.0.pow(5.0))} P"
+    }
+    return LongDisplayableString(
+        value = this,
+        formatted = transfer
     )
 }
 
@@ -128,8 +146,8 @@ private fun Status.toStatusUi(): StatusUi {
         memUsed = memUsed,
         swapUsed = swapUsed,
         diskUsed = diskUsed,
-        netInTransfer = netInTransfer,
-        netOutTransfer = netOutTransfer,
+        netInTransfer = netInTransfer.toLongDisplayableString(),
+        netOutTransfer = netOutTransfer.toLongDisplayableString(),
         netInSpeed = netInSpeed.toNetIOSpeedDisplayableString(),
         netOutSpeed = netOutSpeed.toNetIOSpeedDisplayableString(),
         uptime = uptime,

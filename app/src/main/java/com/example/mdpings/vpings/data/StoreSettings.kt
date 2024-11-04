@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -16,7 +17,7 @@ class StoreSettings(private val context: Context) {
         private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("settings")
         val USER_API_BACKEND = stringPreferencesKey("user_api_backend")
         val USER_API_TOKEN = stringPreferencesKey("user_api_token")
-        val INTERVAL = intPreferencesKey("interval")
+        val INTERVAL = longPreferencesKey("interval")
     }
 
     val getApi: Flow<String?> = context.dataStore.data
@@ -41,12 +42,12 @@ class StoreSettings(private val context: Context) {
         }
     }
 
-    val getInterval: Flow<Int?> = context.dataStore.data
+    val getInterval: Flow<Long?> = context.dataStore.data
         .map { preferences ->
-            preferences[INTERVAL] ?: 5
+            preferences[INTERVAL] ?: 5000
         }
 
-    suspend fun saveInterval(interval: Int) {
+    suspend fun saveInterval(interval: Long) {
         context.dataStore.edit { settings ->
             settings[INTERVAL] = interval
         }

@@ -41,7 +41,8 @@ class LoginViewModel(
 
         viewModelScope.launch{
             _state.update { it.copy(
-                isLoading = true
+                isLoading = true,
+                servers = emptyList()
             ) }
         serverDataSource
             .getServers(apiUrl, token)

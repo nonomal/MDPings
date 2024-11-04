@@ -15,13 +15,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -36,28 +33,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewDynamicColors
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mdpings.ui.theme.MDPingsTheme
-import com.example.mdpings.vpings.domain.Host
 import com.example.mdpings.vpings.presentation.models.HostUi
 import com.example.mdpings.vpings.presentation.models.ServerUi
 import com.example.mdpings.vpings.presentation.models.StatusUi
 import com.example.mdpings.vpings.presentation.models.toCountryCodeToEmojiFlag
 import com.example.mdpings.vpings.presentation.models.toDisplayableNumber
+import com.example.mdpings.vpings.presentation.models.toLongDisplayableString
 import com.example.mdpings.vpings.presentation.models.toNetIOSpeedDisplayableString
-import java.util.Locale
-import kotlin.math.pow
 import kotlin.random.Random
 
 private fun String.toLetterSpacing() = when(this) {
-    "CPU" -> 4.5.sp
+    "CPU" -> 4.7.sp
     "RAM" -> 3.8.sp
-    "SWAP" -> 0.3.sp
+    "SWAP" -> 0.5.sp
     "DISK" -> 2.5.sp
     "NetIO" -> 1.sp
     "NetTR" -> 0.sp
@@ -173,6 +165,7 @@ fun ProgressBar(text: String, total: Float, used: Float) {
     ) {
         Text(
             text = text,
+            textAlign = TextAlign.Start,
             fontWeight = FontWeight.SemiBold,
             style = MaterialTheme.typography.bodyMedium.copy(
                 letterSpacing = text.toLetterSpacing()
@@ -280,7 +273,7 @@ private fun NetworkTransfer(server: ServerUi) {
                 .weight(0.5f)
         )
         Text(
-            text = "${String.format(Locale.US, "%.2f", server.status.netInTransfer / 1024.0.pow(3.0))} G",
+            text = server.status.netInTransfer.formatted,
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
                 .weight(1f)
@@ -292,7 +285,7 @@ private fun NetworkTransfer(server: ServerUi) {
                 .weight(0.5f)
         )
         Text(
-            text = "${String.format(Locale.US, "%.2f", server.status.netOutTransfer / 1024.0.pow(3.0))} G",
+            text = server.status.netOutTransfer.formatted,
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
                 .weight(1f)
@@ -384,8 +377,8 @@ internal val previewStatusUi = StatusUi(
     memUsed = Random.nextLong(until = 8323002368),
     swapUsed = Random.nextInt(until = 267362304),
     diskUsed = Random.nextLong(until = 2164154892288),
-    netInTransfer = 1976106961615,
-    netOutTransfer = 520080984594,
+    netInTransfer = 1976106961615.toLongDisplayableString(),
+    netOutTransfer = 520080984594.toLongDisplayableString(),
     netInSpeed = Random.nextInt(until = 102400000).toNetIOSpeedDisplayableString(),
     netOutSpeed = Random.nextInt(until = 102400000).toNetIOSpeedDisplayableString(),
     uptime = 5201009,
@@ -440,6 +433,20 @@ internal val previewServerUi2 = ServerUi(
     status = previewStatusUi
 )
 
+internal val previewServerUi3 = ServerUi(
+    id = 3,
+    name = "Preview Server3",
+    tag = "",
+    lastActive = 1730554945,
+    ipv4 = "1.1.1.1",
+    ipv6 = "2001:0000:130F:0000:0000:09C0:876A:130B",
+    validIp = "1.1.1.1",
+    displayIndex = 0,
+    hideForGuest = false,
+    host = previewHostUi,
+    status = previewStatusUi
+)
+
 internal val previewListServers = listOf<ServerUi>(
-    previewServerUi0, previewServerUi1, previewServerUi2
+    previewServerUi0, previewServerUi1, previewServerUi2, previewServerUi3
 )
