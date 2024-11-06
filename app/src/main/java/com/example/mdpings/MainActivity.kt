@@ -117,7 +117,8 @@ class MainActivity : ComponentActivity() {
                         }
                         composable<ServerListScreen> {
                             ServerListScreen(
-                                state = serverListState
+                                state = serverListState,
+                                onAction = serverListViewModel::onAction
                             )
                         }
                     }

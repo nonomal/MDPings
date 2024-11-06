@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class StoreSettings(private val context: Context) {
@@ -20,10 +21,18 @@ class StoreSettings(private val context: Context) {
         val INTERVAL = longPreferencesKey("interval")
     }
 
-    val getApi: Flow<String?> = context.dataStore.data
+    val getApi: Flow<String> = context.dataStore.data
         .map { preferences ->
             preferences[USER_API_BACKEND] ?: ""
         }
+
+    suspend fun readApi(): String {
+        return context.dataStore.data.first()[USER_API_BACKEND] ?: ""
+    }
+
+    suspend fun readToken(): String {
+        return context.dataStore.data.first()[USER_API_TOKEN] ?: ""
+    }
 
     suspend fun saveApi(api: String) {
         context.dataStore.edit { settings ->
@@ -31,7 +40,7 @@ class StoreSettings(private val context: Context) {
         }
     }
 
-    val getToken: Flow<String?> = context.dataStore.data
+    val getToken: Flow<String> = context.dataStore.data
         .map { preferences ->
             preferences[USER_API_TOKEN] ?: ""
         }
@@ -42,7 +51,7 @@ class StoreSettings(private val context: Context) {
         }
     }
 
-    val getInterval: Flow<Long?> = context.dataStore.data
+    val getInterval: Flow<Long> = context.dataStore.data
         .map { preferences ->
             preferences[INTERVAL] ?: 5000
         }

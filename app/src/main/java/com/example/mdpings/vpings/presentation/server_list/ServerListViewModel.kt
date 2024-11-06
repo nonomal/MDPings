@@ -15,7 +15,9 @@ import com.example.mdpings.di.appModule
 import com.example.mdpings.vpings.data.StoreSettings
 import com.example.mdpings.vpings.domain.Server
 import com.example.mdpings.vpings.domain.ServerDataSource
+import com.example.mdpings.vpings.presentation.models.toMonitorUi
 import com.example.mdpings.vpings.presentation.models.toServerUi
+import com.example.mdpings.vpings.presentation.user_login.LoginAction
 import com.example.mdpings.vpings.presentation.user_login.LoginEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -25,6 +27,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingCommand
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -33,7 +37,14 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+
+data class AppSettings(
+    val baseUrl: String,
+    val token: String,
+    val interval: Long
+)
 
 class ServerListViewModel(
     private val serverDataSource: ServerDataSource,
@@ -42,24 +53,62 @@ class ServerListViewModel(
 
     private val _state = MutableStateFlow(ServerListState())
     val state = _state
-        .onStart {
-            observeSettingsAndLoadServers(5000)
-        }
+// 前后台切换会导致唤起多个observeSettingsAndLoadServers()
+//        .onStart {
+//            observeSettingsAndLoadServers()
+//        }
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000L),
             ServerListState()
         )
 
-    fun observeSettingsAndLoadServers(interval: Long) {
+    private val appSettings: Flow<AppSettings> = combine(
+        storeSettings.getApi,
+        storeSettings.getToken,
+        storeSettings.getInterval
+    ) { baseUrl, token, interval ->
+        AppSettings(baseUrl, token, interval)
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000L),
+        AppSettings("", "", 5000)
+    )
+
+    init {
+        observeSettingsAndLoadServers()
+    }
+
+    fun observeSettingsAndLoadServers() {
         viewModelScope.launch {
-            combine(storeSettings.getApi, storeSettings.getToken) { api, token ->
-                Pair(api ?: "", token ?: "")
-            }.collect { (api, token) ->
-                if (!(api.isEmpty() or token.isEmpty())) {
-                    while (true) {
-                        loadServers(api, token)
+            appSettings.collectLatest { (baseUrl, token, interval) ->
+                if (!(baseUrl.isEmpty() or token.isEmpty())) {
+                    while (isActive) {
+                        loadServers(baseUrl, token)
                         delay(interval)
+                    }
+                }
+            }
+        }
+    }
+
+//            val baseUrl = storeSettings.readApi()
+//            val token = storeSettings.readToken()
+//            if (!(baseUrl.isEmpty() or token.isEmpty())) {
+//                while (true) {
+//                    loadServers(baseUrl, token)
+//                    delay(5000)
+//                }
+//            }
+
+    fun onAction(action: ServerListAction) {
+        when(action) {
+            is ServerListAction.OnExpandClick -> {
+                viewModelScope.launch {
+                    appSettings.collectLatest { (baseUrl) ->
+                        if (!(baseUrl.isEmpty())) {
+                            loadMonitors(baseUrl, action.id)
+                        }
                     }
                 }
             }
@@ -85,6 +134,27 @@ class ServerListViewModel(
                 }
         }
     }
+
+    fun loadMonitors(apiUrl: String, id: Int) {
+        viewModelScope.launch{
+            _state.update { it.copy(
+                isLoading = true
+            ) }
+
+            serverDataSource
+                .getMonitors(apiUrl, id)
+                .onSuccess { monitors ->
+                    _state.update { it.copy(
+                        isLoading = false,
+                        monitors = monitors.map { it.toMonitorUi() }
+                    ) }
+                }
+                .onError { error ->
+                    _state.update { it.copy(isLoading = false) }
+                }
+        }
+    }
+
 }
 
 //class ServerListViewModel(

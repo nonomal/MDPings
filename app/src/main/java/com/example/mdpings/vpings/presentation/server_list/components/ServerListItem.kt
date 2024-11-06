@@ -9,7 +9,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,45 +17,69 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
+import androidx.compose.material.icons.rounded.Cloud
 import androidx.compose.material.icons.rounded.Download
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.KeyboardArrowUp
+import androidx.compose.material.icons.rounded.MonitorHeart
+import androidx.compose.material.icons.rounded.NetworkPing
 import androidx.compose.material.icons.rounded.Upload
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.util.trace
 import com.example.mdpings.ui.theme.MDPingsTheme
+import com.example.mdpings.vpings.domain.Monitor
+import com.example.mdpings.vpings.presentation.delay_chart.MonitorsChart
+import com.example.mdpings.vpings.presentation.delay_chart.delayList1
+import com.example.mdpings.vpings.presentation.delay_chart.delayList2
+import com.example.mdpings.vpings.presentation.delay_chart.delayList3
+import com.example.mdpings.vpings.presentation.delay_chart.delayListDate1
+import com.example.mdpings.vpings.presentation.delay_chart.delayListDate2
+import com.example.mdpings.vpings.presentation.delay_chart.delayListDate3
+import com.example.mdpings.vpings.presentation.delay_chart.mediumLineModel
 import com.example.mdpings.vpings.presentation.models.HostUi
+import com.example.mdpings.vpings.presentation.models.MonitorUi
 import com.example.mdpings.vpings.presentation.models.ServerUi
 import com.example.mdpings.vpings.presentation.models.StatusUi
 import com.example.mdpings.vpings.presentation.models.toCountryCodeToEmojiFlag
 import com.example.mdpings.vpings.presentation.models.toDisplayableNumber
 import com.example.mdpings.vpings.presentation.models.toLongDisplayableString
 import com.example.mdpings.vpings.presentation.models.toNetIOSpeedDisplayableString
+import com.example.mdpings.vpings.presentation.server_list.ServerListAction
+import com.example.mdpings.vpings.presentation.user_login.LoginAction
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlin.random.Random
 
 private fun String.toLetterSpacing() = when(this) {
@@ -72,15 +95,26 @@ private fun String.toLetterSpacing() = when(this) {
 
 @Composable
 fun ServerListItem(
+    monitors: List<MonitorUi>,
     serverUi: ServerUi,
-    onClick: () -> Unit,
+    onAction: (ServerListAction) -> Unit,
+    onClick: (ServerUi) -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+    var isExtended by remember { mutableStateOf(false) }
+
     Card(
         modifier = modifier.wrapContentHeight(),
         shape = ShapeDefaults.Medium,
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+// OnClickSample
+//        onClick = {
+//            onAction(
+//                LoginAction.OnTestClick(api, token)
+//            )
+//        },
     ) {
         ServerTitle(serverUi)
         Column(
@@ -90,6 +124,27 @@ fun ServerListItem(
                 .padding(horizontal = 12.dp)
                 .padding(bottom = 8.dp)
         ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.MonitorHeart,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .alpha(0.7f)
+                )
+                Text(
+                    text = "Status",
+                    modifier = Modifier
+                        .alpha(0.7f)
+                        .padding(horizontal = 8.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(2.dp))
             Status(serverUi)
             Spacer(modifier = Modifier.height(2.dp))
             NetworkIO(serverUi)
@@ -97,25 +152,106 @@ fun ServerListItem(
             NetworkTransfer(serverUi)
             Spacer(modifier = Modifier.height(2.dp))
             LoadAndUptime(serverUi)
+            Spacer(modifier = Modifier.height(8.dp))
+            Monitor(
+                monitors = monitors,
+                isExtended = isExtended
+            )
+            IconButton(
+                onClick = {
+                    onAction(
+                        ServerListAction.OnExpandClick(id = serverUi.id)
+                    )
+                    isExtended = !isExtended
+                },
+                enabled = true
+            ) {
+                Icon(
+                    imageVector = if (isExtended) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .alpha(0.7f)
+                )
+            }
         }
     }
 }
 
-@PreviewLightDark
+//@PreviewLightDark
+//@Composable
+//fun ServerCardPreview() {
+//    MDPingsTheme {
+//        ServerListItem(
+//            serverUi = previewServerUi0,
+//            onClick = {},
+//            onAction = {},
+//            modifier = Modifier
+//        )
+//    }
+//}
+
 @Composable
-fun ServerCardPreview() {
-    MDPingsTheme {
-        ServerListItem(
-            serverUi = previewServerUi0,
-            onClick = {},
-            modifier = Modifier
-        )
+fun Monitor(
+    monitors: List<MonitorUi> = emptyList(),
+    isExtended: Boolean
+) {
+
+    val modelProducer = remember { CartesianChartModelProducer() }
+
+    if (isExtended && monitors.isNotEmpty()) {
+        LaunchedEffect(Unit) {
+            withContext(Dispatchers.Default) {
+                modelProducer.runTransaction {
+                    lineSeries {
+                        monitors.map { monitor ->
+                            series(
+                                x = monitor.createdAt,
+                                y = monitor.avgDelay
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        Column {
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(4.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.NetworkPing,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .alpha(0.7f)
+                )
+                Text(
+                    text = "Network",
+                    modifier = Modifier
+                        .alpha(0.7f)
+                        .padding(horizontal = 8.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(2.dp))
+            MonitorsChart(
+//                model = mediumLineModel,
+                modelProducer = modelProducer,
+                modifier = Modifier
+                    .sizeIn(maxHeight = 240.dp)
+            )
+        }
     }
 }
 
 @Composable
-private fun ServerTitle(server: ServerUi) {
+fun ServerTitle(server: ServerUi) {
     FilterChip(
+// TODO 根据服务器LastActive更改chip的颜色
 //        colors = FilterChipDefaults.filterChipColors().copy(
 //            if (server.lastActive)
 //        ),
@@ -153,32 +289,6 @@ private fun ServerTitle(server: ServerUi) {
             }
         }
     )
-// Normal Row
-//    Row(
-//        verticalAlignment = Alignment.CenterVertically,
-//        horizontalArrangement = Arrangement.Start
-//    ) {
-//        Text(
-//            text = server.host.countryCode,
-//            style = MaterialTheme.typography.titleMedium,
-//            textAlign = TextAlign.Center,
-//            modifier = Modifier.weight(0.2f)
-//        )
-//        Text(
-//            text = server.name,
-//            style = MaterialTheme.typography.titleMedium,
-//            textAlign = TextAlign.Start,
-//            modifier = Modifier.weight(1f)
-//        )
-//        Text(
-//            text = "${server.host.platform}${server.host.platformVersion}",
-//            style = MaterialTheme.typography.titleSmall,
-//            textAlign = TextAlign.End,
-//            modifier = Modifier
-//                .weight(1f)
-//                .alpha(0.7f)
-//        )
-//    }
 }
 
 @Composable
