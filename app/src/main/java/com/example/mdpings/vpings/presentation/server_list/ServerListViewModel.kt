@@ -112,6 +112,11 @@ class ServerListViewModel(
                     }
                 }
             }
+            is ServerListAction.OnShrinkClick -> {
+                viewModelScope.launch {
+                    cleanMonitors()
+                }
+            }
         }
     }
 
@@ -152,6 +157,14 @@ class ServerListViewModel(
                 .onError { error ->
                     _state.update { it.copy(isLoading = false) }
                 }
+        }
+    }
+
+    fun cleanMonitors() {
+        viewModelScope.launch{
+            _state.update { it.copy(
+                monitors = emptyList()
+            ) }
         }
     }
 

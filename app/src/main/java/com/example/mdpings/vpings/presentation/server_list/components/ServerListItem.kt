@@ -17,13 +17,19 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeightIn
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
-import androidx.compose.material.icons.rounded.Cloud
+import androidx.compose.material.icons.rounded.Commit
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
@@ -32,7 +38,6 @@ import androidx.compose.material.icons.rounded.NetworkPing
 import androidx.compose.material.icons.rounded.Upload
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -57,8 +62,8 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mdpings.ui.theme.MDPingsTheme
-import com.example.mdpings.vpings.domain.Monitor
 import com.example.mdpings.vpings.presentation.delay_chart.MonitorsChart
+import com.example.mdpings.vpings.presentation.delay_chart.chartColors
 import com.example.mdpings.vpings.presentation.delay_chart.delayList1
 import com.example.mdpings.vpings.presentation.delay_chart.delayList2
 import com.example.mdpings.vpings.presentation.delay_chart.delayList3
@@ -75,7 +80,6 @@ import com.example.mdpings.vpings.presentation.models.toDisplayableNumber
 import com.example.mdpings.vpings.presentation.models.toLongDisplayableString
 import com.example.mdpings.vpings.presentation.models.toNetIOSpeedDisplayableString
 import com.example.mdpings.vpings.presentation.server_list.ServerListAction
-import com.example.mdpings.vpings.presentation.user_login.LoginAction
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 import kotlinx.coroutines.Dispatchers
@@ -109,12 +113,6 @@ fun ServerListItem(
         shape = ShapeDefaults.Medium,
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-// OnClickSample
-//        onClick = {
-//            onAction(
-//                LoginAction.OnTestClick(api, token)
-//            )
-//        },
     ) {
         ServerTitle(serverUi)
         Column(
@@ -153,15 +151,24 @@ fun ServerListItem(
             Spacer(modifier = Modifier.height(2.dp))
             LoadAndUptime(serverUi)
             Spacer(modifier = Modifier.height(8.dp))
-            Monitor(
+            NetworkMonitor(
                 monitors = monitors,
                 isExtended = isExtended
             )
             IconButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .size(size = 20.dp),
                 onClick = {
-                    onAction(
-                        ServerListAction.OnExpandClick(id = serverUi.id)
-                    )
+                    if (!isExtended) {
+                        onAction(
+                            ServerListAction.OnExpandClick(id = serverUi.id)
+                        )
+                    } else {
+                        onAction(
+                            ServerListAction.OnShrinkClick(id = serverUi.id)
+                        )
+                    }
                     isExtended = !isExtended
                 },
                 enabled = true
@@ -177,21 +184,8 @@ fun ServerListItem(
     }
 }
 
-//@PreviewLightDark
-//@Composable
-//fun ServerCardPreview() {
-//    MDPingsTheme {
-//        ServerListItem(
-//            serverUi = previewServerUi0,
-//            onClick = {},
-//            onAction = {},
-//            modifier = Modifier
-//        )
-//    }
-//}
-
 @Composable
-fun Monitor(
+fun NetworkMonitor(
     monitors: List<MonitorUi> = emptyList(),
     isExtended: Boolean
 ) {
@@ -239,11 +233,67 @@ fun Monitor(
             }
             Spacer(modifier = Modifier.height(2.dp))
             MonitorsChart(
+                // model = mediumLineModel Preview时解除注释，使用手动build的model测试
 //                model = mediumLineModel,
                 modelProducer = modelProducer,
                 modifier = Modifier
                     .sizeIn(maxHeight = 240.dp)
             )
+
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(90.dp),
+                verticalArrangement = Arrangement.Center,
+                // 指定高度不然会爆炸
+                modifier = Modifier
+                    .requiredHeightIn(max = 48.dp)
+            ) {
+                itemsIndexed(
+                    items = monitors
+                ) { index, monitor ->
+                    Row(
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            tint = chartColors[index],
+                            imageVector = Icons.Rounded.Commit,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Text(
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.bodySmall,
+                            text = monitor.monitorName,
+                            modifier = Modifier.alpha(0.7f)
+                        )
+                    }
+                }
+            }
+
+//            Row(
+//                modifier = Modifier
+//                    .padding(horizontal = 8.dp),
+//                verticalAlignment = Alignment.CenterVertically,
+//                horizontalArrangement = Arrangement.Center
+//            ) {
+//                monitors.forEachIndexed { index, monitor ->
+//                    Icon(
+//                        tint = chartColors[index],
+//                        imageVector = Icons.Rounded.Commit,
+//                        contentDescription = null,
+//                        modifier = Modifier.size(16.dp)
+//                    )
+//                    Text(
+//                        textAlign = TextAlign.Center,
+//                        style = MaterialTheme.typography.bodySmall,
+//                        text = monitor.monitorName,
+//                        modifier = Modifier.alpha(0.7f)
+//                    )
+//                }
+//            }
+
         }
     }
 }
@@ -560,6 +610,69 @@ private fun NetworkIO(server: ServerUi) {
 }
 
 // PreviewData
+@PreviewLightDark
+@Composable
+fun ServerCardPreview() {
+    MDPingsTheme {
+        ServerListItem(
+            serverUi = previewServerUi0,
+            onClick = {},
+            onAction = {},
+            modifier = Modifier,
+            monitors = listOf(
+                MonitorUi(
+                    monitorId = 1,
+                    serverId = 6,
+                    monitorName = "广东电信",
+                    serverName = "WAP.AC",
+                    createdAt = delayListDate1.map { it.toLong() },
+                    avgDelay = delayList1.map { it.toDouble() },
+                ),
+                MonitorUi(
+                    monitorId = 2,
+                    serverId = 6,
+                    monitorName = "广东移动",
+                    serverName = "WAP.AC",
+                    createdAt = delayListDate2.map { it.toLong() },
+                    avgDelay = delayList2.map { it.toDouble() },
+                ),
+                MonitorUi(
+                    monitorId = 3,
+                    serverId = 6,
+                    monitorName = "广东联通",
+                    serverName = "WAP.AC",
+                    createdAt = delayListDate3.map { it.toLong() },
+                    avgDelay = delayList3.map { it.toDouble() },
+                ),
+                MonitorUi(
+                    monitorId = 4,
+                    serverId = 6,
+                    monitorName = "上海联通",
+                    serverName = "WAP.AC",
+                    createdAt = delayListDate1.map { it.toLong() },
+                    avgDelay = delayList3.map { it.toDouble() },
+                ),
+                MonitorUi(
+                    monitorId = 5,
+                    serverId = 6,
+                    monitorName = "上海电信",
+                    serverName = "WAP.AC",
+                    createdAt = delayListDate2.map { it.toLong() },
+                    avgDelay = delayList2.map { it.toDouble() },
+                ),
+                MonitorUi(
+                    monitorId = 6,
+                    serverId = 6,
+                    monitorName = "上海移动",
+                    serverName = "WAP.AC",
+                    createdAt = delayListDate3.map { it.toLong() },
+                    avgDelay = delayList1.map { it.toDouble() },
+                )
+            )
+        )
+    }
+}
+
 private fun previewHostUi(): HostUi {
     return HostUi(
         platform = "ubuntu",
