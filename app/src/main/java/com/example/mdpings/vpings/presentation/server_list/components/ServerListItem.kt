@@ -17,41 +17,24 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeightIn
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
-import androidx.compose.material.icons.rounded.Commit
 import androidx.compose.material.icons.rounded.Download
-import androidx.compose.material.icons.rounded.KeyboardArrowDown
-import androidx.compose.material.icons.rounded.KeyboardArrowUp
-import androidx.compose.material.icons.rounded.MonitorHeart
-import androidx.compose.material.icons.rounded.NetworkPing
 import androidx.compose.material.icons.rounded.Upload
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -62,28 +45,20 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mdpings.ui.theme.MDPingsTheme
-import com.example.mdpings.vpings.presentation.delay_chart.MonitorsChart
-import com.example.mdpings.vpings.presentation.delay_chart.chartColors
-import com.example.mdpings.vpings.presentation.delay_chart.delayList1
-import com.example.mdpings.vpings.presentation.delay_chart.delayList2
-import com.example.mdpings.vpings.presentation.delay_chart.delayList3
-import com.example.mdpings.vpings.presentation.delay_chart.delayListDate1
-import com.example.mdpings.vpings.presentation.delay_chart.delayListDate2
-import com.example.mdpings.vpings.presentation.delay_chart.delayListDate3
-import com.example.mdpings.vpings.presentation.delay_chart.mediumLineModel
+import com.example.mdpings.vpings.domain.IpAPI
+import com.example.mdpings.vpings.presentation.server_detail.components.mockMonitors
 import com.example.mdpings.vpings.presentation.models.HostUi
+import com.example.mdpings.vpings.presentation.models.IpAPIUi
 import com.example.mdpings.vpings.presentation.models.MonitorUi
 import com.example.mdpings.vpings.presentation.models.ServerUi
 import com.example.mdpings.vpings.presentation.models.StatusUi
 import com.example.mdpings.vpings.presentation.models.toCountryCodeToEmojiFlag
 import com.example.mdpings.vpings.presentation.models.toDisplayableNumber
-import com.example.mdpings.vpings.presentation.models.toLongDisplayableString
+import com.example.mdpings.vpings.presentation.models.toNetTRLongDisplayableString
 import com.example.mdpings.vpings.presentation.models.toNetIOSpeedDisplayableString
 import com.example.mdpings.vpings.presentation.server_list.ServerListAction
-import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
-import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 private fun String.toLetterSpacing() = when(this) {
@@ -99,14 +74,14 @@ private fun String.toLetterSpacing() = when(this) {
 
 @Composable
 fun ServerListItem(
-    monitors: List<MonitorUi>,
+    onNavigateToDetail: () -> Unit,
     serverUi: ServerUi,
+    ipAPI: IpAPIUi?,
+    monitors: List<MonitorUi>?,
     onAction: (ServerListAction) -> Unit,
     onClick: (ServerUi) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
-    var isExtended by remember { mutableStateOf(false) }
 
     Card(
         modifier = modifier.wrapContentHeight(),
@@ -114,7 +89,11 @@ fun ServerListItem(
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
     ) {
-        ServerTitle(serverUi)
+        ServerTitle(
+            serverUi = serverUi,
+            onAction = onAction,
+            onNavigateToDetail = onNavigateToDetail
+        )
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -122,27 +101,6 @@ fun ServerListItem(
                 .padding(horizontal = 12.dp)
                 .padding(bottom = 8.dp)
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 4.dp),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.MonitorHeart,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .alpha(0.7f)
-                )
-                Text(
-                    text = "Status",
-                    modifier = Modifier
-                        .alpha(0.7f)
-                        .padding(horizontal = 8.dp)
-                )
-            }
-            Spacer(modifier = Modifier.height(2.dp))
             Status(serverUi)
             Spacer(modifier = Modifier.height(2.dp))
             NetworkIO(serverUi)
@@ -150,156 +108,19 @@ fun ServerListItem(
             NetworkTransfer(serverUi)
             Spacer(modifier = Modifier.height(2.dp))
             LoadAndUptime(serverUi)
-            Spacer(modifier = Modifier.height(8.dp))
-            NetworkMonitor(
-                monitors = monitors,
-                isExtended = isExtended
-            )
-            IconButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .size(size = 20.dp),
-                onClick = {
-                    if (!isExtended) {
-                        onAction(
-                            ServerListAction.OnExpandClick(id = serverUi.id)
-                        )
-                    } else {
-                        onAction(
-                            ServerListAction.OnShrinkClick(id = serverUi.id)
-                        )
-                    }
-                    isExtended = !isExtended
-                },
-                enabled = true
-            ) {
-                Icon(
-                    imageVector = if (isExtended) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .alpha(0.7f)
-                )
-            }
         }
     }
 }
 
 @Composable
-fun NetworkMonitor(
-    monitors: List<MonitorUi> = emptyList(),
-    isExtended: Boolean
+fun ServerTitle(
+    serverUi: ServerUi,
+    onAction: (ServerListAction) -> Unit,
+    onNavigateToDetail: () -> Unit
 ) {
 
-    val modelProducer = remember { CartesianChartModelProducer() }
+    val scope = rememberCoroutineScope()
 
-    if (isExtended && monitors.isNotEmpty()) {
-        LaunchedEffect(Unit) {
-            withContext(Dispatchers.Default) {
-                modelProducer.runTransaction {
-                    lineSeries {
-                        monitors.map { monitor ->
-                            series(
-                                x = monitor.createdAt,
-                                y = monitor.avgDelay
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
-        Column {
-            HorizontalDivider()
-            Spacer(modifier = Modifier.height(4.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 4.dp),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.NetworkPing,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .alpha(0.7f)
-                )
-                Text(
-                    text = "Network",
-                    modifier = Modifier
-                        .alpha(0.7f)
-                        .padding(horizontal = 8.dp)
-                )
-            }
-            Spacer(modifier = Modifier.height(2.dp))
-            MonitorsChart(
-                // model = mediumLineModel Preview时解除注释，使用手动build的model测试
-//                model = mediumLineModel,
-                modelProducer = modelProducer,
-                modifier = Modifier
-                    .sizeIn(maxHeight = 240.dp)
-            )
-
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(90.dp),
-                verticalArrangement = Arrangement.Center,
-                // 指定高度不然会爆炸
-                modifier = Modifier
-                    .requiredHeightIn(max = 48.dp)
-            ) {
-                itemsIndexed(
-                    items = monitors
-                ) { index, monitor ->
-                    Row(
-                        modifier = Modifier
-                            .padding(horizontal = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            tint = chartColors[index],
-                            imageVector = Icons.Rounded.Commit,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Text(
-                            textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.bodySmall,
-                            text = monitor.monitorName,
-                            modifier = Modifier.alpha(0.7f)
-                        )
-                    }
-                }
-            }
-
-//            Row(
-//                modifier = Modifier
-//                    .padding(horizontal = 8.dp),
-//                verticalAlignment = Alignment.CenterVertically,
-//                horizontalArrangement = Arrangement.Center
-//            ) {
-//                monitors.forEachIndexed { index, monitor ->
-//                    Icon(
-//                        tint = chartColors[index],
-//                        imageVector = Icons.Rounded.Commit,
-//                        contentDescription = null,
-//                        modifier = Modifier.size(16.dp)
-//                    )
-//                    Text(
-//                        textAlign = TextAlign.Center,
-//                        style = MaterialTheme.typography.bodySmall,
-//                        text = monitor.monitorName,
-//                        modifier = Modifier.alpha(0.7f)
-//                    )
-//                }
-//            }
-
-        }
-    }
-}
-
-@Composable
-fun ServerTitle(server: ServerUi) {
     FilterChip(
 // TODO 根据服务器LastActive更改chip的颜色
 //        colors = FilterChipDefaults.filterChipColors().copy(
@@ -308,11 +129,11 @@ fun ServerTitle(server: ServerUi) {
         modifier = Modifier
             .padding(horizontal = 12.dp),
         leadingIcon = {
-            Text(text = server.host.countryCode)
+            Text(text = serverUi.host.countryCode)
         },
         trailingIcon = {
             Text(
-                text = "${server.host.platform}${server.host.platformVersion}",
+                text = "${serverUi.host.platform}${serverUi.host.platformVersion}",
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.titleSmall,
@@ -323,7 +144,17 @@ fun ServerTitle(server: ServerUi) {
         },
         shape = ShapeDefaults.Large,
         selected = true,
-        onClick = {},
+        onClick = {
+            scope.launch {
+                onAction(
+                    ServerListAction.OnServerClick(
+                        serverUi = serverUi
+                    )
+                )
+                delay(3000)
+                onNavigateToDetail()
+            }
+        },
         label = {
             Row(
                 horizontalArrangement = Arrangement.Center,
@@ -331,7 +162,7 @@ fun ServerTitle(server: ServerUi) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = server.name,
+                    text = serverUi.name,
                     style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Start,
                     modifier = Modifier.weight(1f)
@@ -342,7 +173,7 @@ fun ServerTitle(server: ServerUi) {
 }
 
 @Composable
-private fun Status(server: ServerUi) {
+fun Status(server: ServerUi) {
     ProgressBar(
         text = "CPU",
         total = 100F,
@@ -429,7 +260,7 @@ fun ProgressBar(text: String, total: Float, used: Float) {
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-private fun LoadAndUptime(server: ServerUi) {
+fun LoadAndUptime(server: ServerUi) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -487,7 +318,7 @@ private fun LoadAndUptime(server: ServerUi) {
 }
 
 @Composable
-private fun NetworkTransfer(server: ServerUi) {
+fun NetworkTransfer(server: ServerUi) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -537,7 +368,7 @@ private fun NetworkTransfer(server: ServerUi) {
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-private fun NetworkIO(server: ServerUi) {
+fun NetworkIO(server: ServerUi) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -609,7 +440,9 @@ private fun NetworkIO(server: ServerUi) {
     }
 }
 
-// PreviewData
+
+
+// Preview Data
 @PreviewLightDark
 @Composable
 fun ServerCardPreview() {
@@ -619,56 +452,9 @@ fun ServerCardPreview() {
             onClick = {},
             onAction = {},
             modifier = Modifier,
-            monitors = listOf(
-                MonitorUi(
-                    monitorId = 1,
-                    serverId = 6,
-                    monitorName = "广东电信",
-                    serverName = "WAP.AC",
-                    createdAt = delayListDate1.map { it.toLong() },
-                    avgDelay = delayList1.map { it.toDouble() },
-                ),
-                MonitorUi(
-                    monitorId = 2,
-                    serverId = 6,
-                    monitorName = "广东移动",
-                    serverName = "WAP.AC",
-                    createdAt = delayListDate2.map { it.toLong() },
-                    avgDelay = delayList2.map { it.toDouble() },
-                ),
-                MonitorUi(
-                    monitorId = 3,
-                    serverId = 6,
-                    monitorName = "广东联通",
-                    serverName = "WAP.AC",
-                    createdAt = delayListDate3.map { it.toLong() },
-                    avgDelay = delayList3.map { it.toDouble() },
-                ),
-                MonitorUi(
-                    monitorId = 4,
-                    serverId = 6,
-                    monitorName = "上海联通",
-                    serverName = "WAP.AC",
-                    createdAt = delayListDate1.map { it.toLong() },
-                    avgDelay = delayList3.map { it.toDouble() },
-                ),
-                MonitorUi(
-                    monitorId = 5,
-                    serverId = 6,
-                    monitorName = "上海电信",
-                    serverName = "WAP.AC",
-                    createdAt = delayListDate2.map { it.toLong() },
-                    avgDelay = delayList2.map { it.toDouble() },
-                ),
-                MonitorUi(
-                    monitorId = 6,
-                    serverId = 6,
-                    monitorName = "上海移动",
-                    serverName = "WAP.AC",
-                    createdAt = delayListDate3.map { it.toLong() },
-                    avgDelay = delayList1.map { it.toDouble() },
-                )
-            )
+            monitors = null,
+            ipAPI = null,
+            onNavigateToDetail = {}
         )
     }
 }
@@ -698,8 +484,8 @@ private fun previewStatusUi(): StatusUi {
         memUsed = Random.nextLong(until = 8323002368),
         swapUsed = Random.nextInt(until = 267362304),
         diskUsed = Random.nextLong(until = 2164154892288),
-        netInTransfer = Random.nextLong(from = 0, until = 1024000000000000).toLongDisplayableString(),
-        netOutTransfer = Random.nextLong(from = 0, until = 1024000000000000000).toLongDisplayableString(),
+        netInTransfer = Random.nextLong(from = 0, until = 1024000000000000).toNetTRLongDisplayableString(),
+        netOutTransfer = Random.nextLong(from = 0, until = 1024000000000000000).toNetTRLongDisplayableString(),
         netInSpeed = Random.nextInt(until = 1024000000).toNetIOSpeedDisplayableString(),
         netOutSpeed = Random.nextInt(until = 1024000000).toNetIOSpeedDisplayableString(),
         uptime = Random.nextInt(until = 102400000),

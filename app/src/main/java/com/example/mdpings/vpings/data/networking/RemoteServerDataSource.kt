@@ -5,18 +5,20 @@ import com.example.mdpings.core.data.networking.safeCall
 import com.example.mdpings.core.domain.util.NetworkError
 import com.example.mdpings.core.domain.util.Result
 import com.example.mdpings.core.domain.util.map
+import com.example.mdpings.vpings.data.mappers.toIpAPI
 import com.example.mdpings.vpings.data.mappers.toMonitor
 import com.example.mdpings.vpings.data.mappers.toServer
+import com.example.mdpings.vpings.data.networking.dto.IpAPIDto
+import com.example.mdpings.vpings.data.networking.dto.IpAPIResponsesDto
 import com.example.mdpings.vpings.data.networking.dto.MonitorsResponsesDto
 import com.example.mdpings.vpings.data.networking.dto.ServersResponsesDto
+import com.example.mdpings.vpings.domain.IpAPI
 import com.example.mdpings.vpings.domain.Monitor
 import com.example.mdpings.vpings.domain.Server
 import com.example.mdpings.vpings.domain.ServerDataSource
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.header
-import io.ktor.http.HttpHeaders
-import io.ktor.http.headers
 
 class RemoteServerDataSource(
     private val httpClient: HttpClient
@@ -51,6 +53,19 @@ class RemoteServerDataSource(
             response.result
                 .sortedBy { it.monitorId }
                 .map { it.toMonitor() }
+        }
+    }
+
+    override suspend fun getIpAPI(serverIp: String): Result<IpAPI, NetworkError> {
+        return safeCall<IpAPIDto> {
+            httpClient.get(
+                urlString = constructUrl(
+                    baseURL = "http://ip-api.com/json/",
+                    url = "/${serverIp}"
+                )
+            )
+        }.map { response ->
+            response.toIpAPI()
         }
     }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.mdpings.vpings.presentation.delay_chart
+package com.example.mdpings.vpings.presentation.server_detail.components
 
 import android.text.Layout
 import androidx.compose.material3.MaterialTheme

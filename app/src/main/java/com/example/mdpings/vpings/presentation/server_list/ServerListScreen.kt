@@ -14,18 +14,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
 import com.example.mdpings.ui.theme.MDPingsTheme
 import com.example.mdpings.vpings.presentation.server_list.components.MDAppTopBar
 import com.example.mdpings.vpings.presentation.server_list.components.ServerListItem
 import com.example.mdpings.vpings.presentation.server_list.components.previewListServers
-import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ServerListScreen(
+    onNavigateToDetail: () -> Unit,
     onAction: (ServerListAction) -> Unit,
     state: ServerListState,
     modifier: Modifier = Modifier
@@ -60,13 +57,15 @@ fun ServerListScreen(
                 key = { it.id }
             ) { serverUi ->
                 ServerListItem(
-                    monitors = state.monitors,
+                    onNavigateToDetail = onNavigateToDetail,
                     serverUi = serverUi,
-                    onClick = { },
+                    ipAPI = state.ipAPIUi,
+                    monitors = state.monitors,
                     onAction = onAction,
+                    onClick = { },
                     modifier = Modifier
                         .padding(horizontal = 8.dp, vertical = 4.dp)
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
                 )
             }
         }
@@ -81,6 +80,7 @@ fun ServerListScreenPreview() {
     MDPingsTheme {
         ServerListScreen(
             onAction = {},
+            onNavigateToDetail = {},
             state = ServerListState(
                 isLoading = false,
                 servers = previewListServers,

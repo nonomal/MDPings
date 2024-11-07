@@ -30,6 +30,7 @@ import com.example.mdpings.core.presentation.util.ObserveAsEvents
 import com.example.mdpings.core.presentation.util.toString
 import com.example.mdpings.ui.theme.MDPingsTheme
 import com.example.mdpings.vpings.data.StoreSettings
+import com.example.mdpings.vpings.presentation.server_detail.ServerDetailScreen
 import com.example.mdpings.vpings.presentation.server_list.ServerListScreen
 import com.example.mdpings.vpings.presentation.server_list.ServerListViewModel
 import com.example.mdpings.vpings.presentation.user_login.LoginEvent
@@ -118,7 +119,19 @@ class MainActivity : ComponentActivity() {
                         composable<ServerListScreen> {
                             ServerListScreen(
                                 state = serverListState,
-                                onAction = serverListViewModel::onAction
+                                onAction = serverListViewModel::onAction,
+                                onNavigateToDetail = {
+                                    navController.navigate(
+                                        route = ServerDetailScreen
+                                    )
+                                }
+                            )
+                        }
+                        composable<ServerDetailScreen> {
+                            ServerDetailScreen(
+                                serverUi = serverListState.selectedServer!!,
+                                ipAPIUi = serverListState.ipAPIUi!!,
+                                monitors = serverListState.monitors
                             )
                         }
                     }
@@ -137,3 +150,6 @@ object LoginScreen
 
 @Serializable
 object ServerListScreen
+
+@Serializable
+object ServerDetailScreen

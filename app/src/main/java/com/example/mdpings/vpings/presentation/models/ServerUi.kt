@@ -2,6 +2,7 @@ package com.example.mdpings.vpings.presentation.models
 
 import android.icu.text.NumberFormat
 import com.example.mdpings.vpings.domain.Host
+import com.example.mdpings.vpings.domain.IpAPI
 import com.example.mdpings.vpings.domain.Server
 import com.example.mdpings.vpings.domain.Status
 import java.util.Locale
@@ -18,7 +19,7 @@ data class ServerUi(
     val displayIndex: Int,
     val hideForGuest: Boolean,
     val host: HostUi,
-    val status: StatusUi
+    val status: StatusUi,
 )
 
 data class HostUi(
@@ -56,13 +57,14 @@ data class StatusUi(
     val gpu: Int
 )
 
+
 data class DoubleDisplayableNumber(
     val value: Double,
     val formatted: String
 )
 
 fun Double.toDisplayableNumber(): DoubleDisplayableNumber {
-    val formatter = NumberFormat.getNumberInstance(java.util.Locale.getDefault()).apply {
+    val formatter = NumberFormat.getNumberInstance(Locale.getDefault()).apply {
         minimumFractionDigits = 2
         maximumFractionDigits = 2
     }
@@ -94,7 +96,7 @@ data class LongDisplayableString(
     val formatted: String
 )
 
-fun Long.toLongDisplayableString(): LongDisplayableString {
+fun Long.toNetTRLongDisplayableString(): LongDisplayableString {
     val transfer = when {
         this / 1024 < 1024 -> "${String.format(Locale.US, "%.2f", this / 1024.0)} K"
         this / 1024.0.pow(2.0) < 1024 -> "${String.format(Locale.US, "%.2f", this / 1024.0.pow(2.0))} M"
@@ -106,6 +108,17 @@ fun Long.toLongDisplayableString(): LongDisplayableString {
         value = this,
         formatted = transfer
     )
+}
+
+fun Long.toMemDiskLongDisplayableString(): String {
+    val transfer = when {
+        this / 1024 < 1024 -> "${String.format(Locale.US, "%.2f", this / 1024.0)} KB"
+        this / 1024.0.pow(2.0) < 1024 -> "${String.format(Locale.US, "%.2f", this / 1024.0.pow(2.0))} MB"
+        this / 1024.0.pow(3.0) < 1024 -> "${String.format(Locale.US, "%.2f", this / 1024.0.pow(3.0))} GB"
+        this / 1024.0.pow(4.0) < 1024 -> "${String.format(Locale.US, "%.2f", this / 1024.0.pow(4.0))} TB"
+        else -> "${String.format(Locale.US, "%.2f", this / 1024.0.pow(5.0))} PB"
+    }
+    return transfer
 }
 
 fun Server.toServerUi(): ServerUi {
@@ -120,7 +133,7 @@ fun Server.toServerUi(): ServerUi {
         displayIndex = displayIndex,
         hideForGuest = hideForGuest,
         host = host.toHostUi(),
-        status = status.toStatusUi()
+        status = status.toStatusUi(),
     )
 }
 
@@ -146,8 +159,8 @@ private fun Status.toStatusUi(): StatusUi {
         memUsed = memUsed,
         swapUsed = swapUsed,
         diskUsed = diskUsed,
-        netInTransfer = netInTransfer.toLongDisplayableString(),
-        netOutTransfer = netOutTransfer.toLongDisplayableString(),
+        netInTransfer = netInTransfer.toNetTRLongDisplayableString(),
+        netOutTransfer = netOutTransfer.toNetTRLongDisplayableString(),
         netInSpeed = netInSpeed.toNetIOSpeedDisplayableString(),
         netOutSpeed = netOutSpeed.toNetIOSpeedDisplayableString(),
         uptime = uptime,

@@ -1,31 +1,14 @@
-package com.example.mdpings.vpings.presentation.delay_chart
+package com.example.mdpings.vpings.presentation.server_detail.components
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.NetworkPing
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ShapeDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.example.mdpings.ui.theme.MDPingsTheme
@@ -55,26 +38,17 @@ import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.compose.cartesian.rememberVicoZoomState
 import com.patrykandpatrick.vico.compose.common.component.rememberShapeComponent
 import com.patrykandpatrick.vico.compose.common.component.rememberTextComponent
-import com.patrykandpatrick.vico.compose.common.component.shapeComponent
-import com.patrykandpatrick.vico.compose.common.data.rememberExtraLambda
 import com.patrykandpatrick.vico.compose.common.dimensions
 import com.patrykandpatrick.vico.compose.common.fill
-import com.patrykandpatrick.vico.compose.common.rememberHorizontalLegend
 import com.patrykandpatrick.vico.compose.common.shape.rounded
-import com.patrykandpatrick.vico.compose.common.vicoTheme
-import com.patrykandpatrick.vico.core.cartesian.CartesianDrawingContext
-import com.patrykandpatrick.vico.core.cartesian.CartesianMeasuringContext
 import com.patrykandpatrick.vico.core.cartesian.Zoom
 import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModel
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianValueFormatter
-import com.patrykandpatrick.vico.core.cartesian.data.LineCartesianLayerModel
 import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
 import com.patrykandpatrick.vico.core.cartesian.marker.DefaultCartesianMarker
-import com.patrykandpatrick.vico.core.common.Legend
-import com.patrykandpatrick.vico.core.common.LegendItem
 import com.patrykandpatrick.vico.core.common.component.Shadow
 import com.patrykandpatrick.vico.core.common.shape.CorneredShape
 import java.time.Instant
@@ -87,7 +61,7 @@ public val chartColors = listOf(
     line3, line4, line5, line6, line7, line8, line9, line10, line11
 )
 
-// x轴时间
+// x轴Epoch时间 -> LocalTime: HH:MM
 private val bottomAxisValueFormatter = CartesianValueFormatter { _, x, _ ->
     formatEpochTimeToHHMM(x)
 }
@@ -105,6 +79,7 @@ private fun formatEpochTimeToHHMM(epochTime: Double): String {
 //fun MonitorsChart(model: CartesianChartModel, modelProducer: CartesianChartModelProducer, modifier: Modifier) {
 fun MonitorsChart(modelProducer: CartesianChartModelProducer, modifier: Modifier) {
     CartesianChartHost(
+        // model = model Preview用
 //        model = model,
         modelProducer = modelProducer,
         chart =
@@ -114,7 +89,9 @@ fun MonitorsChart(modelProducer: CartesianChartModelProducer, modifier: Modifier
                     lineProvider = LineCartesianLayer.LineProvider.series(
                         chartColors.map { color ->
                             LineCartesianLayer.rememberLine(
-                                fill = remember { LineCartesianLayer.LineFill.single(fill(color)) }
+                                fill = remember { LineCartesianLayer.LineFill.single(fill(color)) },
+                                // 注释areaFill以降低3个monitors以上同时显示的可读性
+                                areaFill = null
                             )
                         }
                     )
@@ -176,92 +153,42 @@ private fun rememberStartAxisLabel() =
     )
 
 // 每项的label
-@Composable
-private fun rememberLegend(): Legend<CartesianMeasuringContext, CartesianDrawingContext> {
-    val labelComponent = rememberTextComponent(vicoTheme.textColor)
-    val resources = LocalContext.current.resources
-    return rememberHorizontalLegend(
-        items =
-            rememberExtraLambda {
-                // TODO 根据ChartColor来foreach，不对，直接放弃掉？
-                chartColors.forEachIndexed { index, color ->
-                    add(
-                        LegendItem(
-                            icon = shapeComponent(color, CorneredShape.Pill),
-                            labelComponent = labelComponent,
-                            label = monitor_name[index],
-                        )
-                    )
-                }
-            },
-        padding = dimensions(top = 8.dp, start = 16.dp, end = 16.dp)
-    )
-}
-
-// 模拟数据
-public val mediumLineModel =
-    CartesianChartModel(
-        LineCartesianLayerModel.build {
-            series(x = delayListDate1.takeLast(120), y = delayList1.takeLast(120))
-            series(x = delayListDate2.takeLast(120), y = delayList2.takeLast(120))
-            series(x = delayListDate3.takeLast(120), y = delayList3.takeLast(120))
-            series(x = delayListDate3.takeLast(120), y = delayList2.takeLast(120))
-            series(x = delayListDate2.takeLast(120), y = delayList3.takeLast(120))
-            series(x = delayListDate1.takeLast(120), y = delayList1.takeLast(120))
-        }
-    )
+//@Composable
+//private fun rememberLegend(): Legend<CartesianMeasuringContext, CartesianDrawingContext> {
+//    val labelComponent = rememberTextComponent(vicoTheme.textColor)
+//    val resources = LocalContext.current.resources
+//    return rememberHorizontalLegend(
+//        items =
+//            rememberExtraLambda {
+//                chartColors.forEachIndexed { index, color ->
+//                    add(
+//                        LegendItem(
+//                            icon = shapeComponent(color, CorneredShape.Pill),
+//                            labelComponent = labelComponent,
+//                            label = monitor_name[index],
+//                        )
+//                    )
+//                }
+//            },
+//        padding = dimensions(top = 8.dp, start = 16.dp, end = 16.dp)
+//    )
+//}
 
 //@PreviewLightDark
 //@Composable
 //fun ChartPreview() {
-//
 //    val cartesianChartModelProducer = remember { CartesianChartModelProducer() }
-//
 //    MDPingsTheme {
-//        Card(
-//            modifier = Modifier,
-//            shape = ShapeDefaults.Medium,
-//            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer),
-//            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+//        Box(
+//            modifier = Modifier.background(MaterialTheme.colorScheme.background)
 //        ) {
-//            Box(
+//            MonitorsChart(
+//                // model = mediumLineModel() Preview用
+//                model = mockLineModel(),
+//                modelProducer = cartesianChartModelProducer,
 //                modifier = Modifier
-//                    .padding(horizontal = 16.dp)
-//                    .padding(top = 16.dp, bottom = 16.dp)
-//            ) {
-//                Column {
-//                    HorizontalDivider()
-//                    Spacer(modifier = Modifier.height(4.dp))
-//                    Row(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(horizontal = 4.dp),
-//                        horizontalArrangement = Arrangement.Start,
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        Icon(
-//                            imageVector = Icons.Rounded.NetworkPing,
-//                            contentDescription = null,
-//                            modifier = Modifier
-//                                .alpha(0.7f)
-//                        )
-//                        Text(
-//                            text = "Network",
-//                            modifier = Modifier
-//                                .alpha(0.7f)
-//                                .padding(horizontal = 8.dp)
-//                        )
-//                    }
-//                    Spacer(modifier = Modifier.height(2.dp))
-//                    MonitorsChart(
-//                        // model = mediumLineModel Preview用
-//                        model = mediumLineModel,
-//                        modelProducer = cartesianChartModelProducer,
-//                        modifier = Modifier
-//                            .sizeIn(maxHeight = 240.dp)
-//                    )
-//                }
-//            }
+//                    .sizeIn(maxHeight = 240.dp)
+//            )
 //        }
 //    }
 //}

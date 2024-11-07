@@ -1,40 +1,21 @@
 package com.example.mdpings.vpings.presentation.server_list
 
-import android.app.Application
-import android.content.Context
-import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mdpings.VpingsApp
-import com.example.mdpings.core.domain.util.NetworkError
-import com.example.mdpings.core.domain.util.Result
 import com.example.mdpings.core.domain.util.onError
 import com.example.mdpings.core.domain.util.onSuccess
-import com.example.mdpings.di.appModule
 import com.example.mdpings.vpings.data.StoreSettings
-import com.example.mdpings.vpings.domain.Server
 import com.example.mdpings.vpings.domain.ServerDataSource
+import com.example.mdpings.vpings.presentation.models.ServerUi
+import com.example.mdpings.vpings.presentation.models.toIpAPIUi
 import com.example.mdpings.vpings.presentation.models.toMonitorUi
 import com.example.mdpings.vpings.presentation.models.toServerUi
-import com.example.mdpings.vpings.presentation.user_login.LoginAction
-import com.example.mdpings.vpings.presentation.user_login.LoginEvent
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingCommand
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
@@ -103,24 +84,75 @@ class ServerListViewModel(
 
     fun onAction(action: ServerListAction) {
         when(action) {
-            is ServerListAction.OnExpandClick -> {
+//            is ServerListAction.OnExpandClick -> {
+//                viewModelScope.launch {
+//                    appSettings.collectLatest { (baseUrl) ->
+//                        if (!(baseUrl.isEmpty())) {
+//                            loadMonitors(baseUrl, action.id)
+//                        }
+//                    }
+//                }
+//            }
+//            is ServerListAction.OnShrinkClick -> {
+//                viewModelScope.launch {
+//                    cleanMonitors()
+//                }
+//            }
+            is ServerListAction.OnServerClick -> {
                 viewModelScope.launch {
                     appSettings.collectLatest { (baseUrl) ->
                         if (!(baseUrl.isEmpty())) {
-                            loadMonitors(baseUrl, action.id)
+                            selectServer(
+                                serverUi = action.serverUi,
+                                apiUrl = baseUrl
+                            )
                         }
                     }
                 }
             }
-            is ServerListAction.OnShrinkClick -> {
-                viewModelScope.launch {
-                    cleanMonitors()
-                }
-            }
+
         }
     }
 
-    fun loadServers(apiUrl: String, token: String) {
+    private fun selectServer(serverUi: ServerUi, apiUrl: String) {
+        _state.update { it.copy(selectedServer = serverUi) }
+        _state.update { it.copy(isLoading = true) }
+
+        viewModelScope.launch {
+
+            // getIpAPI && Monitors
+            serverDataSource
+                .getIpAPI(
+                    serverIp = serverUi.ipv4
+                )
+                .onSuccess { result ->
+                    _state.update {
+                        it.copy(
+                            ipAPIUi = result.toIpAPIUi()
+                        )
+                    }
+                }
+                .onError { error ->
+                    _state.update { it.copy(isLoading = false) }
+                }
+
+            serverDataSource
+                .getMonitors(apiUrl, serverUi.id)
+                .onSuccess { monitors ->
+                    _state.update { it.copy(
+                        isLoading = false,
+                        monitors = monitors.map { it.toMonitorUi() }
+                    ) }
+                }
+                .onError { error ->
+                    _state.update { it.copy(isLoading = false) }
+                }
+
+        }
+    }
+
+
+    private fun loadServers(apiUrl: String, token: String) {
         viewModelScope.launch{
             _state.update { it.copy(
                 isLoading = true
@@ -140,33 +172,53 @@ class ServerListViewModel(
         }
     }
 
-    fun loadMonitors(apiUrl: String, id: Int) {
-        viewModelScope.launch{
-            _state.update { it.copy(
-                isLoading = true
-            ) }
+//    private fun loadMonitors(apiUrl: String, id: Int) {
+//        viewModelScope.launch{
+//            _state.update { it.copy(
+//                isLoading = true
+//            ) }
+//
+//            serverDataSource
+//                .getMonitors(apiUrl, id)
+//                .onSuccess { monitors ->
+//                    _state.update { it.copy(
+//                        isLoading = false,
+//                        monitors = monitors.map { it.toMonitorUi() }
+//                    ) }
+//                }
+//                .onError { error ->
+//                    _state.update { it.copy(isLoading = false) }
+//                }
+//        }
+//    }
 
-            serverDataSource
-                .getMonitors(apiUrl, id)
-                .onSuccess { monitors ->
-                    _state.update { it.copy(
-                        isLoading = false,
-                        monitors = monitors.map { it.toMonitorUi() }
-                    ) }
-                }
-                .onError { error ->
-                    _state.update { it.copy(isLoading = false) }
-                }
-        }
-    }
+//    private fun loadMonitors(apiUrl: String, id: Int) {
+//        viewModelScope.launch{
+//            _state.update { it.copy(
+//                isLoading = true
+//            ) }
+//
+//            serverDataSource
+//                .getMonitors(apiUrl, id)
+//                .onSuccess { monitors ->
+//                    _state.update { it.copy(
+//                        isLoading = false,
+//                        monitors = monitors.map { it.toMonitorUi() }
+//                    ) }
+//                }
+//                .onError { error ->
+//                    _state.update { it.copy(isLoading = false) }
+//                }
+//        }
+//    }
 
-    fun cleanMonitors() {
-        viewModelScope.launch{
-            _state.update { it.copy(
-                monitors = emptyList()
-            ) }
-        }
-    }
+//    private fun cleanMonitors() {
+//        viewModelScope.launch{
+//            _state.update { it.copy(
+//                monitors = emptyList()
+//            ) }
+//        }
+//    }
 
 }
 
