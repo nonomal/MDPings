@@ -84,33 +84,19 @@ class ServerListViewModel(
 
     fun onAction(action: ServerListAction) {
         when(action) {
-//            is ServerListAction.OnExpandClick -> {
+            is ServerListAction.OnServerClick -> {
+                _state.update { it.copy(selectedServer = action.serverUi) }
 //                viewModelScope.launch {
 //                    appSettings.collectLatest { (baseUrl) ->
 //                        if (!(baseUrl.isEmpty())) {
-//                            loadMonitors(baseUrl, action.id)
+//                            selectServer(
+//                                serverUi = action.serverUi,
+//                                apiUrl = baseUrl
+//                            )
 //                        }
 //                    }
 //                }
-//            }
-//            is ServerListAction.OnShrinkClick -> {
-//                viewModelScope.launch {
-//                    cleanMonitors()
-//                }
-//            }
-            is ServerListAction.OnServerClick -> {
-                viewModelScope.launch {
-                    appSettings.collectLatest { (baseUrl) ->
-                        if (!(baseUrl.isEmpty())) {
-                            selectServer(
-                                serverUi = action.serverUi,
-                                apiUrl = baseUrl
-                            )
-                        }
-                    }
-                }
             }
-
         }
     }
 
@@ -151,7 +137,6 @@ class ServerListViewModel(
         }
     }
 
-
     private fun loadServers(apiUrl: String, token: String) {
         viewModelScope.launch{
             _state.update { it.copy(
@@ -171,6 +156,8 @@ class ServerListViewModel(
                 }
         }
     }
+
+}
 
 //    private fun loadMonitors(apiUrl: String, id: Int) {
 //        viewModelScope.launch{
@@ -219,8 +206,6 @@ class ServerListViewModel(
 //            ) }
 //        }
 //    }
-
-}
 
 //class ServerListViewModel(
 //    private val serverDataSource: ServerDataSource,

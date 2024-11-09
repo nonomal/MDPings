@@ -11,6 +11,7 @@ import com.example.mdpings.vpings.data.mappers.toServer
 import com.example.mdpings.vpings.data.networking.dto.IpAPIDto
 import com.example.mdpings.vpings.data.networking.dto.IpAPIResponsesDto
 import com.example.mdpings.vpings.data.networking.dto.MonitorsResponsesDto
+import com.example.mdpings.vpings.data.networking.dto.ServerDto
 import com.example.mdpings.vpings.data.networking.dto.ServersResponsesDto
 import com.example.mdpings.vpings.domain.IpAPI
 import com.example.mdpings.vpings.domain.Monitor
@@ -41,12 +42,27 @@ class RemoteServerDataSource(
         }
     }
 
-    override suspend fun getMonitors(apiUrl: String, id: Int): Result<List<Monitor>, NetworkError> {
+    override suspend fun getSingleServer(apiUrl: String, token: String, serverId: String): Result<Server, NetworkError> {
+        return safeCall<ServersResponsesDto> {
+            httpClient.get(
+                urlString = constructUrl(
+                    baseURL = apiUrl,
+                    url = "/api/v1/server/details?id=${serverId}"
+                )
+            ) {
+                header("Authorization", token)
+            }
+        }.map { response ->
+            response.result.first().toServer()
+        }
+    }
+
+    override suspend fun getMonitors(apiUrl: String, serverId: Int): Result<List<Monitor>, NetworkError> {
         return safeCall<MonitorsResponsesDto> {
             httpClient.get(
                 urlString = constructUrl(
                     baseURL = apiUrl,
-                    url = "/api/v1/monitor/$id"
+                    url = "/api/v1/monitor/$serverId"
                 )
             )
         }.map { response ->

@@ -31,6 +31,8 @@ import com.example.mdpings.core.presentation.util.toString
 import com.example.mdpings.ui.theme.MDPingsTheme
 import com.example.mdpings.vpings.data.StoreSettings
 import com.example.mdpings.vpings.presentation.server_detail.ServerDetailScreen
+import com.example.mdpings.vpings.presentation.server_detail.ServerDetailState
+import com.example.mdpings.vpings.presentation.server_detail.ServerDetailViewModel
 import com.example.mdpings.vpings.presentation.server_list.ServerListScreen
 import com.example.mdpings.vpings.presentation.server_list.ServerListViewModel
 import com.example.mdpings.vpings.presentation.user_login.LoginEvent
@@ -57,6 +59,8 @@ class MainActivity : ComponentActivity() {
                     val loginState by loginViewModel.state.collectAsStateWithLifecycle()
                     val serverListViewModel = koinViewModel<ServerListViewModel>()
                     val serverListState by serverListViewModel.state.collectAsStateWithLifecycle()
+                    val serverDetailViewModel = koinViewModel<ServerDetailViewModel>()
+                    val serverDetailState by serverDetailViewModel.state.collectAsStateWithLifecycle()
 
                     ObserveAsEvents(events = loginViewModel.events) { event ->
                         when (event) {
@@ -129,9 +133,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable<ServerDetailScreen> {
                             ServerDetailScreen(
-                                serverUi = serverListState.selectedServer!!,
-                                ipAPIUi = serverListState.ipAPIUi!!,
-                                monitors = serverListState.monitors
+                                state = serverDetailState,
+                                selectedServerUi = serverListState.selectedServer!!,
+                                onAction = serverDetailViewModel::onAction
                             )
                         }
                     }

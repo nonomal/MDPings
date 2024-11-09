@@ -62,7 +62,7 @@ fun InstanceInfo(
                 )
                 Text(
                     text = "Instance Info",
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier
                         .padding(horizontal = 4.dp)

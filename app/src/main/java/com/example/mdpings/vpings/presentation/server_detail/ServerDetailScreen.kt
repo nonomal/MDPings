@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MonitorHeart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -28,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -54,61 +56,94 @@ import com.example.mdpings.vpings.presentation.server_list.components.NetworkTra
 import com.example.mdpings.vpings.presentation.server_list.components.Status
 import com.example.mdpings.vpings.presentation.server_list.components.previewListServers
 import com.example.mdpings.vpings.presentation.server_list.components.previewServerUi0
+import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
+import org.koin.androidx.compose.koinViewModel
+import java.util.Timer
+import java.util.TimerTask
+import kotlin.concurrent.scheduleAtFixedRate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ServerDetailScreen(
-    serverUi: ServerUi,
-    ipAPIUi: IpAPIUi,
-    monitors: List<MonitorUi>,
+    state: ServerDetailState,
+    selectedServerUi: ServerUi,
+    onAction: (ServerDetailAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         state = rememberTopAppBarState()
     )
 
-    Scaffold(
-        modifier = modifier
-            .fillMaxSize()
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            MDAppTopBar(
-                scrollBehavior = scrollBehavior,
-                onMenuClick = { },
-                title = "${serverUi.host.countryCode}  ${serverUi.name}",
-                isLoading = false
+    LaunchedEffect(Unit) {
+        onAction(
+            ServerDetailAction.OnLoadInfoAndMonitors(serverUi = selectedServerUi)
+        )
+    }
+    LaunchedEffect(selectedServerUi) {
+        while (true) {
+            onAction(
+                ServerDetailAction.OnLoadSingleServer(serverUi = selectedServerUi)
             )
+            delay(5000)
         }
-    ) { innerPadding ->
+    }
 
+    if (state.serverUi == null || state.ipAPIUi == null) {
         Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .padding(top = innerPadding.calculateTopPadding() - 4.dp)
-                .padding(horizontal = 8.dp, vertical = 4.dp)
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-
-            InstanceInfo(
-                serverUi = serverUi,
-                ipAPIUi = ipAPIUi,
-                modifier = Modifier
-            )
-
+            CircularProgressIndicator()
             Spacer(Modifier.height(8.dp))
-//            HorizontalDivider(Modifier.padding(vertical = 8.dp))
-
-            NetworkMonitor(monitors = monitors)
-
-            Spacer(Modifier.height(8.dp))
-//            HorizontalDivider(Modifier.padding(vertical = 8.dp))
-
-            ServerStatus(
-                serverUi = serverUi,
+            Text("Loading...")
+        }
+    } else {
+        Scaffold(
+            modifier = modifier
+                .fillMaxSize()
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
+            topBar = {
+                MDAppTopBar(
+                    scrollBehavior = scrollBehavior,
+                    onMenuClick = { },
+                    title = "${selectedServerUi.host.countryCode}  ${selectedServerUi.name}",
+                    isLoading = state.isLoading
+                )
+            }
+        ) { innerPadding ->
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-            )
+                    .verticalScroll(rememberScrollState())
+                    .padding(top = innerPadding.calculateTopPadding() - 4.dp)
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            ) {
+                InstanceInfo(
+                    serverUi = state.serverUi,
+                    ipAPIUi = state.ipAPIUi,
+                    modifier = Modifier
+                )
 
+                Spacer(Modifier.height(8.dp))
+
+                NetworkMonitor(
+                    onAction = onAction,
+                    monitors = state.monitors
+                )
+
+                Spacer(Modifier.height(8.dp))
+
+                ServerStatus(
+                    serverUi = state.serverUi,
+                    modifier = Modifier
+                )
+            }
         }
     }
 }
@@ -142,8 +177,8 @@ fun ServerStatus(
                     modifier = Modifier
                 )
                 Text(
-                    text = "Server Status",
-                    style = MaterialTheme.typography.titleLarge,
+                    text = "Realtime Status",
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier
                         .padding(horizontal = 4.dp)
@@ -161,15 +196,19 @@ fun ServerStatus(
     }
 }
 
-@PreviewLightDark
-@Composable
-fun ServerDetailScreenPreview() {
-    MDPingsTheme {
-        ServerDetailScreen(
-            serverUi = previewServerUi0,
-            ipAPIUi = mockIpAPIUi,
-            monitors = mockMonitors,
-            modifier = Modifier
-        )
-    }
-}
+//@PreviewLightDark
+//@Composable
+//fun ServerDetailScreenPreview() {
+//    MDPingsTheme {
+//        ServerDetailScreen(
+//            selectedServerUi = previewServerUi0,
+//            modifier = Modifier,
+//            state = ServerDetailState(
+//                isLoading = false,
+//                serverUi = previewServerUi0,
+//                ipAPIUi = mockIpAPIUi,
+//                monitors = mockMonitors
+//            )
+//        )
+//    }
+//}

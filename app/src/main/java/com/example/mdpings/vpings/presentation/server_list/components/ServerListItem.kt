@@ -151,7 +151,6 @@ fun ServerTitle(
                         serverUi = serverUi
                     )
                 )
-                delay(3000)
                 onNavigateToDetail()
             }
         },

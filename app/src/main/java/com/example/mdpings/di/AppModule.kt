@@ -8,6 +8,7 @@ import com.example.mdpings.core.data.networking.HttpClientFactory
 import com.example.mdpings.vpings.data.StoreSettings
 import com.example.mdpings.vpings.data.networking.RemoteServerDataSource
 import com.example.mdpings.vpings.domain.ServerDataSource
+import com.example.mdpings.vpings.presentation.server_detail.ServerDetailViewModel
 import com.example.mdpings.vpings.presentation.server_list.ServerListViewModel
 import com.example.mdpings.vpings.presentation.user_login.LoginViewModel
 import io.ktor.client.engine.cio.CIO
@@ -27,4 +28,5 @@ val appModule = module {
 
     viewModelOf(::LoginViewModel)
     viewModelOf(::ServerListViewModel)
+    viewModelOf(::ServerDetailViewModel)
 }
