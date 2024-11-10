@@ -1,9 +1,7 @@
 package com.example.mdpings.vpings.presentation.server_detail
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -20,7 +17,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -36,34 +32,20 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.example.mdpings.ui.theme.MDPingsTheme
-import com.example.mdpings.vpings.domain.Monitor
-import com.example.mdpings.vpings.presentation.models.IpAPIUi
-import com.example.mdpings.vpings.presentation.models.MonitorUi
 import com.example.mdpings.vpings.presentation.models.ServerUi
 import com.example.mdpings.vpings.presentation.server_detail.components.InstanceInfo
 import com.example.mdpings.vpings.presentation.server_detail.components.NetworkMonitor
 import com.example.mdpings.vpings.presentation.server_detail.components.mockIpAPIUi
 import com.example.mdpings.vpings.presentation.server_detail.components.mockMonitors
-import com.example.mdpings.vpings.presentation.server_list.ServerListScreen
-import com.example.mdpings.vpings.presentation.server_list.ServerListState
 import com.example.mdpings.vpings.presentation.server_list.components.LoadAndUptime
 import com.example.mdpings.vpings.presentation.server_list.components.MDAppTopBar
 import com.example.mdpings.vpings.presentation.server_list.components.NetworkIO
 import com.example.mdpings.vpings.presentation.server_list.components.NetworkTransfer
 import com.example.mdpings.vpings.presentation.server_list.components.Status
-import com.example.mdpings.vpings.presentation.server_list.components.previewListServers
 import com.example.mdpings.vpings.presentation.server_list.components.previewServerUi0
-import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
-import org.koin.androidx.compose.koinViewModel
-import java.util.Timer
-import java.util.TimerTask
-import kotlin.concurrent.scheduleAtFixedRate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,7 +61,10 @@ fun ServerDetailScreen(
 
     LaunchedEffect(Unit) {
         onAction(
-            ServerDetailAction.OnLoadInfoAndMonitors(serverUi = selectedServerUi)
+            ServerDetailAction.OnLoadInfoAndMonitors(
+                serverUi = selectedServerUi,
+                monitorsTimeSlice = state.monitorsTimeSlice
+            )
         )
     }
     LaunchedEffect(selectedServerUi) {
@@ -196,19 +181,20 @@ fun ServerStatus(
     }
 }
 
-//@PreviewLightDark
-//@Composable
-//fun ServerDetailScreenPreview() {
-//    MDPingsTheme {
-//        ServerDetailScreen(
-//            selectedServerUi = previewServerUi0,
-//            modifier = Modifier,
-//            state = ServerDetailState(
-//                isLoading = false,
-//                serverUi = previewServerUi0,
-//                ipAPIUi = mockIpAPIUi,
-//                monitors = mockMonitors
-//            )
-//        )
-//    }
-//}
+@PreviewLightDark
+@Composable
+fun ServerDetailScreenPreview() {
+    MDPingsTheme {
+        ServerDetailScreen(
+            selectedServerUi = previewServerUi0,
+            modifier = Modifier,
+            state = ServerDetailState(
+                isLoading = false,
+                serverUi = previewServerUi0,
+                ipAPIUi = mockIpAPIUi,
+                monitors = mockMonitors
+            ),
+            onAction = {}
+        )
+    }
+}

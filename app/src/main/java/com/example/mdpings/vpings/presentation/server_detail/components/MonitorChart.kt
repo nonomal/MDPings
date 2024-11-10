@@ -174,21 +174,21 @@ private fun rememberStartAxisLabel() =
 //    )
 //}
 
-//@PreviewLightDark
-//@Composable
-//fun ChartPreview() {
-//    val cartesianChartModelProducer = remember { CartesianChartModelProducer() }
-//    MDPingsTheme {
-//        Box(
-//            modifier = Modifier.background(MaterialTheme.colorScheme.background)
-//        ) {
-//            MonitorsChart(
-//                // model = mediumLineModel() Preview用
+@PreviewLightDark
+@Composable
+fun ChartPreview() {
+    val cartesianChartModelProducer = remember { CartesianChartModelProducer() }
+    MDPingsTheme {
+        Box(
+            modifier = Modifier.background(MaterialTheme.colorScheme.background)
+        ) {
+            MonitorsChart(
+                // model = mediumLineModel() Preview用
 //                model = mockLineModel(),
-//                modelProducer = cartesianChartModelProducer,
-//                modifier = Modifier
-//                    .sizeIn(maxHeight = 240.dp)
-//            )
-//        }
-//    }
-//}
+                modelProducer = cartesianChartModelProducer,
+                modifier = Modifier
+                    .sizeIn(maxHeight = 240.dp)
+            )
+        }
+    }
+}

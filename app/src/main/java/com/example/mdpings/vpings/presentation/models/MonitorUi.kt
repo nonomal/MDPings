@@ -13,12 +13,18 @@ data class MonitorUi(
 )
 
 fun Monitor.toMonitorUi(): MonitorUi {
+
+    // filtered timeout avgDelay(1000ms)
+    val filtered = createdAt.zip(avgDelay) { createdAt, avgDelay ->
+        createdAt to avgDelay
+    }.filter { (_, avgDelay) -> avgDelay.toInt() != 1000 }
+
     return MonitorUi(
         monitorId = monitorId,
         serverId = serverId,
         monitorName = monitorName,
         serverName = serverName,
-        createdAt = createdAt,
-        avgDelay = avgDelay
+        createdAt = filtered.map { it.first },
+        avgDelay = filtered.map { it.second }
     )
 }

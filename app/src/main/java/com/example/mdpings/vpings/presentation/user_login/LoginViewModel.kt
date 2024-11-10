@@ -1,6 +1,5 @@
 package com.example.mdpings.vpings.presentation.user_login
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mdpings.core.domain.util.onError
@@ -12,7 +11,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.onSuccess
 
 class LoginViewModel(
     private val serverDataSource: ServerDataSource

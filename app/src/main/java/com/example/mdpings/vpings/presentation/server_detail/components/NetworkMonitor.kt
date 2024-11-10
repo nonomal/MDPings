@@ -20,26 +20,19 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Commit
-import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.NetworkPing
 import androidx.compose.material.icons.rounded.Refresh
-import androidx.compose.material.icons.rounded.Timeline
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,13 +43,12 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mdpings.ui.theme.MDPingsTheme
-import com.example.mdpings.vpings.presentation.models.MonitorUi
 import com.example.mdpings.vpings.presentation.server_detail.ServerDetailAction
 import com.example.mdpings.vpings.presentation.server_detail.ServerDetailState
+import com.example.mdpings.vpings.presentation.server_list.components.previewServerUi0
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 @Composable
@@ -262,19 +254,26 @@ private fun DateFilterChipGroup(
     }
 }
 
-//@Composable
-//@PreviewLightDark
-//private fun NetworkMonitorPreview() {
-//    MDPingsTheme {
-//        Card(
-//            modifier = Modifier,
-//            shape = ShapeDefaults.Medium,
-//            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer),
-//            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-//        ) {
-//            NetworkMonitor(
-//                monitors = mockMonitors
-//            )
-//        }
-//    }
-//}
+@Composable
+@PreviewLightDark
+private fun NetworkMonitorPreview() {
+    MDPingsTheme {
+        Card(
+            modifier = Modifier,
+            shape = ShapeDefaults.Medium,
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        ) {
+            NetworkMonitor(
+//                monitors = mockMonitors,
+                state = ServerDetailState(
+                    isLoading = false,
+                    serverUi = previewServerUi0,
+                    ipAPIUi = mockIpAPIUi,
+                    monitors = mockMonitors
+                ),
+                onAction = {}
+            )
+        }
+    }
+}

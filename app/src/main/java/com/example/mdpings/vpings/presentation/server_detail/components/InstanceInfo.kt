@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.MonitorHeart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -86,8 +85,6 @@ fun InstanceInfo(
                     title = "Storage:",
                     content = serverUi.host.diskTotal.toMemDiskLongDisplayableString()
                 )
-
-                // TODO：向https://ip-api.com/docs/api:json
                 InfoRow(
                     title = "ISP:",
                     content = if (ipAPIUi.isp.isNotEmpty()) ipAPIUi.isp else "N/A"

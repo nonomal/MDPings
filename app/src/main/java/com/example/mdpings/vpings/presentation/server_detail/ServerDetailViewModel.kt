@@ -55,7 +55,7 @@ class ServerDetailViewModel(
     fun onAction(action: ServerDetailAction) {
         when(action) {
             is ServerDetailAction.OnLoadInfoAndMonitors -> {
-                loadSelectServerInfoAndMonitors(action.serverUi)
+                loadSelectServerInfoAndMonitors(action.serverUi, action.monitorsTimeSlice)
             }
             is ServerDetailAction.OnMonitorsRefresh -> {
                 reloadMonitors(action.serverId, action.monitorsTimeSlice)
@@ -94,8 +94,15 @@ class ServerDetailViewModel(
         }
     }
 
-    private fun loadSelectServerInfoAndMonitors(serverUi: ServerUi) {
+    private fun loadSelectServerInfoAndMonitors(serverUi: ServerUi, monitorsTimeSlice: String) {
         _state.update { it.copy(isLoading = true, isChartLoading = true) }
+        val sliceCount = when(monitorsTimeSlice) {
+            "30 mins" -> 10
+            "1 hour" -> 15
+            "3 hours" -> 45
+            "6 hours" -> 90
+            else -> 0
+        }
 
         viewModelScope.launch {
             appSettings.collect { (baseUrl) ->
@@ -120,10 +127,20 @@ class ServerDetailViewModel(
                     serverDataSource
                         .getMonitors(baseUrl, serverUi.id)
                         .onSuccess { monitors ->
-                            val monitorUi = monitors.map { it.toMonitorUi() }
+                            val monitorsOrigin = monitors.map { it.toMonitorUi() }
+                            val monitors = if (sliceCount > 0) {
+                                monitorsOrigin.map { monitor ->
+                                    monitor.copy(
+                                        createdAt = monitor.createdAt.takeLast(sliceCount),
+                                        avgDelay = monitor.avgDelay.takeLast(sliceCount)
+                                    )
+                                }
+                            } else {
+                                monitorsOrigin
+                            }
                             _state.update { it.copy(
-                                monitors = monitorUi,
-                                monitorsOrigin = monitorUi,
+                                monitors = monitors,
+                                monitorsOrigin = monitorsOrigin,
                                 isChartLoading = false
                             ) }
                         }
@@ -158,69 +175,29 @@ class ServerDetailViewModel(
     }
 
     private fun sliceMonitors(time: String) {
-        when(time) {
-            "30 mins" -> {
-                _state.update {
-                    val newMonitors = it.monitorsOrigin.map { monitor ->
-                        monitor.copy(
-                            createdAt = monitor.createdAt.takeLast(10),
-                            avgDelay = monitor.avgDelay.takeLast(10)
-                        )
-                    }
-                    it.copy(
-                        monitorsTimeSlice = time,
-                        monitors = newMonitors
+        val sliceCount = when(time) {
+            "30 mins" -> 10
+            "1 hour" -> 15
+            "3 hours" -> 45
+            "6 hours" -> 90
+            else -> 0
+        }
+        _state.update {
+            val newMonitors = if (sliceCount > 0) {
+                it.monitorsOrigin.map { monitor ->
+                    monitor.copy(
+                        createdAt = monitor.createdAt.takeLast(sliceCount),
+                        avgDelay = monitor.avgDelay.takeLast(sliceCount)
                     )
                 }
+            } else {
+                it.monitorsOrigin
             }
-            "1 hour" -> {
-                _state.update {
-                    val newMonitors = it.monitorsOrigin.map { monitor ->
-                        monitor.copy(
-                            createdAt = monitor.createdAt.takeLast(15),
-                            avgDelay = monitor.avgDelay.takeLast(15)
-                        )
-                    }
-                    it.copy(
-                        monitorsTimeSlice = time,
-                        monitors = newMonitors
-                    )
-                }
-            }
-            "3 hours" -> {
-                _state.update {
-                    val newMonitors = it.monitorsOrigin.map { monitor ->
-                        monitor.copy(
-                            createdAt = monitor.createdAt.takeLast(45),
-                            avgDelay = monitor.avgDelay.takeLast(45)
-                        )
-                    }
-                    it.copy(
-                        monitorsTimeSlice = time,
-                        monitors = newMonitors
-                    )
-                }
-            }
-            "6 hours" -> {
-                _state.update {
-                    val newMonitors = it.monitorsOrigin.map { monitor ->
-                        monitor.copy(
-                            createdAt = monitor.createdAt.takeLast(90),
-                            avgDelay = monitor.avgDelay.takeLast(90)
-                        )
-                    }
-                    it.copy(
-                        monitorsTimeSlice = time,
-                        monitors = newMonitors
-                    )
-                }
-            }
-            else -> {
-                _state.update { it.copy(
-                    monitorsTimeSlice = "",
-                    monitors = it.monitorsOrigin
-                ) }
-            }
+
+            it.copy(
+                monitorsTimeSlice = time,
+                monitors = newMonitors
+            )
         }
     }
 
