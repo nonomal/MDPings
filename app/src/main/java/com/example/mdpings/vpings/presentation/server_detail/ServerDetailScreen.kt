@@ -133,8 +133,8 @@ fun ServerDetailScreen(
                 Spacer(Modifier.height(8.dp))
 
                 NetworkMonitor(
-                    onAction = onAction,
-                    monitors = state.monitors
+                    state = state,
+                    onAction = onAction
                 )
 
                 Spacer(Modifier.height(8.dp))

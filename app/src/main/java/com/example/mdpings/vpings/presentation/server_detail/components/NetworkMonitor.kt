@@ -35,6 +35,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -50,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import com.example.mdpings.ui.theme.MDPingsTheme
 import com.example.mdpings.vpings.presentation.models.MonitorUi
 import com.example.mdpings.vpings.presentation.server_detail.ServerDetailAction
+import com.example.mdpings.vpings.presentation.server_detail.ServerDetailState
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 import kotlinx.coroutines.Dispatchers
@@ -58,11 +61,14 @@ import kotlinx.coroutines.withContext
 
 @Composable
 fun NetworkMonitor(
-    onAction: (ServerDetailAction) -> Unit,
-    monitors: List<MonitorUi> = emptyList()
+    state: ServerDetailState,
+    onAction: (ServerDetailAction) -> Unit
 ) {
 
     val modelProducer = remember { CartesianChartModelProducer() }
+    val monitors = state.monitors
+    val serverId = state.serverUi!!.id
+    val isChartLoading = state.isChartLoading
 
     if (monitors.isNotEmpty()) {
         LaunchedEffect(monitors) {
@@ -115,35 +121,51 @@ fun NetworkMonitor(
                         .padding(horizontal = 4.dp)
                 )
                 IconButton(
-                    onClick = { },
+                    onClick = {
+                        onAction(
+                            ServerDetailAction.OnMonitorsRefresh(serverId, state.monitorsTimeSlice)
+                        )
+                    },
                     modifier = Modifier
                         .size(24.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Refresh,
-                        contentDescription = "Refresh",
-                        modifier = Modifier
-                    )
+                    if (isChartLoading) {
+                        CircularProgressIndicator()
+                    } else {
+                        Icon(
+                            imageVector = Icons.Rounded.Refresh,
+                            contentDescription = "Refresh",
+                            modifier = Modifier
+                        )
+                    }
                 }
             }
 
             Spacer(modifier = Modifier.height(2.dp))
 
+            // FilterChips
             DateFilterChipGroup(
+                state = state,
                 modifier = Modifier,
                 onAction = onAction
             )
 
+            // Loading or Chart
             if (monitors.isEmpty()) {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
-                        .height(280.dp)
+                        .height(240.dp)
                         .fillMaxWidth()
                 ) {
-                    CircularProgressIndicator()
-                    Spacer(Modifier.height(8.dp))
-                    Text("Loading Chart...")
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CircularProgressIndicator()
+                        Spacer(Modifier.height(8.dp))
+                        Text("Loading Chart...")
+                    }
                 }
             } else {
                 MonitorsChart(
@@ -162,6 +184,7 @@ fun NetworkMonitor(
                 verticalArrangement = Arrangement.Center,
                 // 指定高度不然LazyGrid会爆炸
                 modifier = Modifier
+                    .wrapContentHeight()
                     .fillMaxWidth()
                     .requiredHeightIn(max = (18*4).dp)
             ) {
@@ -191,19 +214,17 @@ fun NetworkMonitor(
                     }
                 }
             }
+
         }
     }
 }
 
 @Composable
-@PreviewLightDark
 private fun DateFilterChipGroup(
+    state: ServerDetailState,
     modifier: Modifier = Modifier,
     onAction: (ServerDetailAction) -> Unit = { }
 ) {
-
-    var selectedMonitorsTime = remember { mutableStateOf("") }
-
     Row(
         modifier = Modifier.heightIn(max = 40.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -211,15 +232,13 @@ private fun DateFilterChipGroup(
     ) {
         listOf<String>("30 mins", "1 hour", "3 hours", "6 hours").map { text ->
             FilterChip(
-                selected = selectedMonitorsTime.value == text,
+                selected = state.monitorsTimeSlice == text,
                 onClick = {
-                    if (selectedMonitorsTime.value == text) {
-                        selectedMonitorsTime.value = ""
+                    if (state.monitorsTimeSlice == text) {
                         onAction(
                             ServerDetailAction.OnSliceMonitorsTime("")
                         )
                     } else {
-                        selectedMonitorsTime.value = text
                         onAction(
                             ServerDetailAction.OnSliceMonitorsTime(text)
                         )

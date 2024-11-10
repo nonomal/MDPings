@@ -57,6 +57,9 @@ class ServerDetailViewModel(
             is ServerDetailAction.OnLoadInfoAndMonitors -> {
                 loadSelectServerInfoAndMonitors(action.serverUi)
             }
+            is ServerDetailAction.OnMonitorsRefresh -> {
+                reloadMonitors(action.serverId, action.monitorsTimeSlice)
+            }
             is ServerDetailAction.OnLoadSingleServer -> {
                 loadSingleServerDetail(action.serverUi)
             }
@@ -66,8 +69,33 @@ class ServerDetailViewModel(
         }
     }
 
+    private fun reloadMonitors(serverId: Int, monitorsTimeSlice: String) {
+        _state.update { it.copy(isChartLoading = true) }
+
+        viewModelScope.launch {
+            appSettings.collect { (baseUrl) ->
+                if (baseUrl.isNotEmpty()) {
+                    serverDataSource
+                        .getMonitors(baseUrl, serverId)
+                        .onSuccess { monitors ->
+                            val monitorUi = monitors.map { it.toMonitorUi() }
+                            _state.update { it.copy(
+                                monitors = monitorUi,
+                                monitorsOrigin = monitorUi,
+                                isChartLoading = false
+                            ) }
+                            sliceMonitors(monitorsTimeSlice)
+                        }
+                        .onError { error ->
+                            _state.update { it.copy(isChartLoading = false) }
+                        }
+                }
+            }
+        }
+    }
+
     private fun loadSelectServerInfoAndMonitors(serverUi: ServerUi) {
-        _state.update { it.copy(isLoading = true) }
+        _state.update { it.copy(isLoading = true, isChartLoading = true) }
 
         viewModelScope.launch {
             appSettings.collect { (baseUrl) ->
@@ -96,11 +124,11 @@ class ServerDetailViewModel(
                             _state.update { it.copy(
                                 monitors = monitorUi,
                                 monitorsOrigin = monitorUi,
-                                isLoading = false
+                                isChartLoading = false
                             ) }
                         }
                         .onError { error ->
-                            _state.update { it.copy(isLoading = false) }
+                            _state.update { it.copy(isChartLoading = false) }
                         }
                 }
             }
@@ -140,6 +168,7 @@ class ServerDetailViewModel(
                         )
                     }
                     it.copy(
+                        monitorsTimeSlice = time,
                         monitors = newMonitors
                     )
                 }
@@ -153,6 +182,7 @@ class ServerDetailViewModel(
                         )
                     }
                     it.copy(
+                        monitorsTimeSlice = time,
                         monitors = newMonitors
                     )
                 }
@@ -166,6 +196,7 @@ class ServerDetailViewModel(
                         )
                     }
                     it.copy(
+                        monitorsTimeSlice = time,
                         monitors = newMonitors
                     )
                 }
@@ -179,12 +210,14 @@ class ServerDetailViewModel(
                         )
                     }
                     it.copy(
+                        monitorsTimeSlice = time,
                         monitors = newMonitors
                     )
                 }
             }
             else -> {
                 _state.update { it.copy(
+                    monitorsTimeSlice = "",
                     monitors = it.monitorsOrigin
                 ) }
             }
