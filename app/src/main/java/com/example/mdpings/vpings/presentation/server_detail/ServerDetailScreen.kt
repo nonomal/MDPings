@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.MonitorHeart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -95,8 +97,9 @@ fun ServerDetailScreen(
             topBar = {
                 MDAppTopBar(
                     scrollBehavior = scrollBehavior,
-                    onMenuClick = { },
-                    title = "${selectedServerUi.host.countryCode}  ${selectedServerUi.name}",
+                    navigationIcon = Icons.AutoMirrored.Rounded.ArrowBack,
+                    onNavigationIconClick = { },
+                    title = "${selectedServerUi.host.countryCode} ${selectedServerUi.name}",
                     isLoading = state.isLoading
                 )
             }

@@ -87,7 +87,11 @@ class ServerDetailViewModel(
                             sliceMonitors(monitorsTimeSlice)
                         }
                         .onError { error ->
-                            _state.update { it.copy(isChartLoading = false) }
+                            _state.update { it.copy(
+                                monitors = emptyList(),
+                                monitorsOrigin = emptyList(),
+                                isChartLoading = false,
+                            ) }
                         }
                 }
             }
@@ -145,7 +149,11 @@ class ServerDetailViewModel(
                             ) }
                         }
                         .onError { error ->
-                            _state.update { it.copy(isChartLoading = false) }
+                            _state.update { it.copy(
+                                monitors = emptyList(),
+                                monitorsOrigin = emptyList(),
+                                isChartLoading = false
+                            ) }
                         }
                 }
             }

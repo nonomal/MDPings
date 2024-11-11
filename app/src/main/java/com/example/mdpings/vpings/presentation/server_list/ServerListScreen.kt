@@ -37,7 +37,7 @@ fun ServerListScreen(
         topBar = {
             MDAppTopBar(
                 scrollBehavior = scrollBehavior,
-                onMenuClick = { },
+                onNavigationIconClick = { },
                 title = "MDPings",
                 isLoading = state.isLoading
             )

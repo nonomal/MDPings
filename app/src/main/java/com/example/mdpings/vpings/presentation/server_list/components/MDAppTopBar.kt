@@ -1,5 +1,6 @@
 package com.example.mdpings.vpings.presentation.server_list.components
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -37,17 +39,18 @@ import com.example.mdpings.ui.theme.MDPingsTheme
 @Composable
 fun MDAppTopBar(
     title: String = "MDPings",
+    navigationIcon: ImageVector = Icons.Rounded.Menu,
     isLoading: Boolean = false,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior,
-    onMenuClick: () -> Unit = {},
+    onNavigationIconClick: () -> Unit = {},
     onSearchClick: () -> Unit = {},
     onUserClick: () -> Unit = {}
 ) {
     TopAppBar(
         expandedHeight = 56.dp,
         modifier = modifier
-            .padding(vertical = 8.dp, horizontal = 8.dp)
+            .padding(vertical = 8.dp, horizontal = 16.dp)
             .clip(RoundedCornerShape(100.dp)),
         scrollBehavior = scrollBehavior,
         colors = TopAppBarDefaults.topAppBarColors(
@@ -76,11 +79,11 @@ fun MDAppTopBar(
         },
         navigationIcon = {
             IconButton(
-                onClick = onMenuClick
+                onClick = onNavigationIconClick
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Menu,
-                    contentDescription = "Menu"
+                    imageVector = navigationIcon,
+                    contentDescription = navigationIcon.name
                 )
             }
         },
@@ -119,7 +122,7 @@ fun AppBarPreview() {
             title = "MDPings",
             modifier = Modifier,
             scrollBehavior = scrollBehavior,
-            onMenuClick = { },
+            onNavigationIconClick = { },
             isLoading = true
         )
     }
