@@ -2,7 +2,6 @@ package com.example.mdpings.vpings.presentation.models
 
 import android.icu.text.NumberFormat
 import com.example.mdpings.vpings.domain.Host
-import com.example.mdpings.vpings.domain.IpAPI
 import com.example.mdpings.vpings.domain.Server
 import com.example.mdpings.vpings.domain.Status
 import java.util.Locale

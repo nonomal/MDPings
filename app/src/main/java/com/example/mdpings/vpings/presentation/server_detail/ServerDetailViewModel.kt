@@ -6,6 +6,7 @@ import com.example.mdpings.core.domain.util.onError
 import com.example.mdpings.core.domain.util.onSuccess
 import com.example.mdpings.vpings.data.StoreSettings
 import com.example.mdpings.vpings.domain.ServerDataSource
+import com.example.mdpings.vpings.presentation.models.IpAPIUi
 import com.example.mdpings.vpings.presentation.models.MonitorUi
 import com.example.mdpings.vpings.presentation.models.ServerUi
 import com.example.mdpings.vpings.presentation.models.toIpAPIUi
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.Boolean
 
 data class AppSettings(
     val baseUrl: String,
@@ -66,7 +68,21 @@ class ServerDetailViewModel(
             is ServerDetailAction.OnSliceMonitorsTime -> {
                 sliceMonitors(action.time)
             }
+            is ServerDetailAction.OnDisposeCleanUp -> {
+                cleanUp()
+            }
         }
+    }
+
+    private fun cleanUp() {
+        _state.update { it.copy(
+            isLoading = false,
+            isChartLoading = false,
+            serverUi = null,
+            ipAPIUi = null,
+            monitors = emptyList(),
+            monitorsOrigin = emptyList()
+        ) }
     }
 
     private fun reloadMonitors(serverId: Int, monitorsTimeSlice: String) {

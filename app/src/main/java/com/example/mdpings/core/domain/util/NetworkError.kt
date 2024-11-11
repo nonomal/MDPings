@@ -1,6 +1,7 @@
 package com.example.mdpings.core.domain.util
 
 enum class NetworkError: Error {
+    Forbidden,
     REQUEST_TIMEOUT,
     TOO_MANY_REQUEST,
     NO_INTERNET,

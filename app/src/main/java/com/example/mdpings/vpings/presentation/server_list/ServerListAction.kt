@@ -5,4 +5,5 @@ import com.example.mdpings.vpings.presentation.models.ServerUi
 
 interface ServerListAction {
     data class OnServerClick(val serverUi: ServerUi): ServerListAction
+    data class OnInitCleanSelectedServer(val isLoading: Boolean): ServerListAction
 }

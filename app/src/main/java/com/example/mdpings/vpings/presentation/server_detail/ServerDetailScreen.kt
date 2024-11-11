@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.MonitorHeart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -21,20 +19,22 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.mdpings.ui.theme.MDPingsTheme
 import com.example.mdpings.vpings.presentation.models.ServerUi
 import com.example.mdpings.vpings.presentation.server_detail.components.InstanceInfo
@@ -42,12 +42,12 @@ import com.example.mdpings.vpings.presentation.server_detail.components.NetworkM
 import com.example.mdpings.vpings.presentation.server_detail.components.mockIpAPIUi
 import com.example.mdpings.vpings.presentation.server_detail.components.mockMonitors
 import com.example.mdpings.vpings.presentation.server_list.components.LoadAndUptime
-import com.example.mdpings.vpings.presentation.server_list.components.MDAppTopBar
 import com.example.mdpings.vpings.presentation.server_list.components.NetworkIO
 import com.example.mdpings.vpings.presentation.server_list.components.NetworkTransfer
 import com.example.mdpings.vpings.presentation.server_list.components.Status
 import com.example.mdpings.vpings.presentation.server_list.components.previewServerUi0
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,9 +57,7 @@ fun ServerDetailScreen(
     onAction: (ServerDetailAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
-        state = rememberTopAppBarState()
-    )
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     LaunchedEffect(Unit) {
         onAction(
@@ -69,12 +67,19 @@ fun ServerDetailScreen(
             )
         )
     }
-    LaunchedEffect(selectedServerUi) {
-        while (true) {
+    LaunchedEffect(Unit) {
+        while (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
             onAction(
                 ServerDetailAction.OnLoadSingleServer(serverUi = selectedServerUi)
             )
             delay(5000)
+        }
+    }
+    DisposableEffect(lifecycleOwner) {
+        onDispose{
+            onAction(
+                ServerDetailAction.OnDisposeCleanUp(serverUiId = selectedServerUi.id)
+            )
         }
     }
 
@@ -90,48 +95,28 @@ fun ServerDetailScreen(
             Text("Loading...")
         }
     } else {
-        Scaffold(
-            modifier = modifier
-                .fillMaxSize()
-                .nestedScroll(scrollBehavior.nestedScrollConnection),
-            topBar = {
-                MDAppTopBar(
-                    scrollBehavior = scrollBehavior,
-                    navigationIcon = Icons.AutoMirrored.Rounded.ArrowBack,
-                    onNavigationIconClick = { },
-                    title = "${selectedServerUi.host.countryCode} ${selectedServerUi.name}",
-                    isLoading = state.isLoading
-                )
-            }
-        ) { innerPadding ->
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+        ) {
+            InstanceInfo(
+                serverUi = state.serverUi,
+                ipAPIUi = state.ipAPIUi,
                 modifier = Modifier
-                    .verticalScroll(rememberScrollState())
-                    .padding(top = innerPadding.calculateTopPadding() - 4.dp)
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
-            ) {
-                InstanceInfo(
-                    serverUi = state.serverUi,
-                    ipAPIUi = state.ipAPIUi,
-                    modifier = Modifier
-                )
-
-                Spacer(Modifier.height(8.dp))
-
-                NetworkMonitor(
-                    state = state,
-                    onAction = onAction
-                )
-
-                Spacer(Modifier.height(8.dp))
-
-                ServerStatus(
-                    serverUi = state.serverUi,
-                    modifier = Modifier
-                )
-            }
+            )
+            Spacer(Modifier.height(8.dp))
+            NetworkMonitor(
+                state = state,
+                onAction = onAction
+            )
+            Spacer(Modifier.height(8.dp))
+            ServerStatus(
+                serverUi = state.serverUi,
+                modifier = Modifier
+            )
         }
     }
 }

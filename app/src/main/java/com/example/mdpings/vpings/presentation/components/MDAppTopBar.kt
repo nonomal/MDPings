@@ -1,6 +1,5 @@
-package com.example.mdpings.vpings.presentation.server_list.components
+package com.example.mdpings.vpings.presentation.components
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -50,6 +49,8 @@ fun MDAppTopBar(
     TopAppBar(
         expandedHeight = 56.dp,
         modifier = modifier
+//            .padding(bottom = 8.dp)
+            .padding(top = 24.dp)
             .padding(vertical = 8.dp, horizontal = 16.dp)
             .clip(RoundedCornerShape(100.dp)),
         scrollBehavior = scrollBehavior,
@@ -97,7 +98,7 @@ fun MDAppTopBar(
                 )
             }
             IconButton(
-                onClick = { }
+                onClick = onUserClick
             ) {
                 Icon(
                     imageVector = Icons.Rounded.AccountCircle,

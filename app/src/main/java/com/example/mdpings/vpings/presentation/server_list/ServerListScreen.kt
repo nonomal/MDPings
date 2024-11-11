@@ -6,18 +6,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.example.mdpings.ui.theme.MDPingsTheme
-import com.example.mdpings.vpings.presentation.server_list.components.MDAppTopBar
+import com.example.mdpings.vpings.presentation.server_detail.ServerDetailAction
 import com.example.mdpings.vpings.presentation.server_list.components.ServerListItem
 import com.example.mdpings.vpings.presentation.server_list.components.previewListServers
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,49 +24,27 @@ fun ServerListScreen(
     state: ServerListState,
     modifier: Modifier = Modifier
 ) {
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
-        state = rememberTopAppBarState()
-    )
-
-    Scaffold(
-        modifier = modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            MDAppTopBar(
-                scrollBehavior = scrollBehavior,
-                onNavigationIconClick = { },
-                title = "MDPings",
-                isLoading = state.isLoading
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        items(
+            items = state.servers,
+            key = { it.id }
+        ) { serverUi ->
+            ServerListItem(
+                onNavigateToDetail = onNavigateToDetail,
+                serverUi = serverUi,
+                ipAPI = state.ipAPIUi,
+                monitors = state.monitors,
+                onAction = onAction,
+                onClick = { },
+                modifier = Modifier
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                    .fillMaxWidth(),
             )
         }
-    ) { innerPadding ->
-
-        LazyColumn(
-            contentPadding = PaddingValues(
-                top = innerPadding.calculateTopPadding() - 4.dp
-            ),
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-        ) {
-            items(
-                items = state.servers,
-                key = { it.id }
-            ) { serverUi ->
-                ServerListItem(
-                    onNavigateToDetail = onNavigateToDetail,
-                    serverUi = serverUi,
-                    ipAPI = state.ipAPIUi,
-                    monitors = state.monitors,
-                    onAction = onAction,
-                    onClick = { },
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                        .fillMaxWidth(),
-                )
-            }
-        }
-
     }
 }
 

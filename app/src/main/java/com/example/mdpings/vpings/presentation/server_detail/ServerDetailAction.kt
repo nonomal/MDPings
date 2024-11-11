@@ -7,4 +7,5 @@ interface ServerDetailAction {
     data class OnLoadInfoAndMonitors(val serverUi: ServerUi, val monitorsTimeSlice: String): ServerDetailAction
     data class OnMonitorsRefresh(val serverId: Int, val monitorsTimeSlice: String): ServerDetailAction
     data class OnSliceMonitorsTime(val time: String): ServerDetailAction
+    data class OnDisposeCleanUp(val serverUiId: Int): ServerDetailAction
 }

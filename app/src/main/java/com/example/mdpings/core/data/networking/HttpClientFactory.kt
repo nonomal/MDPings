@@ -12,10 +12,12 @@ import io.ktor.http.ContentType
 import io.ktor.http.Headers
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 
 object HttpClientFactory {
 
+    @OptIn(ExperimentalSerializationApi::class)
     fun create(engine: HttpClientEngine): HttpClient {
         return HttpClient(engine) {
             install(Logging) {
@@ -25,6 +27,9 @@ object HttpClientFactory {
             install(ContentNegotiation) {
                 json(
                     json = Json {
+//                        explicitNulls = false
+                        prettyPrint = true
+                        isLenient = true
                         ignoreUnknownKeys = true
                     }
                 )

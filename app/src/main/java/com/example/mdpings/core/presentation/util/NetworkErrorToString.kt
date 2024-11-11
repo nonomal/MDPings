@@ -6,6 +6,7 @@ import com.example.mdpings.core.domain.util.NetworkError
 
 fun NetworkError.toString(context: Context): String {
     val resId =  when(this) {
+        NetworkError.Forbidden -> R.string.error_forbidden
         NetworkError.REQUEST_TIMEOUT -> R.string.error_request_timeout
         NetworkError.TOO_MANY_REQUEST -> R.string.error_too_many_requests
         NetworkError.NO_INTERNET -> R.string.error_no_internet

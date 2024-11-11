@@ -86,16 +86,9 @@ class ServerListViewModel(
         when(action) {
             is ServerListAction.OnServerClick -> {
                 _state.update { it.copy(selectedServer = action.serverUi) }
-//                viewModelScope.launch {
-//                    appSettings.collectLatest { (baseUrl) ->
-//                        if (!(baseUrl.isEmpty())) {
-//                            selectServer(
-//                                serverUi = action.serverUi,
-//                                apiUrl = baseUrl
-//                            )
-//                        }
-//                    }
-//                }
+            }
+            is ServerListAction.OnInitCleanSelectedServer -> {
+                _state.update { it.copy(selectedServer = null) }
             }
         }
     }
