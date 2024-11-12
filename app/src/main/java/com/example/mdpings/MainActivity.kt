@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Monitor
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
@@ -40,14 +42,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.mdpings.core.presentation.util.ObserveAsEvents
 import com.example.mdpings.core.presentation.util.toString
@@ -113,8 +119,14 @@ class MainActivity : ComponentActivity() {
                 val stateApi by dataStore.getApi.collectAsState(initial = "")
                 val stateToken by dataStore.getToken.collectAsState(initial = "")
 
-                // Nav
+                // Nav && currentRoute -> topAppBarTitle
                 val navController = rememberNavController()
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = navBackStackEntry?.destination?.route
+                val topAppBarTitle =
+                    if (currentRoute == "com.example.mdpings.LoginScreen") "Login"
+                    else if (currentRoute == "com.example.mdpings.ServerDetailScreen") "${serverListState.selectedServer!!.host.countryCode} ${serverListState.selectedServer!!.name}"
+                    else "MDPings"
 
                 ModalNavigationDrawer(
                     gesturesEnabled = true,
@@ -124,6 +136,7 @@ class MainActivity : ComponentActivity() {
                             DrawerContent(
                                 modifier = Modifier.requiredWidth(280.dp),
                                 navController = navController,
+                                currentRoute = currentRoute,
                                 drawerState = drawerState
                             )
                         }
@@ -137,8 +150,7 @@ class MainActivity : ComponentActivity() {
                                 // TODO 这个topPadding可以自动判断不用hardcode的？
                                 modifier = Modifier.wrapContentHeight(),
                                 scrollBehavior = scrollBehavior,
-                                title = if (serverDetailState.serverUi == null) "MDPings"
-                                    else "${serverDetailState.serverUi!!.host.countryCode} ${serverDetailState.serverUi!!.name}",
+                                title = topAppBarTitle,
                                 isLoading = serverListState.isLoading,
                                 onNavigationIconClick = {
                                     scope.launch {
@@ -199,9 +211,7 @@ class MainActivity : ComponentActivity() {
                                     state = serverListState,
                                     onAction = serverListViewModel::onAction,
                                     onNavigateToDetail = {
-                                        navController.navigate(
-                                            route = ServerDetailScreen
-                                        )
+                                        navController.navigate(ServerDetailScreen)
                                     }
                                 )
                             }
@@ -221,87 +231,119 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@Preview(showBackground = true)
 @Composable
 fun DrawerContent(
     modifier: Modifier = Modifier,
-    navController: NavController,
-    drawerState: DrawerState
+    navController: NavController = rememberNavController(),
+    currentRoute: String? = "",
+    drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 ) {
 
     val scope = rememberCoroutineScope()
 
     Column(
-        modifier = modifier
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.Start,
+        modifier = modifier,
     ) {
-        Text(
-            text = "MDPings",
-            style = MaterialTheme.typography.titleLarge,
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.Center,
+            modifier = modifier
+                .padding(start = 16.dp)
+                .alpha(0.8f)
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Monitor,
+                contentDescription = Icons.Rounded.Monitor.name
+            )
+            Text(
+                text = "MDPings",
+                fontWeight = FontWeight.Normal,
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier
+                    .padding(16.dp)
+            )
+        }
+
+        Spacer(Modifier.height(8.dp))
+
+        Column(
             modifier = Modifier
-                .padding(16.dp)
-        )
-        HorizontalDivider()
-        NavigationDrawerItem(
-            icon = {
-                Icon(
-                    imageVector = Icons.Rounded.Home,
-                    contentDescription = Icons.Rounded.Home.name
-                )
-            },
-            label = {
-                Text(
-                    text = "Home",
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(16.dp)
-                )
-            },
-            selected = false,
-            onClick = {
-                scope.launch {
-                    drawerState.apply {
-                        if (isClosed) open() else close()
-                    }
-                    navController.navigate(
-                        route = ServerListScreen
-                    ) {
-                        popUpTo(0)
+                .padding(horizontal = 8.dp)
+                .alpha(0.9f)
+        ) {
+            NavigationDrawerItem(
+                icon = {
+                    Icon(
+                        imageVector = Icons.Rounded.Home,
+                        contentDescription = Icons.Rounded.Home.name
+                    )
+                },
+                label = {
+                    Text(
+                        text = "Home",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                },
+                selected = currentRoute?.contains("ServerListScreen") == true,
+                onClick = {
+                    if (currentRoute?.contains("ServerListScreen") == false) {
+                        scope.launch {
+                            drawerState.apply {
+                                if (isClosed) open() else close()
+                            }
+                            navController.navigate(
+                                route = ServerListScreen
+                            ) {
+                                popUpTo(0)
+                            }
+                        }
+                    } else {
+                        scope.launch {
+                            drawerState.apply {
+                                close()
+                            }
+                        }
                     }
                 }
-            }
-        )
-        NavigationDrawerItem(
-            icon = {
-                Icon(
-                    imageVector = Icons.Rounded.Settings,
-                    contentDescription = Icons.Rounded.Settings.name
-                )
-            },
-            label = {
-                Text(
-                    text = "Settings",
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(16.dp)
-                )
-            },
-            selected = false,
-            onClick = {}
-        )
-        NavigationDrawerItem(
-            icon = {
-                Icon(
-                    imageVector = Icons.Rounded.Info,
-                    contentDescription = Icons.Rounded.Info.name
-                )
-            },
-            label = {
-                Text(
-                    text = "About",
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(16.dp)
-                )
-            },
-            selected = false,
-            onClick = {}
-        )
+            )
+            Spacer(Modifier.height(4.dp))
+            NavigationDrawerItem(
+                icon = {
+                    Icon(
+                        imageVector = Icons.Rounded.Settings,
+                        contentDescription = Icons.Rounded.Settings.name
+                    )
+                },
+                label = {
+                    Text(
+                        text = "Settings",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                },
+                selected = false,
+                onClick = {}
+            )
+            Spacer(Modifier.height(4.dp))
+            NavigationDrawerItem(
+                icon = {
+                    Icon(
+                        imageVector = Icons.Rounded.Info,
+                        contentDescription = Icons.Rounded.Info.name
+                    )
+                },
+                label = {
+                    Text(
+                        text = "About",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                },
+                selected = false,
+                onClick = {}
+            )
+        }
     }
 }
 

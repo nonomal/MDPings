@@ -1,6 +1,12 @@
 package com.example.mdpings.vpings.presentation.server_detail.components
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -145,81 +151,92 @@ fun NetworkMonitor(
                 onAction = onAction
             )
 
-            // Loading or Chart
-            if (monitors.isEmpty() && state.isChartLoading) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .height(240.dp)
-                        .fillMaxWidth()
-                ) {
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
+            AnimatedContent(
+                targetState = monitors.isEmpty(),
+                label = "AnimatedChart"
+            ) { it ->
+                // Loading or Chart
+                if (it && state.isChartLoading) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .height(180.dp)
+                            .fillMaxWidth()
                     ) {
-                        CircularProgressIndicator()
-                        Spacer(Modifier.height(8.dp))
-                        Text("Loading Chart...")
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            CircularProgressIndicator()
+                            Spacer(Modifier.height(8.dp))
+                            Text("Loading Chart...")
+                        }
                     }
-                }
-            } else if (monitors.isEmpty()) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .height(180.dp)
-                        .fillMaxWidth()
-                ) {
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
+                } else if (it) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .height(180.dp)
+                            .fillMaxWidth()
                     ) {
-                        Text("No monitor data available.")
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text("No monitor data available.")
+                        }
                     }
-                }
-            } else {
-                MonitorsChart(
-                    // TODO model = mediumLineModel Preview时解除注释，使用手动build的model测试
+                } else {
+                    MonitorsChart(
+                        // TODO model = mediumLineModel Preview时解除注释，使用手动build的model测试
 //                    model = mockLineModel(),
-                    modelProducer = modelProducer,
-                    modifier = Modifier
-                        .sizeIn(maxHeight = 240.dp)
-                )
-
+                        modelProducer = modelProducer,
+                        modifier = Modifier
+//                            .sizeIn(maxHeight = 240.dp)
+                            .height(240.dp)
+                    )
+                }
             }
 
-            // TAG
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(80.dp),
-                verticalArrangement = Arrangement.Center,
-                // 指定高度不然LazyGrid会爆炸
-                modifier = Modifier
-                    .wrapContentHeight()
-                    .fillMaxWidth()
-                    .requiredHeightIn(max = (18*4).dp)
-            ) {
-                itemsIndexed(
-                    items = monitors
-                ) { index, monitor ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            tint = chartColors[index],
-                            imageVector = Icons.Rounded.Commit,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Text(
-                            text = monitor.monitorName,
-                            textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontSize = 12.sp,
-                            modifier = Modifier.alpha(0.7f)
-                        )
+            AnimatedContent(
+                targetState = monitors,
+                contentKey = { it -> it.size },
+                label = "AnimatedTags"
+            ) { it ->
+                // TAG
+                LazyVerticalGrid(
+                    columns = GridCells.Adaptive(80.dp),
+                    verticalArrangement = Arrangement.Center,
+                    // 指定高度不然LazyGrid会爆炸
+                    modifier = Modifier
+                        .wrapContentHeight()
+                        .fillMaxWidth()
+                        .requiredHeightIn(max = (18*4).dp)
+                ) {
+                    itemsIndexed(
+                        items = it
+                    ) { index, monitor ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                tint = chartColors[index],
+                                imageVector = Icons.Rounded.Commit,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                text = monitor.monitorName,
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontSize = 12.sp,
+                                modifier = Modifier.alpha(0.7f)
+                            )
+                        }
                     }
                 }
             }

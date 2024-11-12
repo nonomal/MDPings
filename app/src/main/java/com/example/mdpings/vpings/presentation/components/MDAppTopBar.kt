@@ -1,5 +1,11 @@
 package com.example.mdpings.vpings.presentation.components
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -46,6 +52,7 @@ fun MDAppTopBar(
     onSearchClick: () -> Unit = {},
     onUserClick: () -> Unit = {}
 ) {
+
     TopAppBar(
         expandedHeight = 56.dp,
         modifier = modifier
@@ -63,12 +70,23 @@ fun MDAppTopBar(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    text = title,
-                    textAlign = TextAlign.Center,
-                    fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
+                AnimatedContent(
+                    targetState = title,
+                    label = "AnimatedTitle",
+                    transitionSpec = {
+                        fadeIn() + slideInVertically(
+                            animationSpec = tween(1000),
+                            initialOffsetY = { fullHeight -> fullHeight }
+                        ) togetherWith fadeOut(animationSpec = tween(200))
+                    }
+                ) { it ->
+                    Text(
+                        text = it,
+                        textAlign = TextAlign.Center,
+                        fontSize = 18.sp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
                 Spacer(Modifier.width(8.dp))
                 if (isLoading) {
                     CircularProgressIndicator(
