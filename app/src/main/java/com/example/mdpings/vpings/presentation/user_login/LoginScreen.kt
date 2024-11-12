@@ -1,6 +1,7 @@
 package com.example.mdpings.vpings.presentation.user_login
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -13,11 +14,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Login
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Login
 import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Login
+import androidx.compose.material.icons.rounded.NetworkCheck
+import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,6 +45,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,141 +70,179 @@ fun LoginScreen(
 
     Column(
         verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.Start,
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .padding(18.dp)
+//            .verticalScroll(rememberScrollState())
     ) {
 
         var api by rememberSaveable { mutableStateOf("") }
         var token by rememberSaveable { mutableStateOf("") }
 
-        Text(
-            modifier = Modifier
-                .padding(16.dp, 0.dp)
-                .alpha(0.6f),
-            text = "Login",
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
-            fontSize = 16.sp
-        )
-
-        Text(
-            modifier = Modifier
-                .padding(16.dp, 0.dp)
-                .alpha(0.6f),
-            text = "API BACKEND",
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.secondary,
-            fontSize = 12.sp
-        )
-        OutlinedTextField(
-            value = api,
-            shape = ShapeDefaults.Medium,
-            onValueChange = { api = it },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType
-                = KeyboardType.Uri
-            ),
-            modifier = Modifier
-                .padding(16.dp, 0.dp, 16.dp, 0.dp)
-                .fillMaxWidth(),
-        )
-
-        Text(
-            modifier = Modifier
-                .padding(16.dp, 0.dp)
-                .alpha(0.6f),
-            text = "TOKEN",
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.secondary,
-            fontSize = 12.sp
-        )
-        OutlinedTextField(
-            value = token,
-            shape = ShapeDefaults.Medium,
-            onValueChange = { token = it },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType
-                = KeyboardType.Text
-            ),
-            modifier = Modifier
-                .padding(16.dp, 0.dp, 16.dp, 0.dp)
-                .fillMaxWidth(),
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp, 0.dp, 16.dp, 0.dp)
+        Column(
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.weight(2f)
         ) {
-            Button(
-                onClick = {
-                    onAction(
-                        LoginAction.OnTestClick(api, token)
+            Text(
+                modifier = Modifier
+                    .alpha(0.8f),
+                text = "Login",
+                textAlign = TextAlign.Start,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                modifier = Modifier
+                    .alpha(0.7f),
+                text = "请输入哪吒监控的访问地址和在管理后台创建的TOKEN，并点击Test测试服务器连接状况。",
+                color = MaterialTheme.colorScheme.secondary,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Spacer(Modifier.height(16.dp))
+            Text(
+                modifier = Modifier
+                    .alpha(0.6f),
+                text = "API BACKEND",
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.secondary,
+                fontSize = 12.sp
+            )
+            OutlinedTextField(
+                value = api,
+                maxLines = 1,
+                placeholder = {
+                    Text(
+                        text = "https://your-api.example.com/",
+                        modifier = Modifier.alpha(0.4f)
                     )
                 },
+                shape = ShapeDefaults.ExtraLarge,
+                onValueChange = {
+                    scope.launch {
+                        api = it
+                        if (state.servers.isNotEmpty()) {
+                            onAction(
+                                LoginAction.OnCredentialsChange(api, token)
+                            )
+                        }
+                    }
+                },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType
+                    = KeyboardType.Uri
+                ),
                 modifier = Modifier
-                    .height(60.dp)
-                    .weight(1f)
+                    .fillMaxWidth(),
+            )
 
+            Text(
+                modifier = Modifier
+                    .alpha(0.6f),
+                text = "TOKEN",
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.secondary,
+                fontSize = 12.sp
+            )
+            OutlinedTextField(
+                value = token,
+                maxLines = 1,
+                shape = ShapeDefaults.ExtraLarge,
+                onValueChange = {
+                    scope.launch {
+                        token = it
+                        if (state.servers.isNotEmpty()) {
+                            onAction(
+                                LoginAction.OnCredentialsChange(api, token)
+                            )
+                        }
+                    }
+                },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType
+                    = KeyboardType.Text
+                ),
+                modifier = Modifier
+                    .fillMaxWidth(),
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
+                Button(
+                    onClick = {
+                        onAction(
+                            LoginAction.OnTestClick(api, token)
+                        )
+                    },
+                    modifier = Modifier
+                        .height(60.dp)
+                        .weight(1f)
                 ) {
-                    Text(
-                        style = MaterialTheme.typography.titleMedium,
-                        text = "Test"
-                    )
-                    Spacer(Modifier.width(4.dp))
-                    if (!state.servers.isEmpty()) {
-                        Icon(
-                            imageVector = Icons.Filled.Check,
-                            contentDescription = "Check"
-                        )
-                    } else if (state.isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = LocalContentColor.current
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Filled.Login,
-                            contentDescription = "Login"
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        if (!state.servers.isEmpty()) {
+                            Icon(
+                                imageVector = Icons.Rounded.Check,
+                                contentDescription = "Check"
+                            )
+                        } else if (state.isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = LocalContentColor.current
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Rounded.NetworkCheck,
+                                contentDescription = "Login"
+                            )
+                        }
+                        Spacer(Modifier.width(4.dp))
+                        Text(
+                            style = MaterialTheme.typography.titleMedium,
+                            text = "Test"
                         )
                     }
                 }
-            }
-            Spacer(modifier = Modifier.weight(0.2f))
-            Button(
-                enabled = !state.servers.isEmpty(),
-                onClick = {
-                    scope.launch {
-                        dataStore.saveApi(api)
-                        dataStore.saveToken(token)
-                        delay(1000)
-                        onNavigateToServer()
+                Spacer(modifier = Modifier.weight(0.2f))
+                Button(
+                    enabled = !state.servers.isEmpty(),
+                    onClick = {
+                        scope.launch {
+                            dataStore.saveApi(api)
+                            dataStore.saveToken(token)
+                            delay(1000)
+                            onNavigateToServer()
+                        }
+                    },
+                    modifier = Modifier
+                        .height(60.dp)
+                        .weight(1f)
+                ) {
+                    Row {
+                        Icon(
+                            imageVector = Icons.Rounded.Save,
+                            contentDescription = "Save"
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        Text(
+                            style = MaterialTheme.typography.titleMedium,
+                            text = "Save"
+                        )
                     }
-                },
-                modifier = Modifier
-                    .height(60.dp)
-                    .weight(1f)
-            ) {
-                Row {
-                    Text(
-                        style = MaterialTheme.typography.titleMedium,
-                        text = "Save"
-                    )
-                    Spacer(Modifier.width(4.dp))
-                    Icon(
-                        imageVector = Icons.Filled.Save,
-                        contentDescription = "Save"
-                    )
                 }
             }
         }
+
+        Spacer(Modifier.weight(1f))
+
     }
 }
 
@@ -206,6 +253,7 @@ fun LoginScreen(
 private fun LoginScreenPreview() {
     MDPingsTheme {
         LoginScreen(
+            modifier = Modifier.background(MaterialTheme.colorScheme.background),
             state = LoginState(),
             onAction = {},
             onNavigateToServer = {}

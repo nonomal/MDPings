@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -55,10 +56,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.mdpings.AboutScreen
 import com.example.mdpings.core.presentation.util.ObserveAsEvents
 import com.example.mdpings.core.presentation.util.toString
 import com.example.mdpings.ui.theme.MDPingsTheme
 import com.example.mdpings.vpings.data.StoreSettings
+import com.example.mdpings.vpings.presentation.AboutScreen
 import com.example.mdpings.vpings.presentation.server_detail.ServerDetailScreen
 import com.example.mdpings.vpings.presentation.server_detail.ServerDetailViewModel
 import com.example.mdpings.vpings.presentation.server_list.ServerListScreen
@@ -125,6 +128,7 @@ class MainActivity : ComponentActivity() {
                 val currentRoute = navBackStackEntry?.destination?.route
                 val topAppBarTitle =
                     if (currentRoute == "com.example.mdpings.LoginScreen") "Login"
+                    else if (currentRoute == "com.example.mdpings.AboutScreen") "About"
                     else if (currentRoute == "com.example.mdpings.ServerDetailScreen") "${serverListState.selectedServer!!.host.countryCode} ${serverListState.selectedServer!!.name}"
                     else "MDPings"
 
@@ -144,6 +148,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Scaffold(
                         modifier = Modifier
+                            .background(MaterialTheme.colorScheme.background)
                             .nestedScroll(scrollBehavior.nestedScrollConnection),
                         topBar = {
                             MDAppTopBar(
@@ -221,6 +226,9 @@ class MainActivity : ComponentActivity() {
                                     selectedServerUi = serverListState.selectedServer!!,
                                     onAction = serverDetailViewModel::onAction
                                 )
+                            }
+                            composable<AboutScreen> {
+                                AboutScreen()
                             }
                         }
                     }
@@ -340,8 +348,23 @@ fun DrawerContent(
                         style = MaterialTheme.typography.bodyLarge
                     )
                 },
-                selected = false,
-                onClick = {}
+                selected = currentRoute?.contains("AboutScreen") == true,
+                onClick = {
+                    if (currentRoute?.contains("AboutScreen") == false) {
+                        scope.launch {
+                            drawerState.apply {
+                                if (isClosed) open() else close()
+                            }
+                            navController.navigate(route = AboutScreen)
+                        }
+                    } else {
+                        scope.launch {
+                            drawerState.apply {
+                                close()
+                            }
+                        }
+                    }
+                }
             )
         }
     }
@@ -358,3 +381,6 @@ object ServerListScreen
 
 @Serializable
 object ServerDetailScreen
+
+@Serializable
+object AboutScreen

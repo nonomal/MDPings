@@ -46,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,7 +62,8 @@ import kotlinx.coroutines.withContext
 @Composable
 fun NetworkMonitor(
     state: ServerDetailState,
-    onAction: (ServerDetailAction) -> Unit
+    onAction: (ServerDetailAction) -> Unit,
+    modifier: Modifier = Modifier
 ) {
 
     val modelProducer = remember { CartesianChartModelProducer() }
@@ -88,8 +90,8 @@ fun NetworkMonitor(
 
     Card(
         modifier = Modifier
-            .wrapContentHeight()
-            .animateContentSize(),
+            .wrapContentHeight(),
+//            .animateContentSize(),
         shape = ShapeDefaults.Medium,
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
@@ -289,7 +291,7 @@ private fun DateFilterChipGroup(
 }
 
 @Composable
-@PreviewLightDark
+@Preview(showBackground = true)
 private fun NetworkMonitorPreview() {
     MDPingsTheme {
         Card(

@@ -32,6 +32,11 @@ class LoginViewModel(
                     token = action.token
                 )
             }
+            is LoginAction.OnCredentialsChange -> {
+                _state.update { it.copy(
+                    servers = emptyList()
+                ) }
+            }
         }
     }
 

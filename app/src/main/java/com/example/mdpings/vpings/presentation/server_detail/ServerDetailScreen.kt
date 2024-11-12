@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -85,7 +86,7 @@ fun ServerDetailScreen(
 
     if (state.serverUi == null || state.ipAPIUi == null) {
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -98,24 +99,25 @@ fun ServerDetailScreen(
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
+            modifier = modifier
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
             InstanceInfo(
                 serverUi = state.serverUi,
                 ipAPIUi = state.ipAPIUi,
-                modifier = Modifier
+                modifier = modifier
             )
             Spacer(Modifier.height(8.dp))
             NetworkMonitor(
                 state = state,
-                onAction = onAction
+                onAction = onAction,
+                modifier = modifier
             )
             Spacer(Modifier.height(8.dp))
             ServerStatus(
                 serverUi = state.serverUi,
-                modifier = Modifier
+                modifier = modifier
             )
         }
     }
