@@ -2,8 +2,11 @@ package com.example.mdpings.di
 
 import com.example.mdpings.core.data.networking.HttpClientFactory
 import com.example.mdpings.vpings.data.StoreSettings
+import com.example.mdpings.vpings.data.app_settings.LocalAppSettingsDataSource
 import com.example.mdpings.vpings.data.networking.RemoteServerDataSource
+import com.example.mdpings.vpings.domain.AppSettingsDataSource
 import com.example.mdpings.vpings.domain.ServerDataSource
+import com.example.mdpings.vpings.presentation.app_settings.AppSettingsViewModel
 import com.example.mdpings.vpings.presentation.server_detail.ServerDetailViewModel
 import com.example.mdpings.vpings.presentation.server_list.ServerListViewModel
 import com.example.mdpings.vpings.presentation.user_login.LoginViewModel
@@ -17,8 +20,10 @@ val appModule = module {
     single { StoreSettings(get()) }
     single { HttpClientFactory.create(CIO.create()) }
     singleOf(::RemoteServerDataSource).bind<ServerDataSource>()
+    singleOf(::LocalAppSettingsDataSource).bind<AppSettingsDataSource>()
 
     viewModelOf(::LoginViewModel)
     viewModelOf(::ServerListViewModel)
     viewModelOf(::ServerDetailViewModel)
+    viewModelOf(::AppSettingsViewModel)
 }

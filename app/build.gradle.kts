@@ -30,7 +30,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-//            buildConfigField("String", "BASE_URL", "\"https://api.coincap.io/v2/\"")
         }
     }
     compileOptions {
@@ -65,14 +64,11 @@ dependencies {
     // Preferences DataStore (SharedPreferences like APIs)
     dependencies {
         implementation(libs.androidx.datastore.preferences)
-
         // optional - RxJava2 support
         implementation(libs.androidx.datastore.preferences.rxjava2)
-
         // optional - RxJava3 support
         implementation(libs.androidx.datastore.preferences.rxjava3)
     }
-
     // Alternatively - use the following artifact without an Android dependency.
     dependencies {
         implementation(libs.androidx.datastore.preferences.core)
@@ -81,43 +77,31 @@ dependencies {
     dependencies {
         // For Jetpack Compose.
         implementation("com.patrykandpatrick.vico:compose:2.0.0-beta.2")
-
         // For `compose`. Creates a `ChartStyle` based on an M2 Material Theme.
         implementation("com.patrykandpatrick.vico:compose-m2:2.0.0-beta.2")
-
         // For `compose`. Creates a `ChartStyle` based on an M3 Material Theme.
         implementation("com.patrykandpatrick.vico:compose-m3:2.0.0-beta.2")
-
         // Houses the core logic for charts and other elements. Included in all other modules.
         implementation("com.patrykandpatrick.vico:core:2.0.0-beta.2")
-
         // For the view system.
         implementation("com.patrykandpatrick.vico:views:2.0.0-beta.2")
     }
 
     dependencies {
         val nav_version = "2.8.3"
-
         // Jetpack Compose integration
         implementation("androidx.navigation:navigation-compose:$nav_version")
-
         // Views/Fragments integration
         implementation("androidx.navigation:navigation-fragment:$nav_version")
         implementation("androidx.navigation:navigation-ui:$nav_version")
-
         // Feature module support for Fragments
         implementation("androidx.navigation:navigation-dynamic-features-fragment:$nav_version")
-
         // Testing Navigation
         androidTestImplementation("androidx.navigation:navigation-testing:$nav_version")
 
     }
 
     implementation(libs.gson)
-
-//    implementation(libs.datastore.preferences)
-//    implementation(libs.datastore)
-
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

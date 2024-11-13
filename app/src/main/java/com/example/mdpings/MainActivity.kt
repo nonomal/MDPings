@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Home
@@ -25,7 +24,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -40,6 +38,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,7 +47,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -56,12 +54,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.mdpings.AboutScreen
+import com.example.mdpings.AppSettingsScreen
 import com.example.mdpings.core.presentation.util.ObserveAsEvents
 import com.example.mdpings.core.presentation.util.toString
 import com.example.mdpings.ui.theme.MDPingsTheme
 import com.example.mdpings.vpings.data.StoreSettings
 import com.example.mdpings.vpings.presentation.AboutScreen
+import com.example.mdpings.vpings.presentation.app_settings.AppSettingsScreen
+import com.example.mdpings.vpings.presentation.app_settings.AppSettingsViewModel
+import com.example.mdpings.vpings.presentation.components.DrawerContent
 import com.example.mdpings.vpings.presentation.server_detail.ServerDetailScreen
 import com.example.mdpings.vpings.presentation.server_detail.ServerDetailViewModel
 import com.example.mdpings.vpings.presentation.server_list.ServerListScreen
@@ -101,6 +102,8 @@ class MainActivity : ComponentActivity() {
                 val serverListState by serverListViewModel.state.collectAsStateWithLifecycle()
                 val serverDetailViewModel = koinViewModel<ServerDetailViewModel>()
                 val serverDetailState by serverDetailViewModel.state.collectAsStateWithLifecycle()
+                val appSettingsViewModel = koinViewModel<AppSettingsViewModel>()
+                val appSettingsState by appSettingsViewModel.state.collectAsStateWithLifecycle()
 
                 // Error Handle
                 val context = LocalContext.current
@@ -128,6 +131,7 @@ class MainActivity : ComponentActivity() {
                 val currentRoute = navBackStackEntry?.destination?.route
                 val topAppBarTitle =
                     if (currentRoute == "com.example.mdpings.LoginScreen") "Login"
+                    else if (currentRoute == "com.example.mdpings.AppSettingsScreen") "Settings"
                     else if (currentRoute == "com.example.mdpings.AboutScreen") "About"
                     else if (currentRoute == "com.example.mdpings.ServerDetailScreen") "${serverListState.selectedServer!!.host.countryCode} ${serverListState.selectedServer!!.name}"
                     else "MDPings"
@@ -227,6 +231,12 @@ class MainActivity : ComponentActivity() {
                                     onAction = serverDetailViewModel::onAction
                                 )
                             }
+                            composable<AppSettingsScreen> {
+                                AppSettingsScreen(
+                                    state = appSettingsState,
+                                    onAction = appSettingsViewModel::onAction
+                                )
+                            }
                             composable<AboutScreen> {
                                 AboutScreen()
                             }
@@ -235,137 +245,6 @@ class MainActivity : ComponentActivity() {
 
                 }
             }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DrawerContent(
-    modifier: Modifier = Modifier,
-    navController: NavController = rememberNavController(),
-    currentRoute: String? = "",
-    drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-) {
-
-    val scope = rememberCoroutineScope()
-
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.Start,
-        modifier = modifier,
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-//            horizontalArrangement = Arrangement.Center,
-            modifier = modifier
-                .padding(start = 16.dp)
-                .alpha(0.8f)
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.Monitor,
-                contentDescription = Icons.Rounded.Monitor.name
-            )
-            Text(
-                text = "MDPings",
-                fontWeight = FontWeight.Normal,
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier
-                    .padding(16.dp)
-            )
-        }
-
-        Spacer(Modifier.height(8.dp))
-
-        Column(
-            modifier = Modifier
-                .padding(horizontal = 8.dp)
-                .alpha(0.9f)
-        ) {
-            NavigationDrawerItem(
-                icon = {
-                    Icon(
-                        imageVector = Icons.Rounded.Home,
-                        contentDescription = Icons.Rounded.Home.name
-                    )
-                },
-                label = {
-                    Text(
-                        text = "Home",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                },
-                selected = currentRoute?.contains("ServerListScreen") == true,
-                onClick = {
-                    if (currentRoute?.contains("ServerListScreen") == false) {
-                        scope.launch {
-                            drawerState.apply {
-                                if (isClosed) open() else close()
-                            }
-                            navController.navigate(
-                                route = ServerListScreen
-                            ) {
-                                popUpTo(0)
-                            }
-                        }
-                    } else {
-                        scope.launch {
-                            drawerState.apply {
-                                close()
-                            }
-                        }
-                    }
-                }
-            )
-            Spacer(Modifier.height(4.dp))
-            NavigationDrawerItem(
-                icon = {
-                    Icon(
-                        imageVector = Icons.Rounded.Settings,
-                        contentDescription = Icons.Rounded.Settings.name
-                    )
-                },
-                label = {
-                    Text(
-                        text = "Settings",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                },
-                selected = false,
-                onClick = {}
-            )
-            Spacer(Modifier.height(4.dp))
-            NavigationDrawerItem(
-                icon = {
-                    Icon(
-                        imageVector = Icons.Rounded.Info,
-                        contentDescription = Icons.Rounded.Info.name
-                    )
-                },
-                label = {
-                    Text(
-                        text = "About",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                },
-                selected = currentRoute?.contains("AboutScreen") == true,
-                onClick = {
-                    if (currentRoute?.contains("AboutScreen") == false) {
-                        scope.launch {
-                            drawerState.apply {
-                                if (isClosed) open() else close()
-                            }
-                            navController.navigate(route = AboutScreen)
-                        }
-                    } else {
-                        scope.launch {
-                            drawerState.apply {
-                                close()
-                            }
-                        }
-                    }
-                }
-            )
         }
     }
 }
@@ -381,6 +260,9 @@ object ServerListScreen
 
 @Serializable
 object ServerDetailScreen
+
+@Serializable
+object AppSettingsScreen
 
 @Serializable
 object AboutScreen

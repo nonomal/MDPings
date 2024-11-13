@@ -56,6 +56,7 @@ import com.example.mdpings.vpings.presentation.server_detail.ServerDetailState
 import com.example.mdpings.vpings.presentation.server_list.components.previewServerUi0
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
+import com.patrykandpatrick.vico.core.common.data.ExtraStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -144,7 +145,7 @@ fun NetworkMonitor(
                 }
             }
 
-            Spacer(modifier = Modifier.height(2.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             // FilterChips
             DateFilterChipGroup(

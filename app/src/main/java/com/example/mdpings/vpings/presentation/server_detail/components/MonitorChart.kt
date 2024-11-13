@@ -1,5 +1,13 @@
 package com.example.mdpings.vpings.presentation.server_detail.components
 
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -38,6 +46,7 @@ import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.compose.cartesian.rememberVicoZoomState
 import com.patrykandpatrick.vico.compose.common.component.rememberShapeComponent
 import com.patrykandpatrick.vico.compose.common.component.rememberTextComponent
+import com.patrykandpatrick.vico.compose.common.data.rememberExtraLambda
 import com.patrykandpatrick.vico.compose.common.dimensions
 import com.patrykandpatrick.vico.compose.common.fill
 import com.patrykandpatrick.vico.compose.common.shape.rounded
@@ -48,6 +57,7 @@ import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModel
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianValueFormatter
 import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
+import com.patrykandpatrick.vico.core.cartesian.marker.CartesianMarkerValueFormatter
 import com.patrykandpatrick.vico.core.cartesian.marker.DefaultCartesianMarker
 import com.patrykandpatrick.vico.core.common.component.Shadow
 import com.patrykandpatrick.vico.core.common.shape.CorneredShape
@@ -58,11 +68,14 @@ import java.time.format.DateTimeFormatter
 // Line的颜色
 public val chartColors = listOf(
     lineDefault1, line0, lineDefault2, line1, lineDefault3, line2,
-    line3, line4, line5, line6, line7, line8, line9, line10, line11
+    line3, line4, line5, line6, line7, line8, line9, line10, line11,
+    lineDefault1, line0, lineDefault2, line1, lineDefault3, line2,
+    line3, line4, line5, line6, line7, line8, line9, line10, line11,
 )
 
 // x轴Epoch时间 -> LocalTime: HH:MM
-private val bottomAxisValueFormatter = CartesianValueFormatter { _, x, _ ->
+private val bottomAxisValueFormatter = CartesianValueFormatter { context, x, y ->
+//    context.model.extraStore.
     formatEpochTimeToHHMM(x)
 }
 
@@ -82,18 +95,24 @@ fun MonitorsChart(modelProducer: CartesianChartModelProducer, modifier: Modifier
         // model = model Preview用
 //        model = model,
         modelProducer = modelProducer,
+        animationSpec = tween(
+            durationMillis = 500,
+            delayMillis = 50,
+            easing = FastOutSlowInEasing
+        ),
         chart =
             rememberCartesianChart(
                 rememberLineCartesianLayer(
                     // 线段样式调整
                     lineProvider = LineCartesianLayer.LineProvider.series(
-                        chartColors.map { color ->
-                            LineCartesianLayer.rememberLine(
-                                fill = remember { LineCartesianLayer.LineFill.single(fill(color)) },
-                                // 注释areaFill以降低3个monitors以上同时显示的可读性
-                                areaFill = null
-                            )
-                        }
+                        lines =
+                            chartColors.map { color ->
+                                LineCartesianLayer.rememberLine(
+                                    fill = remember { LineCartesianLayer.LineFill.single(fill(color)) },
+                                    // 注释areaFill以降低3个monitors以上同时显示的可读性
+                                    areaFill = null
+                                )
+                            }
                     )
                 ),
                 // Y轴
@@ -116,10 +135,13 @@ fun MonitorsChart(modelProducer: CartesianChartModelProducer, modifier: Modifier
                         valueFormatter = bottomAxisValueFormatter,
                         itemPlacer =
                             remember {
-                                HorizontalAxis.ItemPlacer.aligned(spacing = 3, addExtremeLabelPadding = true)
+                                HorizontalAxis.ItemPlacer.aligned(spacing = 4, addExtremeLabelPadding = true)
                             },
                     ),
-                marker = rememberMarker(DefaultCartesianMarker.LabelPosition.AroundPoint),
+                marker = rememberMarker(
+                    labelPosition = DefaultCartesianMarker.LabelPosition.Top,
+//                    showIndicator = false
+                ),
                 layerPadding = cartesianLayerPadding(scalableStart = 16.dp, scalableEnd = 16.dp),
                 // 名字标注
 //                legend = rememberLegend(),

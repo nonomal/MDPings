@@ -10,7 +10,6 @@ import com.example.mdpings.vpings.data.mappers.toMonitor
 import com.example.mdpings.vpings.data.mappers.toServer
 import com.example.mdpings.vpings.data.networking.dto.IpAPIDto
 import com.example.mdpings.vpings.data.networking.dto.MonitorsResponsesDto
-import com.example.mdpings.vpings.data.networking.dto.ServerDto
 import com.example.mdpings.vpings.data.networking.dto.ServersResponsesDto
 import com.example.mdpings.vpings.domain.IpAPI
 import com.example.mdpings.vpings.domain.Monitor

@@ -2,6 +2,8 @@ package com.example.mdpings.core.data.networking
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
+import io.ktor.client.plugins.HttpRequestRetry
+import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.ANDROID
@@ -20,6 +22,12 @@ object HttpClientFactory {
     @OptIn(ExperimentalSerializationApi::class)
     fun create(engine: HttpClientEngine): HttpClient {
         return HttpClient(engine) {
+            install(HttpRequestRetry) {
+                maxRetries = 3
+                retryOnExceptionIf { request, cause ->
+                    cause is HttpRequestTimeoutException
+                }
+            }
             install(Logging) {
                 level = LogLevel.ALL
                 logger = Logger.ANDROID
