@@ -58,8 +58,8 @@ import com.example.mdpings.AppSettingsScreen
 import com.example.mdpings.core.presentation.util.ObserveAsEvents
 import com.example.mdpings.core.presentation.util.toString
 import com.example.mdpings.ui.theme.MDPingsTheme
-import com.example.mdpings.vpings.data.StoreSettings
 import com.example.mdpings.vpings.presentation.AboutScreen
+import com.example.mdpings.vpings.presentation.app_settings.AppSettingsAction
 import com.example.mdpings.vpings.presentation.app_settings.AppSettingsScreen
 import com.example.mdpings.vpings.presentation.app_settings.AppSettingsViewModel
 import com.example.mdpings.vpings.presentation.components.DrawerContent
@@ -121,9 +121,11 @@ class MainActivity : ComponentActivity() {
                 }
 
                 // DataStore
-                val dataStore = StoreSettings(context)
-                val stateApi by dataStore.getApi.collectAsState(initial = "")
-                val stateToken by dataStore.getToken.collectAsState(initial = "")
+//                val dataStore = StoreSettings(context)
+//                val stateApi by dataStore.getApi.collectAsState(initial = "")
+//                val stateToken by dataStore.getToken.collectAsState(initial = "")
+                val apiURL = appSettingsViewModel.getApiURL()
+                val apiTOKEN = appSettingsViewModel.getApiTOKEN()
 
                 // Nav && currentRoute -> topAppBarTitle
                 val navController = rememberNavController()
@@ -177,9 +179,9 @@ class MainActivity : ComponentActivity() {
                         }
                     ) { innerPadding ->
 
-                        LaunchedEffect(stateApi, stateToken) {
+                        LaunchedEffect(apiURL, apiTOKEN) {
                             delay(1000)
-                            val isSettingsIsnull = stateApi!!.isEmpty() || stateToken!!.isEmpty()
+                            val isSettingsIsnull = apiURL == null || apiTOKEN == null
                             navController.navigate(if (isSettingsIsnull) LoginScreen else ServerListScreen) {
                                 popUpTo(0)
                             }
@@ -207,6 +209,7 @@ class MainActivity : ComponentActivity() {
                                 LoginScreen(
                                     modifier = Modifier.padding(innerPadding),
                                     state = loginState,
+                                    appSettingsState = appSettingsState,
                                     onAction = loginViewModel::onAction,
                                     onNavigateToServer = {
                                         navController.navigate(
@@ -221,14 +224,17 @@ class MainActivity : ComponentActivity() {
                                     onAction = serverListViewModel::onAction,
                                     onNavigateToDetail = {
                                         navController.navigate(ServerDetailScreen)
-                                    }
+                                    },
+                                    onLoad = appSettingsViewModel::onAction,
+                                    appSettingsState = appSettingsState
                                 )
                             }
                             composable<ServerDetailScreen> {
                                 ServerDetailScreen(
                                     state = serverDetailState,
                                     selectedServerUi = serverListState.selectedServer!!,
-                                    onAction = serverDetailViewModel::onAction
+                                    onAction = serverDetailViewModel::onAction,
+                                    appSettingsState = appSettingsState,
                                 )
                             }
                             composable<AppSettingsScreen> {

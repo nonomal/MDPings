@@ -12,9 +12,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlin.String
 
-private const val USER_API_BACKEND = "user_api_backend"
-private const val USER_API_TOKEN = "user_api_token"
-private const val SERVER_LIST_REFRESH_INTERVAL = "server_list_refresh_interval"
+const val USER_API_BACKEND = "user_api_backend"
+const val USER_API_TOKEN = "user_api_token"
+const val SERVER_LIST_REFRESH_INTERVAL = "server_list_refresh_interval"
 
 class AppSettingsViewModel(
     private val appSettingsDataSource: AppSettingsDataSource

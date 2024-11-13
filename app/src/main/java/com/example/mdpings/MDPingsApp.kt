@@ -6,12 +6,12 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 
-class VpingsApp: Application(){
+class MDPingsApp: Application(){
 
     override fun onCreate() {
         super.onCreate()
         startKoin {
-            androidContext(this@VpingsApp)
+            androidContext(this@MDPingsApp)
             androidLogger()
 
             modules(appModule)

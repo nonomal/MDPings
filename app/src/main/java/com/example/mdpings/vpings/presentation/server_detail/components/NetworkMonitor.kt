@@ -1,12 +1,6 @@
 package com.example.mdpings.vpings.presentation.server_detail.components
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +12,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -47,21 +40,21 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mdpings.ui.theme.MDPingsTheme
+import com.example.mdpings.vpings.presentation.app_settings.AppSettingsState
 import com.example.mdpings.vpings.presentation.server_detail.ServerDetailAction
 import com.example.mdpings.vpings.presentation.server_detail.ServerDetailState
 import com.example.mdpings.vpings.presentation.server_list.components.previewServerUi0
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
-import com.patrykandpatrick.vico.core.common.data.ExtraStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
 fun NetworkMonitor(
+    appSettingsState: AppSettingsState,
     state: ServerDetailState,
     onAction: (ServerDetailAction) -> Unit,
     modifier: Modifier = Modifier
@@ -127,7 +120,7 @@ fun NetworkMonitor(
                 IconButton(
                     onClick = {
                         onAction(
-                            ServerDetailAction.OnMonitorsRefresh(serverId, state.monitorsTimeSlice)
+                            ServerDetailAction.OnMonitorsRefresh(serverId, state.monitorsTimeSlice, appSettingsState.apiURL)
                         )
                     },
                     modifier = Modifier
@@ -309,7 +302,8 @@ private fun NetworkMonitorPreview() {
                     ipAPIUi = mockIpAPIUi,
                     monitors = mockMonitors
                 ),
-                onAction = {}
+                onAction = {},
+                appSettingsState = AppSettingsState()
             )
         }
     }

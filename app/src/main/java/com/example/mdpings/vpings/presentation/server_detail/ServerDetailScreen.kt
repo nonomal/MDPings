@@ -24,19 +24,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.mdpings.ui.theme.MDPingsTheme
+import com.example.mdpings.vpings.presentation.app_settings.AppSettingsState
 import com.example.mdpings.vpings.presentation.models.ServerUi
 import com.example.mdpings.vpings.presentation.server_detail.components.InstanceInfo
 import com.example.mdpings.vpings.presentation.server_detail.components.NetworkMonitor
@@ -48,12 +45,12 @@ import com.example.mdpings.vpings.presentation.server_list.components.NetworkTra
 import com.example.mdpings.vpings.presentation.server_list.components.Status
 import com.example.mdpings.vpings.presentation.server_list.components.previewServerUi0
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ServerDetailScreen(
     state: ServerDetailState,
+    appSettingsState: AppSettingsState,
     selectedServerUi: ServerUi,
     onAction: (ServerDetailAction) -> Unit,
     modifier: Modifier = Modifier
@@ -64,16 +61,24 @@ fun ServerDetailScreen(
         onAction(
             ServerDetailAction.OnLoadInfoAndMonitors(
                 serverUi = selectedServerUi,
-                monitorsTimeSlice = state.monitorsTimeSlice
+                monitorsTimeSlice = state.monitorsTimeSlice,
+                apiURL = appSettingsState.apiURL,
+                apiTOKEN = appSettingsState.apiTOKEN,
+                interval = appSettingsState.refreshInterval
             )
         )
     }
     LaunchedEffect(Unit) {
         while (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
             onAction(
-                ServerDetailAction.OnLoadSingleServer(serverUi = selectedServerUi)
+                ServerDetailAction.OnLoadSingleServer(
+                    serverUi = selectedServerUi,
+                    apiURL = appSettingsState.apiURL,
+                    apiTOKEN = appSettingsState.apiTOKEN,
+                    interval = appSettingsState.refreshInterval
+                )
             )
-            delay(5000)
+            delay(appSettingsState.refreshInterval.toLong())
         }
     }
     DisposableEffect(lifecycleOwner) {
@@ -110,6 +115,7 @@ fun ServerDetailScreen(
             )
             Spacer(Modifier.height(8.dp))
             NetworkMonitor(
+                appSettingsState = appSettingsState,
                 state = state,
                 onAction = onAction,
                 modifier = modifier
@@ -184,7 +190,8 @@ fun ServerDetailScreenPreview() {
                 ipAPIUi = mockIpAPIUi,
                 monitors = mockMonitors
             ),
-            onAction = {}
+            onAction = {},
+            appSettingsState = AppSettingsState()
         )
     }
 }

@@ -1,7 +1,6 @@
 package com.example.mdpings.di
 
 import com.example.mdpings.core.data.networking.HttpClientFactory
-import com.example.mdpings.vpings.data.StoreSettings
 import com.example.mdpings.vpings.data.app_settings.LocalAppSettingsDataSource
 import com.example.mdpings.vpings.data.networking.RemoteServerDataSource
 import com.example.mdpings.vpings.domain.AppSettingsDataSource
@@ -17,7 +16,6 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val appModule = module {
-    single { StoreSettings(get()) }
     single { HttpClientFactory.create(CIO.create()) }
     singleOf(::RemoteServerDataSource).bind<ServerDataSource>()
     singleOf(::LocalAppSettingsDataSource).bind<AppSettingsDataSource>()

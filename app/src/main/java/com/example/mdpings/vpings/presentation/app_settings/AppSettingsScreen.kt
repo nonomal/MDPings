@@ -9,17 +9,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Explore
-import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Key
-import androidx.compose.material.icons.rounded.MonitorHeart
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -39,12 +35,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mdpings.ui.theme.MDPingsTheme
-import com.example.mdpings.vpings.presentation.user_login.LoginAction
 import kotlinx.coroutines.launch
 
 @Composable
@@ -66,11 +60,10 @@ fun AppSettingsScreen(
         "API 地址" -> {
             AlertDialogExample(
                 value = state.apiURL,
-                onAction = onAction,
+                onConfirmation = onAction,
                 onDismissRequest = {
                     openAlertDialog = ""
                 },
-                onConfirmation = { },
                 dialogTitle = openAlertDialog,
                 dialogText = "更改哪吒监控的 API 访问地址",
                 icon = Icons.Rounded.Explore
@@ -79,11 +72,10 @@ fun AppSettingsScreen(
         "TOKEN" -> {
             AlertDialogExample(
                 value = state.apiTOKEN,
-                onAction = onAction,
+                onConfirmation = onAction,
                 onDismissRequest = {
                     openAlertDialog = ""
                 },
-                onConfirmation = { },
                 dialogTitle = openAlertDialog,
                 dialogText = "更改哪吒监控的 TOKEN",
                 icon = Icons.Rounded.Key
@@ -92,11 +84,10 @@ fun AppSettingsScreen(
         "更新间隔" -> {
             AlertDialogExample(
                 value = state.refreshInterval.toString(),
-                onAction = onAction,
+                onConfirmation = onAction,
                 onDismissRequest = {
                     openAlertDialog = ""
                 },
-                onConfirmation = { },
                 dialogTitle = openAlertDialog,
                 dialogText = "更改 MDPings 的默认数据刷新间隔（毫秒）",
                 icon = Icons.Rounded.Refresh
@@ -208,9 +199,8 @@ fun AppSettingsScreen(
 @Composable
 fun AlertDialogExample(
     value: String = "",
-    onAction: (AppSettingsAction) -> Unit,
     onDismissRequest: () -> Unit,
-    onConfirmation: () -> Unit,
+    onConfirmation: (AppSettingsAction) -> Unit,
     dialogTitle: String,
     dialogText: String,
     icon: ImageVector,
@@ -258,12 +248,13 @@ fun AlertDialogExample(
             TextButton(
                 onClick = {
                     scope.launch {
-                        onAction(
+                        onConfirmation(
                             AppSettingsAction.OnSaveClicked(
                                 dialogTitle = dialogTitle,
                                 value = value
                             )
                         )
+                        onDismissRequest()
                     }
                 }
             ) {
@@ -307,7 +298,6 @@ private fun AlertDialogExamplePreview() {
             dialogTitle = "API 地址",
             dialogText = "更改哪吒监控的 API 访问地址",
             icon = Icons.Rounded.Explore,
-            onAction = {}
         )
     }
 }

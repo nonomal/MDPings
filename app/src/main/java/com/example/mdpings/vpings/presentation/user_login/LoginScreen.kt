@@ -50,23 +50,24 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mdpings.ui.theme.MDPingsTheme
-import com.example.mdpings.vpings.data.StoreSettings
+import com.example.mdpings.vpings.presentation.app_settings.AppSettingsState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
+    appSettingsState: AppSettingsState,
     state: LoginState,
     onAction: (LoginAction) -> Unit,
     modifier: Modifier = Modifier,
     onNavigateToServer: () -> Unit,
 ) {
-    // context
-    val context = LocalContext.current
-    // a coroutine scope
+//    // context
+//    val context = LocalContext.current
+//    // a coroutine scope
     val scope = rememberCoroutineScope()
-    // we instantiate the saveEmail class
-    val dataStore = StoreSettings(context)
+//    // we instantiate the saveEmail class
+//    val dataStore = StoreSettings(context)
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -125,7 +126,7 @@ fun LoginScreen(
                         api = it
                         if (state.servers.isNotEmpty()) {
                             onAction(
-                                LoginAction.OnCredentialsChange(api, token)
+                                LoginAction.OnCredentialsChange
                             )
                         }
                     }
@@ -155,7 +156,7 @@ fun LoginScreen(
                         token = it
                         if (state.servers.isNotEmpty()) {
                             onAction(
-                                LoginAction.OnCredentialsChange(api, token)
+                                LoginAction.OnCredentialsChange
                             )
                         }
                     }
@@ -216,8 +217,9 @@ fun LoginScreen(
                     enabled = !state.servers.isEmpty(),
                     onClick = {
                         scope.launch {
-                            dataStore.saveApi(api)
-                            dataStore.saveToken(token)
+                            onAction(
+                                LoginAction.OnSaveClicked(api, token)
+                            )
                             delay(1000)
                             onNavigateToServer()
                         }
@@ -256,7 +258,8 @@ private fun LoginScreenPreview() {
             modifier = Modifier.background(MaterialTheme.colorScheme.background),
             state = LoginState(),
             onAction = {},
-            onNavigateToServer = {}
+            onNavigateToServer = {},
+            appSettingsState = AppSettingsState()
         )
     }
 }
