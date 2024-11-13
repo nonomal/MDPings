@@ -65,8 +65,8 @@ class RemoteServerDataSource(
             )
         }.map { response ->
             response.result
-                .sortedBy { it.monitorId }
-                .map { it.toMonitor() }
+                ?.sortedBy { it.monitorId }
+                ?.map { it.toMonitor() } ?: emptyList()
         }
     }
 

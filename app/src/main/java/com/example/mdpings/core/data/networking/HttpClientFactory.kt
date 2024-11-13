@@ -35,7 +35,7 @@ object HttpClientFactory {
             install(ContentNegotiation) {
                 json(
                     json = Json {
-//                        explicitNulls = false
+                        explicitNulls = false
                         prettyPrint = true
                         isLenient = true
                         ignoreUnknownKeys = true

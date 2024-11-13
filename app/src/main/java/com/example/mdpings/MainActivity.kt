@@ -120,10 +120,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                // DataStore
-//                val dataStore = StoreSettings(context)
-//                val stateApi by dataStore.getApi.collectAsState(initial = "")
-//                val stateToken by dataStore.getToken.collectAsState(initial = "")
+                // AppSettings
                 val apiURL = appSettingsViewModel.getApiURL()
                 val apiTOKEN = appSettingsViewModel.getApiTOKEN()
 
@@ -180,7 +177,7 @@ class MainActivity : ComponentActivity() {
                     ) { innerPadding ->
 
                         LaunchedEffect(apiURL, apiTOKEN) {
-                            delay(1000)
+//                            delay(1000)
                             val isSettingsIsnull = apiURL == null || apiTOKEN == null
                             navController.navigate(if (isSettingsIsnull) LoginScreen else ServerListScreen) {
                                 popUpTo(0)

@@ -1,5 +1,7 @@
 package com.example.mdpings.vpings.presentation
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,16 +40,20 @@ import androidx.compose.ui.unit.dp
 fun AboutScreen(
     modifier: Modifier = Modifier
 ) {
+
+    val uriHandler = LocalUriHandler.current
+
     Column(
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.Start,
         modifier = Modifier
+            .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .alpha(0.8f)
-            .padding(18.dp)
-            .fillMaxSize()
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
+            modifier = Modifier.padding(horizontal = 18.dp, vertical = 8.dp)
         ) {
             Icon(
                 imageVector = Icons.Rounded.Info,
@@ -61,17 +68,16 @@ fun AboutScreen(
                 color = MaterialTheme.colorScheme.primary
             )
         }
-        HorizontalDivider()
         Text(
             text = body,
             textAlign = TextAlign.Start,
             style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier.padding(horizontal = 26.dp, vertical = 8.dp),
             color = MaterialTheme.colorScheme.secondary
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
+            modifier = Modifier.padding(horizontal = 18.dp, vertical = 8.dp)
         ) {
             Icon(
                 imageVector = Icons.Rounded.MonitorHeart,
@@ -86,8 +92,14 @@ fun AboutScreen(
                 color = MaterialTheme.colorScheme.primary
             )
         }
-        HorizontalDivider()
+
         ListItem(
+            modifier = Modifier
+                .clickable(
+                    onClick = {
+                        uriHandler.openUri("https://github.com/")
+                    }
+                ),
             headlineContent = { Text(text = "MDPings", color = MaterialTheme.colorScheme.secondary) },
             supportingContent = { Text(text = "查看 MDPings GitHub 项目地址和应用说明", color = MaterialTheme.colorScheme.tertiary) },
             leadingContent = {
@@ -99,6 +111,12 @@ fun AboutScreen(
             },
         )
         ListItem(
+            modifier = Modifier
+                .clickable(
+                    onClick = {
+                        uriHandler.openUri("https://github.com/")
+                    }
+                ),
             headlineContent = { Text("GitHub 议题", color = MaterialTheme.colorScheme.secondary) },
             supportingContent = { Text("提交错误报告或改进建议", color = MaterialTheme.colorScheme.tertiary) },
             leadingContent = {
@@ -110,6 +128,12 @@ fun AboutScreen(
             },
         )
         ListItem(
+            modifier = Modifier
+                .clickable(
+                    onClick = {
+                        uriHandler.openUri("https://github.com/")
+                    }
+                ),
             headlineContent = { Text("赞助", color = MaterialTheme.colorScheme.secondary) },
             supportingContent = {
                 Text(
@@ -126,6 +150,12 @@ fun AboutScreen(
             },
         )
         ListItem(
+            modifier = Modifier
+                .clickable(
+                    onClick = {
+                        uriHandler.openUri("https://github.com/")
+                    }
+                ),
             headlineContent = { Text("Telegram 频道", color = MaterialTheme.colorScheme.secondary) },
             supportingContent = { Text("https://t.me/mdpings_app", color = MaterialTheme.colorScheme.tertiary) },
             leadingContent = {
@@ -137,6 +167,10 @@ fun AboutScreen(
             },
         )
         ListItem(
+            modifier = Modifier
+                .clickable(
+                    onClick = { }
+                ),
             headlineContent = { Text("当前版本", color = MaterialTheme.colorScheme.secondary) },
             supportingContent = { Text("0.0.1 - Alpha", color = MaterialTheme.colorScheme.tertiary) },
             leadingContent = {
@@ -147,9 +181,12 @@ fun AboutScreen(
                 )
             },
         )
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.alpha(0.9f)
+            modifier = Modifier
+                .padding(horizontal = 18.dp, vertical = 8.dp)
+                .alpha(0.9f)
         ) {
             Icon(
                 imageVector = Icons.Rounded.Favorite,
@@ -164,10 +201,15 @@ fun AboutScreen(
                 color = MaterialTheme.colorScheme.primary
             )
         }
-        HorizontalDivider()
         ListItem(
+            modifier = Modifier
+                .clickable(
+                    onClick = {
+                        uriHandler.openUri("https://nezha.wiki/")
+                    }
+                ),
             headlineContent = { Text("哪吒监控", color = MaterialTheme.colorScheme.secondary) },
-            supportingContent = { Text("查看哪吒监控 GitHub 项目地址和应用说明", color = MaterialTheme.colorScheme.tertiary) },
+            supportingContent = { Text("查看哪吒监控的官方网站", color = MaterialTheme.colorScheme.tertiary) },
 //            supportingContent = { Text("查看哪吒监控 GitHub 项目地址和应用说明") },
             leadingContent = {
                 Icon(
@@ -179,6 +221,12 @@ fun AboutScreen(
 //            trailingContent = { Text("meta") }
         )
         ListItem(
+            modifier = Modifier
+                .clickable(
+                    onClick = {
+                        uriHandler.openUri("https://apps.apple.com/us/app/vpings/id6479573031")
+                    }
+                ),
             headlineContent = { Text("VPings", color = MaterialTheme.colorScheme.secondary) },
             supportingContent = { Text("哪吒监控 IOS 客户端，部分界面参考其构建", color = MaterialTheme.colorScheme.tertiary) },
             leadingContent = {
@@ -190,6 +238,12 @@ fun AboutScreen(
             },
         )
         ListItem(
+            modifier = Modifier
+                .clickable(
+                    onClick = {
+                        uriHandler.openUri("https://github.com/patrykandpatrick/vico")
+                    }
+                ),
             headlineContent = { Text("Vico", color = MaterialTheme.colorScheme.secondary) },
             supportingContent = { Text("开源的图表绘制库", color = MaterialTheme.colorScheme.tertiary) },
             leadingContent = {
@@ -201,6 +255,12 @@ fun AboutScreen(
             },
         )
         ListItem(
+            modifier = Modifier
+                .clickable(
+                    onClick = {
+                        uriHandler.openUri("https://ktor.io/")
+                    }
+                ),
             headlineContent = { Text("Ktor", color = MaterialTheme.colorScheme.secondary) },
             supportingContent = { Text("开源的 Http 客户端", color = MaterialTheme.colorScheme.tertiary) },
             leadingContent = {
@@ -212,6 +272,12 @@ fun AboutScreen(
             },
         )
         ListItem(
+            modifier = Modifier
+                .clickable(
+                    onClick = {
+                        uriHandler.openUri("https://insert-koin.io/")
+                    }
+                ),
             headlineContent = { Text("Koin", color = MaterialTheme.colorScheme.secondary) },
             supportingContent = { Text("开源的 DI 注入框架", color = MaterialTheme.colorScheme.tertiary) },
             leadingContent = {

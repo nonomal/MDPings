@@ -8,7 +8,7 @@ data class ServerDto(
     val id: Int,
     val name: String,
     val tag: String,
-    @SerialName(value = "last_active") val lastActive: Int,
+    @SerialName(value = "last_active") val lastActive: Long,
     val ipv4: String,
     val ipv6: String,
     @SerialName(value = "valid_ip") val validIp: String,

@@ -27,7 +27,7 @@ private fun HostDto.toHost(): Host {
      return Host(
          platform = platform,
          platformVersion = platformVersion,
-         cpu = cpu,
+         cpu = cpu ?: listOf("N/A"),
          memTotal = memTotal,
          diskTotal = diskTotal,
          swapTotal = swapTotal,

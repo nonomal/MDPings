@@ -7,10 +7,10 @@ import kotlinx.serialization.SerialName
 data class HostDto(
     @SerialName(value = "Platform") val platform: String,
     @SerialName(value = "PlatformVersion") val platformVersion: String,
-    @SerialName(value = "CPU") val cpu: List<String>,
+    @SerialName(value = "CPU") val cpu: List<String>? = emptyList<String>(),
     @SerialName(value = "MemTotal") val memTotal: Long,
     @SerialName(value = "DiskTotal") val diskTotal: Long,
-    @SerialName(value = "SwapTotal") val swapTotal: Int,
+    @SerialName(value = "SwapTotal") val swapTotal: Long,
     @SerialName(value = "Arch") val arch: String,
     @SerialName(value = "Virtualization") val virtualization: String,
     @SerialName(value = "BootTime") val bootTime: Int,

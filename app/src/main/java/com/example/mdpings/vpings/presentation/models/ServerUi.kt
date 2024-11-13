@@ -11,7 +11,7 @@ data class ServerUi(
     val id: Int,
     val name: String,
     val tag: String,
-    val lastActive: Int,
+    val lastActive: Long,
     val ipv4: String,
     val ipv6: String,
     val validIp: String,
@@ -27,7 +27,7 @@ data class HostUi(
     val cpu: List<String>,
     val memTotal: Long,
     val diskTotal: Long,
-    val swapTotal: Int,
+    val swapTotal: Long,
     val arch: String,
     val virtualization: String,
     val bootTime: Int,
@@ -39,13 +39,13 @@ data class HostUi(
 data class StatusUi(
     val cpu: Double,
     val memUsed: Long,
-    val swapUsed: Int,
+    val swapUsed: Long,
     val diskUsed: Long,
     val netInTransfer: LongDisplayableString,
     val netOutTransfer: LongDisplayableString,
     val netInSpeed: NetIOSpeedDisplayableString,
     val netOutSpeed: NetIOSpeedDisplayableString,
-    val uptime: Int,
+    val uptime: Long,
     val load1: DoubleDisplayableNumber,
     val load5: DoubleDisplayableNumber,
     val load15: DoubleDisplayableNumber,
@@ -74,11 +74,11 @@ fun Double.toDisplayableNumber(): DoubleDisplayableNumber {
 }
 
 data class NetIOSpeedDisplayableString(
-    val value: Int,
+    val value: Long,
     val formatted: String
 )
 
-fun Int.toNetIOSpeedDisplayableString(): NetIOSpeedDisplayableString {
+fun Long.toNetIOSpeedDisplayableString(): NetIOSpeedDisplayableString {
     val speed = when {
         this / 1024 < 1024 -> "${String.format(Locale.US, "%.2f", this / 1024.0)} K/s"
         this / 1024 / 1024 < 1024 -> "${String.format(Locale.US, "%.2f", this / 1024.0.pow(2.0))} M/s"

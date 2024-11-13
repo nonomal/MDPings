@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -89,16 +90,17 @@ fun AppSettingsScreen(
                     openAlertDialog = ""
                 },
                 dialogTitle = openAlertDialog,
-                dialogText = "更改 MDPings 的默认数据刷新间隔（毫秒）",
+                dialogText = "更改应用的数据刷新间隔（毫秒）",
                 icon = Icons.Rounded.Refresh
             )
         }
     }
 
     Column(
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start,
         modifier = modifier
+            .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .alpha(0.8f)
     ) {
@@ -258,7 +260,7 @@ fun AlertDialogExample(
                     }
                 }
             ) {
-                Text("Confirm")
+                Text("确认")
             }
         },
         dismissButton = {
@@ -267,7 +269,7 @@ fun AlertDialogExample(
                     onDismissRequest()
                 }
             ) {
-                Text("Dismiss")
+                Text("取消")
             }
         }
     )

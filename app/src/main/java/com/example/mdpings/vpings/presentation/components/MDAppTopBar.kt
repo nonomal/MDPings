@@ -107,14 +107,14 @@ fun MDAppTopBar(
             }
         },
         actions = {
-            IconButton(
-                onClick = { }
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Search,
-                    contentDescription = "Search"
-                )
-            }
+//            IconButton(
+//                onClick = { }
+//            ) {
+//                Icon(
+//                    imageVector = Icons.Rounded.Search,
+//                    contentDescription = "Search"
+//                )
+//            }
             IconButton(
                 onClick = onUserClick
             ) {

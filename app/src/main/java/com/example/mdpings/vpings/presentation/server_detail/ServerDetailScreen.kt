@@ -84,7 +84,7 @@ fun ServerDetailScreen(
     DisposableEffect(lifecycleOwner) {
         onDispose{
             onAction(
-                ServerDetailAction.OnDisposeCleanUp(serverUiId = selectedServerUi.id)
+                ServerDetailAction.OnDisposeCleanUp
             )
         }
     }

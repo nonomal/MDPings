@@ -75,7 +75,7 @@ fun LoginScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(18.dp)
-//            .verticalScroll(rememberScrollState())
+            .verticalScroll(rememberScrollState())
     ) {
 
         var api by rememberSaveable { mutableStateOf("") }
