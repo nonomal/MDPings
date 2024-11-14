@@ -17,7 +17,7 @@ data class Server(
 data class Host(
     val platform: String,
     val platformVersion: String,
-    val cpu: List<String>,
+    val cpu: List<String>?,
     val memTotal: Long,
     val diskTotal: Long,
     val swapTotal: Long,

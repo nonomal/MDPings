@@ -17,19 +17,27 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.Download
+import androidx.compose.material.icons.rounded.QuestionMark
+import androidx.compose.material.icons.rounded.SignalWifiConnectedNoInternet4
+import androidx.compose.material.icons.rounded.SignalWifiOff
+import androidx.compose.material.icons.rounded.SignalWifiStatusbarConnectedNoInternet4
 import androidx.compose.material.icons.rounded.Upload
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SelectableChipColors
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,11 +53,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mdpings.ui.theme.MDPingsTheme
-import com.example.mdpings.vpings.domain.IpAPI
-import com.example.mdpings.vpings.presentation.server_detail.components.mockMonitors
 import com.example.mdpings.vpings.presentation.models.HostUi
-import com.example.mdpings.vpings.presentation.models.IpAPIUi
-import com.example.mdpings.vpings.presentation.models.MonitorUi
 import com.example.mdpings.vpings.presentation.models.ServerUi
 import com.example.mdpings.vpings.presentation.models.StatusUi
 import com.example.mdpings.vpings.presentation.models.toCountryCodeToEmojiFlag
@@ -57,7 +61,6 @@ import com.example.mdpings.vpings.presentation.models.toDisplayableNumber
 import com.example.mdpings.vpings.presentation.models.toNetTRLongDisplayableString
 import com.example.mdpings.vpings.presentation.models.toNetIOSpeedDisplayableString
 import com.example.mdpings.vpings.presentation.server_list.ServerListAction
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -76,38 +79,52 @@ private fun String.toLetterSpacing() = when(this) {
 fun ServerListItem(
     onNavigateToDetail: () -> Unit,
     serverUi: ServerUi,
-    ipAPI: IpAPIUi?,
-    monitors: List<MonitorUi>?,
     onAction: (ServerListAction) -> Unit,
-    onClick: (ServerUi) -> Unit,
     modifier: Modifier = Modifier
+//    onClick: (ServerUi) -> Unit,
+//    ipAPI: IpAPIUi?,
+//    monitors: List<MonitorUi>?,
 ) {
-
-    Card(
-        modifier = modifier.wrapContentHeight(),
-        shape = ShapeDefaults.Medium,
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-    ) {
-        ServerTitle(
-            serverUi = serverUi,
-            onAction = onAction,
-            onNavigateToDetail = onNavigateToDetail
-        )
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = modifier
-                .padding(horizontal = 12.dp)
-                .padding(bottom = 8.dp)
+    if (serverUi.isOnline) {
+        Card(
+            modifier = modifier.wrapContentHeight(),
+            shape = ShapeDefaults.Medium,
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         ) {
-            Status(serverUi)
-            Spacer(modifier = Modifier.height(2.dp))
-            NetworkIO(serverUi)
-            Spacer(modifier = Modifier.height(2.dp))
-            NetworkTransfer(serverUi)
-            Spacer(modifier = Modifier.height(2.dp))
-            LoadAndUptime(serverUi)
+            ServerTitle(
+                serverUi = serverUi,
+                onAction = onAction,
+                onNavigateToDetail = onNavigateToDetail
+            )
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = modifier
+                    .padding(horizontal = 12.dp)
+                    .padding(bottom = 8.dp)
+            ) {
+                Status(serverUi)
+                Spacer(modifier = Modifier.height(2.dp))
+                NetworkIO(serverUi)
+                Spacer(modifier = Modifier.height(2.dp))
+                NetworkTransfer(serverUi)
+                Spacer(modifier = Modifier.height(2.dp))
+                LoadAndUptime(serverUi)
+            }
+        }
+    } else {
+        Card(
+            modifier = modifier.wrapContentHeight(),
+            shape = ShapeDefaults.Medium,
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        ) {
+            ServerTitle(
+                serverUi = serverUi,
+                onAction = onAction,
+                onNavigateToDetail = onNavigateToDetail
+            )
         }
     }
 }
@@ -122,18 +139,33 @@ fun ServerTitle(
     val scope = rememberCoroutineScope()
 
     FilterChip(
-// TODO 根据服务器LastActive更改chip的颜色
-//        colors = FilterChipDefaults.filterChipColors().copy(
-//            if (server.lastActive)
-//        ),
+        colors = FilterChipDefaults.filterChipColors().copy(
+            selectedContainerColor =
+                if (serverUi.isOnline) MaterialTheme.colorScheme.primaryContainer
+                else MaterialTheme.colorScheme.errorContainer,
+            selectedLabelColor =
+                if (serverUi.isOnline) MaterialTheme.colorScheme.onSurface
+                else MaterialTheme.colorScheme.error,
+        ),
         modifier = Modifier
             .padding(horizontal = 12.dp),
         leadingIcon = {
-            Text(text = serverUi.host.countryCode)
+            if (serverUi.isOnline) Text(text = serverUi.host.countryCode)
+            else Icon(
+                imageVector = Icons.Rounded.Warning,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+                tint = MaterialTheme.colorScheme.error
+            )
         },
         trailingIcon = {
             Text(
-                text = "${serverUi.host.platform}${serverUi.host.platformVersion}",
+                text =
+                    if (serverUi.isOnline) "${serverUi.host.platform}${serverUi.host.platformVersion}"
+                    else "OFFLINE",
+                color =
+                    if (serverUi.isOnline) MaterialTheme.colorScheme.onSurface
+                    else MaterialTheme.colorScheme.onErrorContainer,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.titleSmall,
@@ -176,7 +208,7 @@ fun Status(server: ServerUi) {
     ProgressBar(
         text = "CPU",
         total = 100F,
-        used = server.status.cpu.toFloat()*10
+        used = server.status.cpu.toFloat()
     )
     Spacer(modifier = Modifier.height(2.dp))
     ProgressBar(
@@ -446,15 +478,21 @@ fun NetworkIO(server: ServerUi) {
 @Composable
 fun ServerCardPreview() {
     MDPingsTheme {
-        ServerListItem(
-            serverUi = previewServerUi0,
-            onClick = {},
-            onAction = {},
-            modifier = Modifier,
-            monitors = null,
-            ipAPI = null,
-            onNavigateToDetail = {}
-        )
+        Column {
+            ServerListItem(
+                serverUi = previewServerUi0,
+                onAction = {},
+                modifier = Modifier,
+                onNavigateToDetail = {}
+            )
+            Spacer(Modifier.height(8.dp))
+            ServerListItem(
+                serverUi = previewServerUi1,
+                onAction = {},
+                modifier = Modifier,
+                onNavigateToDetail = {}
+            )
+        }
     }
 }
 
@@ -470,8 +508,8 @@ private fun previewHostUi(): HostUi {
         virtualization = "kvm",
         bootTime = 1725353936,
         countryCode = listOf<String>(
-            "hk", "nl", "us", "cn", "ru", "jp"
-        )[Random.nextInt(until = 6)]
+            "hk", "nl", "us", "cn", "jp"
+        )[Random.nextInt(until = 5)]
             .toCountryCodeToEmojiFlag(),
         version = "0.20.3"
     )
@@ -509,7 +547,8 @@ internal val previewServerUi0 = ServerUi(
     displayIndex = 0,
     hideForGuest = false,
     host = previewHostUi(),
-    status = previewStatusUi()
+    status = previewStatusUi(),
+    isOnline = true
 )
 
 internal val previewServerUi1 = ServerUi(
@@ -523,7 +562,8 @@ internal val previewServerUi1 = ServerUi(
     displayIndex = 0,
     hideForGuest = false,
     host = previewHostUi(),
-    status = previewStatusUi()
+    status = previewStatusUi(),
+    isOnline = false
 )
 
 internal val previewServerUi2 = ServerUi(
@@ -537,7 +577,8 @@ internal val previewServerUi2 = ServerUi(
     displayIndex = 0,
     hideForGuest = false,
     host = previewHostUi(),
-    status = previewStatusUi()
+    status = previewStatusUi(),
+    isOnline = true
 )
 
 internal val previewServerUi3 = ServerUi(
@@ -551,7 +592,8 @@ internal val previewServerUi3 = ServerUi(
     displayIndex = 0,
     hideForGuest = false,
     host = previewHostUi(),
-    status = previewStatusUi()
+    status = previewStatusUi(),
+    isOnline = false
 )
 
 internal val previewListServers = listOf<ServerUi>(

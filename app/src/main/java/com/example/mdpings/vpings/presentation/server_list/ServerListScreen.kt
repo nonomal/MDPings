@@ -98,13 +98,13 @@ fun ServerListScreen(
                 ServerListItem(
                     onNavigateToDetail = onNavigateToDetail,
                     serverUi = serverUi,
-                    ipAPI = state.ipAPIUi,
-                    monitors = state.monitors,
                     onAction = onAction,
-                    onClick = { },
                     modifier = Modifier
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                         .fillMaxWidth(),
+//                    onClick = { },
+//                    ipAPI = state.ipAPIUi,
+//                    monitors = state.monitors,
                 )
             }
         }

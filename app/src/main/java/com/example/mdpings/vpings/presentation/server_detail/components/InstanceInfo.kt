@@ -75,7 +75,7 @@ fun InstanceInfo(
                 )
                 InfoRow(
                     title = "CPU:",
-                    content = serverUi.host.cpu[0]
+                    content = serverUi.host.cpu?.get(0) ?: "N/A"
                 )
                 InfoRow(
                     title = "RAM:",

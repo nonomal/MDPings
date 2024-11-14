@@ -19,12 +19,13 @@ data class ServerUi(
     val hideForGuest: Boolean,
     val host: HostUi,
     val status: StatusUi,
+    val isOnline: Boolean
 )
 
 data class HostUi(
     val platform: String,
     val platformVersion: String,
-    val cpu: List<String>,
+    val cpu: List<String>?,
     val memTotal: Long,
     val diskTotal: Long,
     val swapTotal: Long,
@@ -56,6 +57,74 @@ data class StatusUi(
     val gpu: Int
 )
 
+fun Server.toServerUi(): ServerUi {
+    return ServerUi(
+        id = id,
+        name = name,
+        tag = tag,
+        lastActive = lastActive,
+        ipv4 = ipv4,
+        ipv6 = ipv6,
+        validIp = validIp,
+        displayIndex = displayIndex,
+        hideForGuest = hideForGuest,
+        host = host.toHostUi(),
+        status = status.toStatusUi(),
+        // 上次汇报时间>=120s -> Server Offline
+        isOnline = lastActive.toISOnline(),
+    )
+}
+
+private fun Host.toHostUi(): HostUi {
+    return HostUi(
+        platform = platform,
+        platformVersion = platformVersion,
+        cpu = cpu,
+        memTotal = memTotal,
+        diskTotal = diskTotal,
+        swapTotal = swapTotal,
+        arch = arch,
+        virtualization = virtualization,
+        bootTime = bootTime,
+        countryCode = countryCode.toCountryCodeToEmojiFlag(),
+        version = version
+    )
+}
+
+private fun Status.toStatusUi(): StatusUi {
+    return StatusUi(
+        cpu = cpu,
+        memUsed = memUsed,
+        swapUsed = swapUsed,
+        diskUsed = diskUsed,
+        netInTransfer = netInTransfer.toNetTRLongDisplayableString(),
+        netOutTransfer = netOutTransfer.toNetTRLongDisplayableString(),
+        netInSpeed = netInSpeed.toNetIOSpeedDisplayableString(),
+        netOutSpeed = netOutSpeed.toNetIOSpeedDisplayableString(),
+        uptime = uptime,
+        load1 = load1.toDisplayableNumber(),
+        load5 = load5.toDisplayableNumber(),
+        load15 = load15.toDisplayableNumber(),
+        tcpConnCount = tcpConnCount,
+        udpConnCount = udpConnCount,
+        processCount = processCount,
+        gpu = gpu
+    )
+}
+
+fun String.toCountryCodeToEmojiFlag(): String {
+    return this
+        .uppercase(Locale.US)
+        .map { char ->
+            Character.codePointAt("$char", 0) - 0x41 + 0x1F1E6
+        }
+        .map { codePoint ->
+            Character.toChars(codePoint)
+        }
+        .joinToString(separator = "") { charArray ->
+            String(charArray)
+        }
+}
 
 data class DoubleDisplayableNumber(
     val value: Double,
@@ -120,70 +189,9 @@ fun Long.toMemDiskLongDisplayableString(): String {
     return transfer
 }
 
-fun Server.toServerUi(): ServerUi {
-    return ServerUi(
-        id = id,
-        name = name,
-        tag = tag,
-        lastActive = lastActive,
-        ipv4 = ipv4,
-        ipv6 = ipv6,
-        validIp = validIp,
-        displayIndex = displayIndex,
-        hideForGuest = hideForGuest,
-        host = host.toHostUi(),
-        status = status.toStatusUi(),
-    )
-}
-
-private fun Host.toHostUi(): HostUi {
-    return HostUi(
-        platform = platform,
-        platformVersion = platformVersion,
-        cpu = cpu,
-        memTotal = memTotal,
-        diskTotal = diskTotal,
-        swapTotal = swapTotal,
-        arch = arch,
-        virtualization = virtualization,
-        bootTime = bootTime,
-        countryCode = countryCode.toCountryCodeToEmojiFlag(),
-        version = version
-    )
-}
-
-private fun Status.toStatusUi(): StatusUi {
-    return StatusUi(
-        cpu = cpu,
-        memUsed = memUsed,
-        swapUsed = swapUsed,
-        diskUsed = diskUsed,
-        netInTransfer = netInTransfer.toNetTRLongDisplayableString(),
-        netOutTransfer = netOutTransfer.toNetTRLongDisplayableString(),
-        netInSpeed = netInSpeed.toNetIOSpeedDisplayableString(),
-        netOutSpeed = netOutSpeed.toNetIOSpeedDisplayableString(),
-        uptime = uptime,
-        load1 = load1.toDisplayableNumber(),
-        load5 = load5.toDisplayableNumber(),
-        load15 = load15.toDisplayableNumber(),
-        tcpConnCount = tcpConnCount,
-        udpConnCount = udpConnCount,
-        processCount = processCount,
-        gpu = gpu
-    )
-}
-
-fun String.toCountryCodeToEmojiFlag(): String {
-    return this
-        .uppercase(Locale.US)
-        .map { char ->
-            Character.codePointAt("$char", 0) - 0x41 + 0x1F1E6
-        }
-        .map { codePoint ->
-            Character.toChars(codePoint)
-        }
-        .joinToString(separator = "") { charArray ->
-            String(charArray)
-        }
+fun Long.toISOnline(): Boolean {
+    val current = System.currentTimeMillis() / 1000
+    val timeDifference = kotlin.math.abs(current - this)
+    return timeDifference <= 120
 }
 
