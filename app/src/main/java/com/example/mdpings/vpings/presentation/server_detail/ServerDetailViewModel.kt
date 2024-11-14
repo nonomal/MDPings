@@ -32,6 +32,10 @@ enum class TimeSlice(val label: String, val milliseconds: Long) {
     }
 }
 
+// detail视图逻辑（原始数据的10线*1440点滑动不跟手，vico撑不住这个数据量？）
+// 24h视图 -> 无论是初始载入/reload都使用sampleMonitorData()做采样 -> 每线360点
+// 其他视图 -> 不做简化，直接根据epoch切片 -> 哪吒每分钟监控的情况下6h -> 每线360点
+
 class ServerDetailViewModel(
     private val serverDataSource: ServerDataSource
 ): ViewModel() {
@@ -104,8 +108,9 @@ class ServerDetailViewModel(
                     .getMonitors(apiURL, serverId)
                     .onSuccess { monitors ->
                         val monitorUi = monitors.map { it.toMonitorUi() }
+                        val sampleMonitorUi = sampleMonitorData(monitorUi)
                         _state.update { it.copy(
-                            monitors = monitorUi,
+                            monitors = sampleMonitorUi,
                             monitorsOrigin = monitorUi,
                             isChartLoading = false
                         ) }
@@ -181,7 +186,7 @@ class ServerDetailViewModel(
         val monitorsOrigin = monitors.map { it.toMonitorUi() }
 
         val processedMonitors = if (slice == TimeSlice.ALL) {
-            monitorsOrigin
+            sampleMonitorData(monitorsOrigin)
         } else {
             val cutoffTime = System.currentTimeMillis() - slice.milliseconds
 
@@ -199,6 +204,7 @@ class ServerDetailViewModel(
                     avgDelay = monitor.avgDelay.sliceByIndices(slicedIndices)
                 )
             }
+
         }
 
         _state.update {
@@ -212,7 +218,7 @@ class ServerDetailViewModel(
 
     private fun sampleMonitorData(
         monitors: List<MonitorUi>,
-        targetSize: Int = 360  // 默认采样到180个点（90组，每组保留最大最小值）
+        targetSize: Int = 179  // 默认采样到360-2个点（179组，每组保留最大最小值，180组不能整除1439（哪吒API数据点）导致损失最近179分钟的数据）
     ): List<MonitorUi> {
         return monitors.map { monitor ->
             val (sampledDelays, sampledIndices) = sampleDelayWithMinMax(
@@ -278,7 +284,7 @@ class ServerDetailViewModel(
             if (slice == TimeSlice.ALL) {
                 return@update currentState.copy(
                     monitorsTimeSlice = timeSlice,
-                    monitors = currentState.monitorsOrigin
+                    monitors = sampleMonitorData(currentState.monitorsOrigin)
                 )
             }
 
