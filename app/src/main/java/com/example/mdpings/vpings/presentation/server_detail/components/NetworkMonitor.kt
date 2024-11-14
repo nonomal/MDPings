@@ -258,7 +258,7 @@ private fun DateFilterChipGroup(
                 onClick = {
                     if (state.monitorsTimeSlice == text) {
                         onAction(
-                            ServerDetailAction.OnSliceMonitorsTime("")
+                            ServerDetailAction.OnSliceMonitorsTime("all")
                         )
                     } else {
                         onAction(

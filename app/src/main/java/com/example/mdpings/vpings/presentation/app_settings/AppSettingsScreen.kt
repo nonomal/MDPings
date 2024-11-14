@@ -90,7 +90,7 @@ fun AppSettingsScreen(
                     openAlertDialog = ""
                 },
                 dialogTitle = openAlertDialog,
-                dialogText = "更改应用的数据刷新间隔（毫秒）",
+                dialogText = "更改应用的数据刷新间隔（毫秒），不建议将其设置到3000ms以下",
                 icon = Icons.Rounded.Refresh
             )
         }
@@ -298,7 +298,7 @@ private fun AlertDialogExamplePreview() {
             onDismissRequest = {},
             onConfirmation = {},
             dialogTitle = "API 地址",
-            dialogText = "更改哪吒监控的 API 访问地址",
+            dialogText = "更改哪吒监控的 API 访问地址\n不建议将数据刷新间隔设置到3000ms以下",
             icon = Icons.Rounded.Explore,
         )
     }

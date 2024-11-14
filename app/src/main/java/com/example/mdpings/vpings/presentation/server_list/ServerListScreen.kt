@@ -22,11 +22,9 @@ import com.example.mdpings.ui.theme.MDPingsTheme
 import com.example.mdpings.vpings.presentation.app_settings.AppSettingsAction
 import com.example.mdpings.vpings.presentation.app_settings.AppSettingsState
 import com.example.mdpings.vpings.presentation.models.ServerUi
-import com.example.mdpings.vpings.presentation.server_detail.ServerDetailAction
 import com.example.mdpings.vpings.presentation.server_list.components.ServerListItem
 import com.example.mdpings.vpings.presentation.server_list.components.previewListServers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

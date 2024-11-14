@@ -37,6 +37,7 @@ import com.example.mdpings.vpings.presentation.app_settings.AppSettingsState
 import com.example.mdpings.vpings.presentation.models.ServerUi
 import com.example.mdpings.vpings.presentation.server_detail.components.InstanceInfo
 import com.example.mdpings.vpings.presentation.server_detail.components.NetworkMonitor
+import com.example.mdpings.vpings.presentation.server_detail.components.OfflineCard
 import com.example.mdpings.vpings.presentation.server_detail.components.mockIpAPIUi
 import com.example.mdpings.vpings.presentation.server_detail.components.mockMonitors
 import com.example.mdpings.vpings.presentation.server_list.components.LoadAndUptime
@@ -44,6 +45,7 @@ import com.example.mdpings.vpings.presentation.server_list.components.NetworkIO
 import com.example.mdpings.vpings.presentation.server_list.components.NetworkTransfer
 import com.example.mdpings.vpings.presentation.server_list.components.Status
 import com.example.mdpings.vpings.presentation.server_list.components.previewServerUi0
+import com.example.mdpings.vpings.presentation.server_list.components.previewServerUi1
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -108,6 +110,10 @@ fun ServerDetailScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
+            if (!state.serverUi.isOnline) {
+                OfflineCard()
+                Spacer(Modifier.height(8.dp))
+            }
             InstanceInfo(
                 serverUi = state.serverUi,
                 ipAPIUi = state.ipAPIUi,
@@ -179,7 +185,7 @@ fun ServerStatus(
 
 @PreviewLightDark
 @Composable
-fun ServerDetailScreenPreview() {
+fun ServerDetailScreenPreviewOnline() {
     MDPingsTheme {
         ServerDetailScreen(
             selectedServerUi = previewServerUi0,
@@ -187,6 +193,25 @@ fun ServerDetailScreenPreview() {
             state = ServerDetailState(
                 isLoading = false,
                 serverUi = previewServerUi0,
+                ipAPIUi = mockIpAPIUi,
+                monitors = mockMonitors
+            ),
+            onAction = {},
+            appSettingsState = AppSettingsState()
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+fun ServerDetailScreenPreviewOffline() {
+    MDPingsTheme {
+        ServerDetailScreen(
+            selectedServerUi = previewServerUi1,
+            modifier = Modifier,
+            state = ServerDetailState(
+                isLoading = false,
+                serverUi = previewServerUi1,
                 ipAPIUi = mockIpAPIUi,
                 monitors = mockMonitors
             ),
