@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -74,36 +75,51 @@ fun PktLostAndAvgLatencyCard(
                     .alpha(0.8f)
             ) {
                 Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.weight(1f),
+                    horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Commit,
                         contentDescription = null,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier
+                            .size(16.dp)
+                            .weight(1f)
                     )
                     Text(
-                        text = " N O D E",
+                        text = "NODE",
+                        textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium,
-                        fontSize = 12.sp
+                        fontSize = 12.sp,
+                        modifier = Modifier
+                            .weight(3f)
+                            .fillMaxWidth()
                     )
                 }
                 Text(
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.End,
                     text = "Delay24h",
                     style = MaterialTheme.typography.bodyMedium,
                     fontSize = 12.sp
                 )
                 Text(
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.End,
                     text = "Los24h",
                     style = MaterialTheme.typography.bodyMedium,
                     fontSize = 12.sp
                 )
                 Text(
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.End,
                     text = "Delay30",
                     style = MaterialTheme.typography.bodyMedium,
                     fontSize = 12.sp
                 )
                 Text(
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.End,
                     text = "Los30",
                     style = MaterialTheme.typography.bodyMedium,
                     fontSize = 12.sp
@@ -141,37 +157,54 @@ private fun PktLostAndAvgLatency(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        Row {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.weight(1f)
+        ) {
             Icon(
                 tint = chartColors[index],
                 imageVector = Icons.Rounded.Commit,
                 contentDescription = null,
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier
+                    .size(16.dp)
+                    .weight(1f)
             )
             Text(
                 text = monitor.monitorName,
                 style = MaterialTheme.typography.bodyMedium,
-                fontSize = 12.sp
+                fontSize = 12.sp,
+                modifier = Modifier
+                    .weight(3f)
+                    .fillMaxWidth()
             )
         }
         // avgDelay24h pktLoss24h avgDelay30mins pktLoss30mins
         Text(
-            monitor.avgDelay24h,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.End,
+            text = monitor.avgDelay24h,
             style = MaterialTheme.typography.bodyMedium,
             fontSize = 12.sp
         )
         Text(
-            monitor.pktLoss24h,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.End,
+            text = monitor.pktLoss24h,
             style = MaterialTheme.typography.bodyMedium,
             fontSize = 12.sp
         )
         Text(
-            monitor.avgDelay30mins,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.End,
+            text = monitor.avgDelay30mins,
             style = MaterialTheme.typography.bodyMedium,
             fontSize = 12.sp
         )
         Text(
-            monitor.pktLoss30mins,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.End,
+            text = monitor.pktLoss30mins,
             style = MaterialTheme.typography.bodyMedium,
             fontSize = 12.sp
         )

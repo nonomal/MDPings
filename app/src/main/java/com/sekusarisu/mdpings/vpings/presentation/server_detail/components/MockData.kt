@@ -54,11 +54,19 @@ public val mockMonitors: List<MonitorUi> = List(12) { index ->
         serverName = "WAP.AC",
         createdAt = mockEpoch.map { it.toLong() },
         avgDelay = mockDelayList().map { it.toDouble() },
-        pktLoss24h = "12.10%",
-        avgDelay24h = "111.4ms",
-        avgDelay30mins = "111.2ms",
-        pktLoss30mins = "6.78%",
+        pktLoss24h = mockPktLoss(),
+        avgDelay24h = mockDelay(),
+        avgDelay30mins = mockDelay(),
+        pktLoss30mins = mockPktLoss(),
     )
+}
+
+fun mockPktLoss(): String {
+    return "%.2f".format((Random.nextDouble() * 100)) + "%"
+}
+
+fun mockDelay(): String {
+    return "%.1f".format((Random.nextDouble() * 1000)) + "ms"
 }
 
 public val mockIpAPIUi = IpAPIUi(
