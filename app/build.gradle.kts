@@ -6,13 +6,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.mdpings"
+    namespace = "com.sekusarisu.mdpings"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.mdpings"
+        applicationId = "com.sekusarisu.mdpings"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
