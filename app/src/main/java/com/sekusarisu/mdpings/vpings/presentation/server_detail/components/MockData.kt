@@ -55,11 +55,9 @@ public val mockMonitors: List<MonitorUi> = List(12) { index ->
         createdAt = mockEpoch.map { it.toLong() },
         avgDelay = mockDelayList().map { it.toDouble() },
         pktLoss24h = "12.10%",
-        avgDelay24h = "111ms",
-        avgDelay6h = "111ms",
-        avgDelay3h = "111ms",
-        avgDelay1h = "111ms",
-        avgDelay30mins = "111ms",
+        avgDelay24h = "111.4ms",
+        avgDelay30mins = "111.2ms",
+        pktLoss30mins = "6.78%",
     )
 }
 

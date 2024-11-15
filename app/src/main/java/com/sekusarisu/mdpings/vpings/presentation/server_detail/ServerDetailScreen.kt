@@ -38,6 +38,7 @@ import com.sekusarisu.mdpings.vpings.presentation.models.ServerUi
 import com.sekusarisu.mdpings.vpings.presentation.server_detail.components.InstanceInfo
 import com.sekusarisu.mdpings.vpings.presentation.server_detail.components.NetworkMonitor
 import com.sekusarisu.mdpings.vpings.presentation.server_detail.components.OfflineCard
+import com.sekusarisu.mdpings.vpings.presentation.server_detail.components.PktLostAndAvgLatencyCard
 import com.sekusarisu.mdpings.vpings.presentation.server_detail.components.mockIpAPIUi
 import com.sekusarisu.mdpings.vpings.presentation.server_detail.components.mockMonitors
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.LoadAndUptime
@@ -125,6 +126,11 @@ fun ServerDetailScreen(
                 appSettingsState = appSettingsState,
                 state = state,
                 onAction = onAction,
+                modifier = modifier
+            )
+            Spacer(Modifier.height(8.dp))
+            PktLostAndAvgLatencyCard(
+                monitors = state.monitors,
                 modifier = modifier
             )
             Spacer(Modifier.height(8.dp))

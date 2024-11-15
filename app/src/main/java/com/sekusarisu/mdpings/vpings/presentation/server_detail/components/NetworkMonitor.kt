@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Commit
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.NetworkPing
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.Card
@@ -49,6 +50,8 @@ import com.sekusarisu.mdpings.vpings.presentation.server_detail.ServerDetailStat
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewServerUi0
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
+import com.sekusarisu.mdpings.vpings.domain.Monitor
+import com.sekusarisu.mdpings.vpings.presentation.models.MonitorUi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -236,7 +239,6 @@ fun NetworkMonitor(
                     }
                 }
             }
-
         }
     }
 }
