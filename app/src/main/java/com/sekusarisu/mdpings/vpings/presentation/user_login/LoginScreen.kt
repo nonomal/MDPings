@@ -71,6 +71,7 @@ fun LoginScreen(
             .verticalScroll(rememberScrollState())
     ) {
 
+        var name by rememberSaveable { mutableStateOf("") }
         var api by rememberSaveable { mutableStateOf("") }
         var token by rememberSaveable { mutableStateOf("") }
 
@@ -96,6 +97,42 @@ fun LoginScreen(
                 style = MaterialTheme.typography.bodyMedium,
             )
             Spacer(Modifier.height(16.dp))
+            Text(
+                modifier = Modifier
+                    .alpha(0.6f),
+                text = "INSTANCE NAME",
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.secondary,
+                fontSize = 12.sp
+            )
+            OutlinedTextField(
+                value = name,
+                maxLines = 1,
+                placeholder = {
+                    Text(
+                        text = "Name of your instance",
+                        modifier = Modifier.alpha(0.4f)
+                    )
+                },
+                shape = ShapeDefaults.ExtraLarge,
+                onValueChange = {
+                    scope.launch {
+                        name = it
+                        if (state.servers.isNotEmpty()) {
+                            onAction(
+                                LoginAction.OnCredentialsChange
+                            )
+                        }
+                    }
+                },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType
+                    = KeyboardType.Uri
+                ),
+                modifier = Modifier
+                    .fillMaxWidth(),
+            )
+
             Text(
                 modifier = Modifier
                     .alpha(0.6f),
@@ -211,7 +248,7 @@ fun LoginScreen(
                     onClick = {
                         scope.launch {
                             onAction(
-                                LoginAction.OnSaveClicked(api, token)
+                                LoginAction.OnSaveClicked(name, api, token)
                             )
                             delay(1000)
                             onNavigateToServer()

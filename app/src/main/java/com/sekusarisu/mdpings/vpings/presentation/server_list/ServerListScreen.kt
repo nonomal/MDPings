@@ -45,20 +45,26 @@ fun ServerListScreen(
         )
     }
     LaunchedEffect(appSettingsState) {
-        if (appSettingsState.apiURL != "https://your-api.example.com/") {
+        delay(500)
+        val apiURL = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiUrl
+        val apiTOKEN = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiToken
+        val interval = appSettingsState.appSettings.refreshInterval.toLong()
+
+        if (appSettingsState.appSettings.instances.isNotEmpty()) {
             while (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+                println(appSettingsState.appSettings.instances)
                 onAction(
                     ServerListAction.OnLoadServer(
-                        apiURL = appSettingsState.apiURL,
-                        apiTOKEN = appSettingsState.apiTOKEN
+                        apiURL = apiURL,
+                        apiTOKEN = apiTOKEN
                     )
                 )
-                delay(appSettingsState.refreshInterval.toLong())
+                delay(interval)
             }
         }
     }
 
-    if (appSettingsState.apiURL == "https://your-api.example.com/") {
+    if (appSettingsState.appSettings.instances.isEmpty()) {
         Column(
             modifier = Modifier
                 .fillMaxSize(),
@@ -70,7 +76,7 @@ fun ServerListScreen(
                 contentDescription = null
             )
             Spacer(Modifier.height(8.dp))
-            Text("No Credentials!")
+            Text("No Available Credentials!")
         }
     } else if (state.servers == emptyList<ServerUi>()) {
         Column(

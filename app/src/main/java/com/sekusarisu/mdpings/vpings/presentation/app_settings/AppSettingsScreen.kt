@@ -209,7 +209,9 @@ fun AlertDialogExample(
 ) {
 
     val scope = rememberCoroutineScope()
-    var value by rememberSaveable { mutableStateOf(value) }
+    var name by rememberSaveable { mutableStateOf(value) }
+    var apiUrl by rememberSaveable { mutableStateOf(value) }
+    var apiToken by rememberSaveable { mutableStateOf(value) }
 
     AlertDialog(
         icon = {
@@ -236,7 +238,41 @@ fun AlertDialogExample(
                     },
                     shape = ShapeDefaults.ExtraLarge,
                     onValueChange = {
-                        value = it
+                        name = it
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                )
+                Spacer(Modifier.height(4.dp))
+                OutlinedTextField(
+                    value = value,
+                    maxLines = 1,
+                    placeholder = {
+                        Text(
+                            text = value,
+                            modifier = Modifier.alpha(0.4f)
+                        )
+                    },
+                    shape = ShapeDefaults.ExtraLarge,
+                    onValueChange = {
+                        apiUrl = it
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                )
+                Spacer(Modifier.height(4.dp))
+                OutlinedTextField(
+                    value = value,
+                    maxLines = 1,
+                    placeholder = {
+                        Text(
+                            text = value,
+                            modifier = Modifier.alpha(0.4f)
+                        )
+                    },
+                    shape = ShapeDefaults.ExtraLarge,
+                    onValueChange = {
+                        apiToken = it
                     },
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -251,9 +287,8 @@ fun AlertDialogExample(
                 onClick = {
                     scope.launch {
                         onConfirmation(
-                            AppSettingsAction.OnSaveClicked(
-                                dialogTitle = dialogTitle,
-                                value = value
+                            AppSettingsAction.OnSaveInstanceClicked(
+                                name = name, apiUrl = apiUrl, apiToken = apiToken
                             )
                         )
                         onDismissRequest()

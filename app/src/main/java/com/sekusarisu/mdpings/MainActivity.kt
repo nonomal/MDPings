@@ -1,5 +1,6 @@
 package com.sekusarisu.mdpings
 
+import android.content.Context
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -33,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.datastore.dataStore
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -41,6 +43,8 @@ import androidx.navigation.compose.rememberNavController
 import com.sekusarisu.mdpings.core.presentation.util.ObserveAsEvents
 import com.sekusarisu.mdpings.core.presentation.util.toString
 import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
+import com.sekusarisu.mdpings.vpings.data.app_settings.AppSettingsSerializer
+import com.sekusarisu.mdpings.vpings.domain.AppSettings
 import com.sekusarisu.mdpings.vpings.presentation.AboutScreen
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsScreen
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsViewModel
@@ -89,6 +93,9 @@ class MainActivity : ComponentActivity() {
                 // Error Handle
                 val context = LocalContext.current
 
+                // AppSettings json
+//                val appSettings by context.dataStore.data.collectAsStateWithLifecycle(AppSettings())
+
                 ObserveAsEvents(events = loginViewModel.events) { event ->
                     when (event) {
                         is LoginEvent.Error -> {
@@ -102,8 +109,11 @@ class MainActivity : ComponentActivity() {
                 }
 
                 // AppSettings
+//                val apiURL = appSettingsViewModel.getApiURL()
+//                val apiTOKEN = appSettingsViewModel.getApiTOKEN()
                 val apiURL = appSettingsViewModel.getApiURL()
                 val apiTOKEN = appSettingsViewModel.getApiTOKEN()
+//                println(apiURL + apiTOKEN)
 
                 // Nav && currentRoute -> topAppBarTitle
                 val navController = rememberNavController()
@@ -203,7 +213,7 @@ class MainActivity : ComponentActivity() {
                                         navController.navigate(ServerDetailScreen)
                                     },
                                     onLoad = appSettingsViewModel::onAction,
-                                    appSettingsState = appSettingsState
+                                    appSettingsState = appSettingsState,
                                 )
                             }
                             composable<ServerDetailScreen> {

@@ -62,27 +62,33 @@ fun ServerDetailScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
 
     LaunchedEffect(Unit) {
+        val apiURL = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiUrl
+        val apiTOKEN = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiToken
+        val interval = appSettingsState.appSettings.refreshInterval
         onAction(
             ServerDetailAction.OnLoadInfoAndMonitors(
                 serverUi = selectedServerUi,
                 monitorsTimeSlice = state.monitorsTimeSlice,
-                apiURL = appSettingsState.apiURL,
-                apiTOKEN = appSettingsState.apiTOKEN,
-                interval = appSettingsState.refreshInterval
+                apiURL = apiURL,
+                apiTOKEN = apiTOKEN,
+                interval = interval
             )
         )
     }
     LaunchedEffect(Unit) {
+        val apiURL = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiUrl
+        val apiTOKEN = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiToken
+        val interval = appSettingsState.appSettings.refreshInterval
         while (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
             onAction(
                 ServerDetailAction.OnLoadSingleServer(
                     serverUi = selectedServerUi,
-                    apiURL = appSettingsState.apiURL,
-                    apiTOKEN = appSettingsState.apiTOKEN,
-                    interval = appSettingsState.refreshInterval
+                    apiURL = apiURL,
+                    apiTOKEN = apiTOKEN,
+                    interval = interval
                 )
             )
-            delay(appSettingsState.refreshInterval.toLong())
+            delay(interval.toLong())
         }
     }
     DisposableEffect(lifecycleOwner) {

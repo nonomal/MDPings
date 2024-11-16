@@ -74,6 +74,9 @@ dependencies {
         implementation(libs.androidx.datastore.preferences.core)
     }
 
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.jetbrains.kotlinx.collections.immutable)
+
     dependencies {
         // For Jetpack Compose.
         implementation("com.patrykandpatrick.vico:compose:2.0.0-beta.2")

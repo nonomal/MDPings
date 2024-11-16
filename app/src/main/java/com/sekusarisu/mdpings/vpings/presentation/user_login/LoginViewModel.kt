@@ -42,8 +42,9 @@ class LoginViewModel(
                 ) }
             }
             is LoginAction.OnSaveClicked -> {
-                saveApiURL(action.apiURL)
-                saveApiTOKEN(action.apiTOKEN)
+                saveInstance(action.name, action.apiURL, action.apiTOKEN)
+//                saveApiURL(action.apiURL)
+//                saveApiTOKEN(action.apiTOKEN)
             }
         }
     }
@@ -69,15 +70,21 @@ class LoginViewModel(
         }
     }
 
-    fun saveApiURL(value: String) {
+    fun saveInstance(name: String, apiUrl: String, apiToken: String) {
         viewModelScope.launch{
-            appSettingsDataSource.putString(USER_API_BACKEND, value)
+            appSettingsDataSource.putInstance(name, apiUrl, apiToken)
         }
     }
 
-    fun saveApiTOKEN(value: String) {
-        viewModelScope.launch{
-            appSettingsDataSource.putString(USER_API_TOKEN, value)
-        }
-    }
+//    fun saveApiURL(value: String) {
+//        viewModelScope.launch{
+//            appSettingsDataSource.putString(USER_API_BACKEND, value)
+//        }
+//    }
+//
+//    fun saveApiTOKEN(value: String) {
+//        viewModelScope.launch{
+//            appSettingsDataSource.putString(USER_API_TOKEN, value)
+//        }
+//    }
 }
