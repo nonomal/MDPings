@@ -46,6 +46,7 @@ import kotlinx.coroutines.launch
 fun AppSettingsScreen(
     state: AppSettingsState,
     onAction: (AppSettingsAction) -> Unit,
+    onNavigateToLogin: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // init load DataStore->AppSettingsState
@@ -58,32 +59,32 @@ fun AppSettingsScreen(
     var openAlertDialog by remember { mutableStateOf("") }
 
     when (openAlertDialog) {
-        "API 地址" -> {
-            val value = state.appSettings.instances[state.appSettings.activeInstance].apiUrl
-            AlertDialogExample(
-                value = value,
-                onConfirmation = onAction,
-                onDismissRequest = {
-                    openAlertDialog = ""
-                },
-                dialogTitle = openAlertDialog,
-                dialogText = "更改哪吒监控的 API 访问地址",
-                icon = Icons.Rounded.Explore
-            )
-        }
-        "TOKEN" -> {
-            val value = state.appSettings.instances[state.appSettings.activeInstance].apiToken
-            AlertDialogExample(
-                value = value,
-                onConfirmation = onAction,
-                onDismissRequest = {
-                    openAlertDialog = ""
-                },
-                dialogTitle = openAlertDialog,
-                dialogText = "更改哪吒监控的 TOKEN",
-                icon = Icons.Rounded.Key
-            )
-        }
+//        "API 地址" -> {
+//            val value = state.appSettings.instances[state.appSettings.activeInstance].apiUrl
+//            AlertDialogExample(
+//                value = value,
+//                onConfirmation = onAction,
+//                onDismissRequest = {
+//                    openAlertDialog = ""
+//                },
+//                dialogTitle = openAlertDialog,
+//                dialogText = "更改哪吒监控的 API 访问地址",
+//                icon = Icons.Rounded.Explore
+//            )
+//        }
+//        "TOKEN" -> {
+//            val value = state.appSettings.instances[state.appSettings.activeInstance].apiToken
+//            AlertDialogExample(
+//                value = value,
+//                onConfirmation = onAction,
+//                onDismissRequest = {
+//                    openAlertDialog = ""
+//                },
+//                dialogTitle = openAlertDialog,
+//                dialogText = "更改哪吒监控的 TOKEN",
+//                icon = Icons.Rounded.Key
+//            )
+//        }
         "更新间隔" -> {
             val value = state.appSettings.refreshInterval
             AlertDialogExample(
@@ -125,49 +126,71 @@ fun AppSettingsScreen(
             )
         }
 
+//        ListItem(
+//            modifier = Modifier.clickable(
+//                onClick = {
+//                    openAlertDialog = "API 地址"
+//                }
+//            ),
+//            headlineContent = {
+//                Text(
+//                    text = "API 地址",
+//                    color = MaterialTheme.colorScheme.secondary
+//                ) },
+//            supportingContent = {
+//                Text(text = "更改哪吒监控的 API 访问地址",
+//                    color = MaterialTheme.colorScheme.tertiary
+//                ) },
+//            leadingContent = {
+//                Icon(
+//                    imageVector = Icons.Rounded.Explore,
+//                    contentDescription = "Explore",
+//                    tint = MaterialTheme.colorScheme.secondary
+//                )
+//            },
+//        )
+//
+//        ListItem(
+//            modifier = Modifier.clickable(
+//                onClick = {
+//                    openAlertDialog = "TOKEN"
+//                }
+//            ),
+//            headlineContent = {
+//                Text(
+//                    text = "TOKEN",
+//                    color = MaterialTheme.colorScheme.secondary
+//                ) },
+//            supportingContent = {
+//                Text(text = "更改哪吒监控的 TOKEN",
+//                    color = MaterialTheme.colorScheme.tertiary
+//                ) },
+//            leadingContent = {
+//                Icon(
+//                    imageVector = Icons.Rounded.Key,
+//                    contentDescription = "Key",
+//                    tint = MaterialTheme.colorScheme.secondary
+//                )
+//            },
+//        )
+
         ListItem(
             modifier = Modifier.clickable(
-                onClick = {
-                    openAlertDialog = "API 地址"
-                }
+                onClick = onNavigateToLogin
             ),
             headlineContent = {
                 Text(
-                    text = "API 地址",
+                    text = "编辑/切换实例",
                     color = MaterialTheme.colorScheme.secondary
                 ) },
             supportingContent = {
-                Text(text = "更改哪吒监控的 API 访问地址",
+                Text(text = "新增、删除或切换哪吒监控实例",
                     color = MaterialTheme.colorScheme.tertiary
                 ) },
             leadingContent = {
                 Icon(
                     imageVector = Icons.Rounded.Explore,
                     contentDescription = "Explore",
-                    tint = MaterialTheme.colorScheme.secondary
-                )
-            },
-        )
-
-        ListItem(
-            modifier = Modifier.clickable(
-                onClick = {
-                    openAlertDialog = "TOKEN"
-                }
-            ),
-            headlineContent = {
-                Text(
-                    text = "TOKEN",
-                    color = MaterialTheme.colorScheme.secondary
-                ) },
-            supportingContent = {
-                Text(text = "更改哪吒监控的 TOKEN",
-                    color = MaterialTheme.colorScheme.tertiary
-                ) },
-            leadingContent = {
-                Icon(
-                    imageVector = Icons.Rounded.Key,
-                    contentDescription = "Key",
                     tint = MaterialTheme.colorScheme.secondary
                 )
             },
@@ -212,9 +235,7 @@ fun AlertDialogExample(
 ) {
 
     val scope = rememberCoroutineScope()
-    var name by rememberSaveable { mutableStateOf(value) }
-    var apiUrl by rememberSaveable { mutableStateOf(value) }
-    var apiToken by rememberSaveable { mutableStateOf(value) }
+    var value by rememberSaveable { mutableStateOf(value) }
 
     AlertDialog(
         icon = {
@@ -241,41 +262,7 @@ fun AlertDialogExample(
                     },
                     shape = ShapeDefaults.ExtraLarge,
                     onValueChange = {
-                        name = it
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                )
-                Spacer(Modifier.height(4.dp))
-                OutlinedTextField(
-                    value = value,
-                    maxLines = 1,
-                    placeholder = {
-                        Text(
-                            text = value,
-                            modifier = Modifier.alpha(0.4f)
-                        )
-                    },
-                    shape = ShapeDefaults.ExtraLarge,
-                    onValueChange = {
-                        apiUrl = it
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                )
-                Spacer(Modifier.height(4.dp))
-                OutlinedTextField(
-                    value = value,
-                    maxLines = 1,
-                    placeholder = {
-                        Text(
-                            text = value,
-                            modifier = Modifier.alpha(0.4f)
-                        )
-                    },
-                    shape = ShapeDefaults.ExtraLarge,
-                    onValueChange = {
-                        apiToken = it
+                        value = it
                     },
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -290,9 +277,7 @@ fun AlertDialogExample(
                 onClick = {
                     scope.launch {
                         onConfirmation(
-                            AppSettingsAction.OnSaveInstanceClicked(
-                                name = name, apiUrl = apiUrl, apiToken = apiToken
-                            )
+                            AppSettingsAction.OnSaveIntervalClicked(value.toInt())
                         )
                         onDismissRequest()
                     }
@@ -320,7 +305,8 @@ private fun AppSettingsScreenPreview() {
         AppSettingsScreen(
             state = AppSettingsState(),
             onAction = {},
-            modifier = Modifier
+            modifier = Modifier,
+            onNavigateToLogin = {}
         )
     }
 }

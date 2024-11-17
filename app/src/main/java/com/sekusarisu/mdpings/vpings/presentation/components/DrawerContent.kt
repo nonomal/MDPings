@@ -28,9 +28,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.sekusarisu.mdpings.AboutScreen
-import com.sekusarisu.mdpings.AppSettingsScreen
-import com.sekusarisu.mdpings.ServerListScreen
+import com.sekusarisu.mdpings.Screen
+//import com.sekusarisu.mdpings.AboutScreen
+//import com.sekusarisu.mdpings.AppSettingsScreen
+//import com.sekusarisu.mdpings.ServerListScreen
 import kotlinx.coroutines.launch
 
 @Preview(showBackground = true)
@@ -89,15 +90,15 @@ fun DrawerContent(
                         style = MaterialTheme.typography.bodyLarge
                     )
                 },
-                selected = currentRoute?.contains("ServerListScreen") == true,
+                selected = currentRoute == Screen.ServerList.route,
                 onClick = {
-                    if (currentRoute?.contains("ServerListScreen") == false) {
+                    if (currentRoute != Screen.ServerList.route) {
                         scope.launch {
                             drawerState.apply {
                                 if (isClosed) open() else close()
                             }
                             navController.navigate(
-                                route = ServerListScreen
+                                route = Screen.ServerList.route
                             ) {
                                 popUpTo(0)
                             }
@@ -125,14 +126,14 @@ fun DrawerContent(
                         style = MaterialTheme.typography.bodyLarge
                     )
                 },
-                selected = currentRoute?.contains("AppSettingsScreen") == true,
+                selected = currentRoute == Screen.AppSettings.route,
                 onClick = {
-                    if (currentRoute?.contains("AppSettingsScreen") == false) {
+                    if (currentRoute != Screen.AppSettings.route) {
                         scope.launch {
                             drawerState.apply {
                                 if (isClosed) open() else close()
                             }
-                            navController.navigate(route = AppSettingsScreen)
+                            navController.navigate(route = Screen.AppSettings.route)
                         }
                     } else {
                         scope.launch {
@@ -157,14 +158,14 @@ fun DrawerContent(
                         style = MaterialTheme.typography.bodyLarge
                     )
                 },
-                selected = currentRoute?.contains("AboutScreen") == true,
+                selected = currentRoute == Screen.About.route,
                 onClick = {
-                    if (currentRoute?.contains("AboutScreen") == false) {
+                    if (currentRoute != Screen.About.route) {
                         scope.launch {
                             drawerState.apply {
                                 if (isClosed) open() else close()
                             }
-                            navController.navigate(route = AboutScreen)
+                            navController.navigate(route = Screen.About.route)
                         }
                     } else {
                         scope.launch {

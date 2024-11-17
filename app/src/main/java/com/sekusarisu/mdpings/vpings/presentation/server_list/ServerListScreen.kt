@@ -29,7 +29,7 @@ import kotlinx.coroutines.delay
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ServerListScreen(
-    onNavigateToDetail: () -> Unit,
+    onNavigateToDetail: (Int) -> Unit,
     onLoad: (AppSettingsAction) -> Unit,
     onAction: (ServerListAction) -> Unit,
     appSettingsState: AppSettingsState,
@@ -99,7 +99,7 @@ fun ServerListScreen(
                 key = { it.id }
             ) { serverUi ->
                 ServerListCard(
-                    onNavigateToDetail = onNavigateToDetail,
+                    onNavigateToDetail = { onNavigateToDetail(serverUi.id) },
                     serverUi = serverUi,
                     onAction = onAction,
                     modifier = Modifier

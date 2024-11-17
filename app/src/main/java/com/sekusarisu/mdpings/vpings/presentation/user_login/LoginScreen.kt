@@ -105,10 +105,10 @@ fun LoginScreen(
     when (openAlertDialog) {
         "Add" -> {
             CredentialDialog(
+                index = selectedInstanceIndex,
                 onDismissRequest = {
                     openAlertDialog = ""
                 },
-                onRefreshAfterSaved = {},
                 dialogTitle = "Create",
                 dialogText = "请输入一个哪吒监控的API实例、取一个容易记住的名字，并点击Test测试服务器连接状况",
                 icon = Icons.Rounded.Add,
@@ -119,10 +119,10 @@ fun LoginScreen(
         }
         "Edit" -> {
             CredentialDialog(
+                index = selectedInstanceIndex,
                 onDismissRequest = {
                     openAlertDialog = ""
                 },
-                onRefreshAfterSaved = {},
                 dialogTitle = "Edit",
                 dialogText = "编辑当前实例配置",
                 icon = Icons.Rounded.Edit,
@@ -133,11 +133,13 @@ fun LoginScreen(
         }
         "Delete" -> {
             DeleteConfirmDialog(
-                index = deleteInstanceIndex,
+                appSettingsState = appSettingsState,
+                deleteInstanceIndex = deleteInstanceIndex,
                 onDismissRequest = {
                     openAlertDialog = ""
                 },
-                onAction = onAction
+                onAction = onAction,
+                onLoad = onLoad
             )
         }
     }
@@ -243,12 +245,16 @@ fun LoginScreen(
 
 @Composable
 fun DeleteConfirmDialog(
-    index: Int,
+    appSettingsState: AppSettingsState,
+    deleteInstanceIndex: Int,
     onDismissRequest: () -> Unit,
-    onAction: (LoginAction) -> Unit
+    onAction: (LoginAction) -> Unit,
+    onLoad: (AppSettingsAction) -> Unit
 ) {
 
     val scope = rememberCoroutineScope()
+    val activeInstance = appSettingsState.appSettings.activeInstance
+    val instancesCount = appSettingsState.appSettings.instances.count()
 
     AlertDialog(
         icon = {
@@ -270,8 +276,13 @@ fun DeleteConfirmDialog(
             TextButton(
                 onClick = {
                     scope.launch {
+                        if (instancesCount - 2 < activeInstance) {
+                            onLoad(
+                                AppSettingsAction.OnChangeActiveInstance(0)
+                            )
+                        }
                         onAction(
-                            LoginAction.OnDeleteClick(index)
+                            LoginAction.OnDeleteClick(deleteInstanceIndex)
                         )
                         onDismissRequest()
                     }
@@ -294,10 +305,10 @@ fun DeleteConfirmDialog(
 
 @Composable
 fun CredentialDialog(
+    index: Int,
     instance: Instance,
     onDismissRequest: () -> Unit,
     onAction: (LoginAction) -> Unit,
-    onRefreshAfterSaved: (AppSettingsAction) -> Unit,
     dialogTitle: String,
     dialogText: String,
     icon: ImageVector,
@@ -343,6 +354,9 @@ fun CredentialDialog(
                     shape = ShapeDefaults.ExtraLarge,
                     onValueChange = {
                         name = it
+                        onAction(
+                            LoginAction.OnCredentialsChange
+                        )
                     },
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -367,6 +381,9 @@ fun CredentialDialog(
                     shape = ShapeDefaults.ExtraLarge,
                     onValueChange = {
                         apiUrl = it
+                        onAction(
+                            LoginAction.OnCredentialsChange
+                        )
                     },
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -391,6 +408,9 @@ fun CredentialDialog(
                     shape = ShapeDefaults.ExtraLarge,
                     onValueChange = {
                         apiToken = it
+                        onAction(
+                            LoginAction.OnCredentialsChange
+                        )
                     },
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -420,15 +440,22 @@ fun CredentialDialog(
                             .fillMaxWidth(),
                         onClick = {
                             scope.launch {
+                                if (dialogTitle == "Create") {
+                                    onAction(
+                                        LoginAction.OnSaveClicked(name, apiUrl, apiToken)
+                                    )
+                                }
+                                if (dialogTitle == "Edit") {
+                                    onAction(
+                                        LoginAction.OnEditSaveClicked(index, name, apiUrl, apiToken)
+                                    )
+                                }
                                 onAction(
-                                    LoginAction.OnSaveClicked(name, apiUrl, apiToken)
+                                    LoginAction.OnCredentialsChange
                                 )
-//                                delay(1000)
-//                                onRefreshAfterSaved(
-//                                    AppSettingsAction.OnInitLoadAppSettings
-//                                )
                                 onDismissRequest()
                             }
+
                         },
                         state = state
                     )
@@ -548,8 +575,8 @@ private fun LoginScreenPreview2() {
 private fun LoginDialogPreview() {
     MDPingsTheme {
         CredentialDialog(
+            index = 0,
             onDismissRequest = {},
-            onRefreshAfterSaved = {},
             dialogTitle = "Login",
             dialogText = "请输入一个哪吒监控的API实例、取一个容易记住的名字，并点击Test测试服务器连接状况。",
             icon = Icons.AutoMirrored.Rounded.Login,

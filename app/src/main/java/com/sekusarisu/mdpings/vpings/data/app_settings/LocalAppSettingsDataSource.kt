@@ -15,6 +15,7 @@ import io.ktor.util.reflect.instanceOf
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.Serializable
 
@@ -102,6 +103,27 @@ class LocalAppSettingsDataSource(
             Log.e("InstanceManager", "Error putting instance", e)
         }
 
+    }
+
+    override suspend fun editInstance(index: Int, name: String, apiUrl: String, apiToken: String) {
+        try {
+            Log.d("InstanceManager", "Starting to put instance: $name")
+            context.dataStore.updateData { currentData ->
+                Log.d("InstanceManager", "Current data before update: $currentData")
+                val newInstances = currentData.instances.toMutableList()
+                val oldInstance = newInstances[index]
+                newInstances[index] = oldInstance.copy(
+                    name = name,
+                    apiUrl = apiUrl,
+                    apiToken = apiToken
+                )
+                val updatedData = currentData.copy(instances = newInstances.toPersistentList())
+                Log.d("InstanceManager", "Updated data: $updatedData")
+                updatedData
+            }
+        } catch (e: Exception) {
+            Log.e("InstanceManager", "Error putting instance", e)
+        }
     }
 
     override suspend fun removeInstance(index: Int) {

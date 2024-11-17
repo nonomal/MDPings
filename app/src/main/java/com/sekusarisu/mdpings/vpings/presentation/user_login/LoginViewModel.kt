@@ -47,6 +47,9 @@ class LoginViewModel(
             is LoginAction.OnSaveClicked -> {
                 saveInstance(action.name, action.apiURL, action.apiTOKEN)
             }
+            is LoginAction.OnEditSaveClicked -> {
+                editInstance(action.index, action.name, action.apiURL, action.apiTOKEN)
+            }
             is LoginAction.OnDeleteClick -> {
                 deleteInstance(action.index)
             }
@@ -93,6 +96,18 @@ class LoginViewModel(
                 isLoading = true
             ) }
             appSettingsDataSource.putInstance(name, apiUrl, apiToken)
+            _state.update { it.copy(
+                isLoading = false
+            ) }
+        }
+    }
+
+    fun editInstance(index: Int, name: String, apiUrl: String, apiToken: String) {
+        viewModelScope.launch{
+            _state.update { it.copy(
+                isLoading = true
+            ) }
+            appSettingsDataSource.editInstance(index, name, apiUrl, apiToken)
             _state.update { it.copy(
                 isLoading = false
             ) }
