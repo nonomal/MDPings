@@ -44,68 +44,29 @@ class AppSettingsViewModel(
                     }
                 }
             }
+            is AppSettingsAction.OnChangeActiveInstance -> {
+                setActiveInstanceIndex(action.index)
+            }
+            is AppSettingsAction.OnDeleteInstance -> {
+                deleteInstance(action.index)
+            }
             is AppSettingsAction.OnSaveInstanceClicked -> {
                 saveInstance(action.name, action.apiUrl, action.apiToken)
             }
             is AppSettingsAction.OnSaveIntervalClicked -> {
                 saveInterval(action.interval)
             }
-//            is AppSettingsAction.OnSaveClicked -> {
-//                when (action.dialogTitle) {
-//                    "API 地址" -> {
-//                        saveApiURL(action.value)
-//                    }
-//                    "TOKEN" -> {
-//                        saveApiTOKEN(action.value)
-//                    }
-//                    "更新间隔" -> {
-//                        saveInterval(action.value.toInt())
-//                    }
-//                }
-//            }
         }
     }
 
-//    fun saveApiURL(value: String) {
-//        viewModelScope.launch{
-//            appSettingsDataSource.putString(USER_API_BACKEND, value)
-//        }
-//    }
-//    fun getApiURL(): String? = runBlocking {
-//        appSettingsDataSource.getString(USER_API_BACKEND)
-//    }
-//
-//    fun saveApiTOKEN(value: String) {
-//        viewModelScope.launch{
-//            appSettingsDataSource.putString(USER_API_TOKEN, value)
-//        }
-//    }
-//    fun getApiTOKEN(): String? = runBlocking {
-//        appSettingsDataSource.getString(USER_API_TOKEN)
-//    }
-//
-//    fun saveInterval(value: Int) {
-//        viewModelScope.launch{
-//            appSettingsDataSource.putInt(SERVER_LIST_REFRESH_INTERVAL, value)
-//        }
-//    }
-//    fun getInterval(): Int? = runBlocking {
-//        appSettingsDataSource.getInt(SERVER_LIST_REFRESH_INTERVAL)
-//    }
-
-//    fun saveApiURL(value: String) {
-//        viewModelScope.launch{
-//            appSettingsDataSource.putString(USER_API_BACKEND, value)
-//        }
-//    }
-//    fun saveApiTOKEN(value: String) {
-//        viewModelScope.launch{
-//            appSettingsDataSource.putString(USER_API_TOKEN, value)
-//        }
-//    }
-
     fun getActiveInstanceIndex(): Int? = runBlocking {
         appSettingsDataSource.getActiveInstanceIndex()
+    }
+
+    fun setActiveInstanceIndex(index: Int) {
+        viewModelScope.launch{
+            appSettingsDataSource.setActiveInstanceIndex(index)
+        }
     }
 
     fun getInstances(): PersistentList<Instance>? = runBlocking {
@@ -115,6 +76,12 @@ class AppSettingsViewModel(
     fun saveInstance(name: String, apiUrl: String, apiToken: String) {
         viewModelScope.launch{
             appSettingsDataSource.putInstance(name, apiUrl, apiToken)
+        }
+    }
+
+    fun deleteInstance(index: Int) {
+        viewModelScope.launch{
+            appSettingsDataSource.removeInstance(index)
         }
     }
 

@@ -59,8 +59,9 @@ fun AppSettingsScreen(
 
     when (openAlertDialog) {
         "API 地址" -> {
+            val value = state.appSettings.instances[state.appSettings.activeInstance].apiUrl
             AlertDialogExample(
-                value = state.apiURL,
+                value = value,
                 onConfirmation = onAction,
                 onDismissRequest = {
                     openAlertDialog = ""
@@ -71,8 +72,9 @@ fun AppSettingsScreen(
             )
         }
         "TOKEN" -> {
+            val value = state.appSettings.instances[state.appSettings.activeInstance].apiToken
             AlertDialogExample(
-                value = state.apiTOKEN,
+                value = value,
                 onConfirmation = onAction,
                 onDismissRequest = {
                     openAlertDialog = ""
@@ -83,8 +85,9 @@ fun AppSettingsScreen(
             )
         }
         "更新间隔" -> {
+            val value = state.appSettings.refreshInterval
             AlertDialogExample(
-                value = state.refreshInterval.toString(),
+                value = value.toString(),
                 onConfirmation = onAction,
                 onDismissRequest = {
                     openAlertDialog = ""
@@ -315,10 +318,7 @@ fun AlertDialogExample(
 private fun AppSettingsScreenPreview() {
     MDPingsTheme {
         AppSettingsScreen(
-            state = AppSettingsState(
-                apiURL = "https://example.com/",
-                apiTOKEN = "AAABBBCCCDDDEEEFFF112233"
-            ),
+            state = AppSettingsState(),
             onAction = {},
             modifier = Modifier
         )

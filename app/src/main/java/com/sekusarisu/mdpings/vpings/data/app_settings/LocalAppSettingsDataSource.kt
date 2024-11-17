@@ -18,68 +18,6 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.Serializable
 
-//private const val PREFERENCES_NAME = "settings"
-//
-//private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = PREFERENCES_NAME)
-//
-//class LocalAppSettingsDataSource(
-//    private val context: Context
-//): AppSettingsDataSource {
-//
-//    override suspend fun putString(key: String, value: String) {
-//        val preferencesKey = stringPreferencesKey(key)
-//        context.dataStore.edit { preferences ->
-//            preferences[preferencesKey] = value
-//        }
-//    }
-//
-//    override suspend fun putInt(key: String, value: Int) {
-//        val preferencesKey = intPreferencesKey(key)
-//        context.dataStore.edit { preferences ->
-//            preferences[preferencesKey] = value
-//        }
-//    }
-//
-//    override suspend fun getString(key: String): String? {
-//        return try {
-//            val preferencesKey = stringPreferencesKey(key)
-//            val preferences = context.dataStore.data.first()
-//            preferences[preferencesKey]
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//            null
-//        }
-//    }
-//
-//    override suspend fun getInt(key: String): Int? {
-//        return try {
-//            val preferencesKey = intPreferencesKey(key)
-//            val preferences = context.dataStore.data.first()
-//            preferences[preferencesKey]
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//            null
-//        }
-//
-//    }
-//
-//}
-
-
-//@Serializable
-//data class AppSettings(
-//    val activeInstance: Int = 0,
-//    val instances: PersistentList<Instance> = persistentListOf(),
-//    val refreshInterval: Long = 5000,
-//)
-//
-//@Serializable
-//data class Instance(
-//    val name: String,
-//    val apiUrl: String,
-//    val apiToken: String
-//)
-
 private val Context.dataStore by dataStore("AppSettings.json", AppSettingsSerializer)
 
 class LocalAppSettingsDataSource(
@@ -113,6 +51,14 @@ class LocalAppSettingsDataSource(
         } catch (e: Exception) {
             e.printStackTrace()
             0
+        }
+    }
+
+    override suspend fun setActiveInstanceIndex(index: Int) {
+        context.dataStore.updateData {
+            it.copy(
+                activeInstance = index
+            )
         }
     }
 

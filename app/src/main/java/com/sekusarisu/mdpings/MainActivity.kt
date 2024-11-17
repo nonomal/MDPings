@@ -57,6 +57,7 @@ import com.sekusarisu.mdpings.vpings.presentation.components.MDAppTopBar
 import com.sekusarisu.mdpings.vpings.presentation.user_login.LoginEvent
 import com.sekusarisu.mdpings.vpings.presentation.user_login.LoginScreen
 import com.sekusarisu.mdpings.vpings.presentation.user_login.LoginViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
@@ -158,16 +159,15 @@ class MainActivity : ComponentActivity() {
                                     }
                                 },
                                 onUserClick = {
-                                    navController.navigate(
-                                        route = LoginScreen
-                                    )
+                                    if (currentRoute != "com.sekusarisu.mdpings.LoginScreen") {
+                                        navController.navigate(LoginScreen)
+                                    }
                                 }
                             )
                         }
                     ) { innerPadding ->
 
-                        LaunchedEffect(apiURL, apiTOKEN) {
-//                            delay(1000)
+                        LaunchedEffect(Unit) {
                             val isSettingsIsnull = apiURL == null || apiTOKEN == null
                             navController.navigate(if (isSettingsIsnull) LoginScreen else ServerListScreen) {
                                 popUpTo(0)
@@ -202,7 +202,8 @@ class MainActivity : ComponentActivity() {
                                         navController.navigate(
                                             route = ServerListScreen
                                         )
-                                    }
+                                    },
+                                    onLoad = appSettingsViewModel::onAction
                                 )
                             }
                             composable<ServerListScreen> {

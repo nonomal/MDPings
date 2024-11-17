@@ -14,7 +14,7 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
 @OptIn(ExperimentalSerializationApi::class)
-@Serializer(forClass = PersistentList::class)
+//@Serializer(forClass = PersistentList::class)
 class MyPersistentListSerializer(
     private val serializer: KSerializer<Instance>,
 ) : KSerializer<PersistentList<Instance>> {

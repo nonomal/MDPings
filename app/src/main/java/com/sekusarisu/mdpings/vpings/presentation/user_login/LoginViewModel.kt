@@ -30,6 +30,9 @@ class LoginViewModel(
     // 点击coinList coin操作
     fun onAction(action: LoginAction) {
         when(action) {
+            is LoginAction.OnInitLoadInstances -> {
+                getInstances()
+            }
             is LoginAction.OnTestClick -> {
                 testConnection(
                     apiUrl = action.apiURL,
@@ -43,8 +46,9 @@ class LoginViewModel(
             }
             is LoginAction.OnSaveClicked -> {
                 saveInstance(action.name, action.apiURL, action.apiTOKEN)
-//                saveApiURL(action.apiURL)
-//                saveApiTOKEN(action.apiTOKEN)
+            }
+            is LoginAction.OnDeleteClick -> {
+                deleteInstance(action.index)
             }
         }
     }
@@ -70,21 +74,40 @@ class LoginViewModel(
         }
     }
 
-    fun saveInstance(name: String, apiUrl: String, apiToken: String) {
+    fun getInstances() {
         viewModelScope.launch{
-            appSettingsDataSource.putInstance(name, apiUrl, apiToken)
+            _state.update { it.copy(
+                isLoading = true
+            ) }
+            appSettingsDataSource
+                .getInstances()
+            _state.update { it.copy(
+                isLoading = false
+            ) }
         }
     }
 
-//    fun saveApiURL(value: String) {
-//        viewModelScope.launch{
-//            appSettingsDataSource.putString(USER_API_BACKEND, value)
-//        }
-//    }
-//
-//    fun saveApiTOKEN(value: String) {
-//        viewModelScope.launch{
-//            appSettingsDataSource.putString(USER_API_TOKEN, value)
-//        }
-//    }
+    fun saveInstance(name: String, apiUrl: String, apiToken: String) {
+        viewModelScope.launch{
+            _state.update { it.copy(
+                isLoading = true
+            ) }
+            appSettingsDataSource.putInstance(name, apiUrl, apiToken)
+            _state.update { it.copy(
+                isLoading = false
+            ) }
+        }
+    }
+
+    fun deleteInstance(index: Int) {
+        viewModelScope.launch{
+            _state.update { it.copy(
+                isLoading = true
+            ) }
+            appSettingsDataSource.removeInstance(index)
+            _state.update { it.copy(
+                isLoading = false
+            ) }
+        }
+    }
 }

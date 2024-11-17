@@ -39,20 +39,19 @@ fun ServerListScreen(
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(appSettingsState) {
+    LaunchedEffect(appSettingsState.appSettings) {
         onLoad(
             AppSettingsAction.OnInitLoadAppSettings
         )
     }
-    LaunchedEffect(appSettingsState) {
+    LaunchedEffect(appSettingsState.appSettings) {
         delay(500)
-        val apiURL = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiUrl
-        val apiTOKEN = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiToken
-        val interval = appSettingsState.appSettings.refreshInterval.toLong()
-
         if (appSettingsState.appSettings.instances.isNotEmpty()) {
+            val apiURL = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiUrl
+            val apiTOKEN = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiToken
+            val interval = appSettingsState.appSettings.refreshInterval.toLong()
+
             while (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-                println(appSettingsState.appSettings.instances)
                 onAction(
                     ServerListAction.OnLoadServer(
                         apiURL = apiURL,

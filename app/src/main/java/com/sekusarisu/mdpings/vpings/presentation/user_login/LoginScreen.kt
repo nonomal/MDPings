@@ -1,15 +1,20 @@
 package com.sekusarisu.mdpings.vpings.presentation.user_login
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -17,270 +22,497 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Login
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.Explore
+import androidx.compose.material.icons.rounded.Login
 import androidx.compose.material.icons.rounded.NetworkCheck
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Save
+import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material.icons.rounded.StarBorder
+import androidx.compose.material.icons.rounded.Warning
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.LastBaseline
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
+import com.sekusarisu.mdpings.vpings.domain.AppSettings
+import com.sekusarisu.mdpings.vpings.domain.Instance
+import com.sekusarisu.mdpings.vpings.presentation.app_settings.AlertDialogExample
+import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsAction
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsState
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
+    onLoad: (AppSettingsAction) -> Unit,
     appSettingsState: AppSettingsState,
     state: LoginState,
     onAction: (LoginAction) -> Unit,
     modifier: Modifier = Modifier,
     onNavigateToServer: () -> Unit,
 ) {
-//    // context
-//    val context = LocalContext.current
-//    // a coroutine scope
+    LaunchedEffect(state) {
+        onLoad(
+            AppSettingsAction.OnInitLoadAppSettings
+        )
+    }
     val scope = rememberCoroutineScope()
-//    // we instantiate the saveEmail class
-//    val dataStore = StoreSettings(context)
+    var selectedInstanceIndex by remember { mutableIntStateOf(0) }
+    var openAlertDialog by remember { mutableStateOf("") }
+    var deleteInstanceIndex by remember { mutableIntStateOf(999) }
 
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.Start,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(18.dp)
-            .verticalScroll(rememberScrollState())
-    ) {
-
-        var name by rememberSaveable { mutableStateOf("") }
-        var api by rememberSaveable { mutableStateOf("") }
-        var token by rememberSaveable { mutableStateOf("") }
-
-        Column(
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.weight(2f)
-        ) {
-            Text(
-                modifier = Modifier
-                    .alpha(0.8f),
-                text = "Login",
-                textAlign = TextAlign.Start,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Spacer(Modifier.height(8.dp))
-            Text(
-                modifier = Modifier
-                    .alpha(0.7f),
-                text = "请输入哪吒监控的访问地址和在管理后台创建的TOKEN，并点击Test测试服务器连接状况。",
-                color = MaterialTheme.colorScheme.secondary,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            Spacer(Modifier.height(16.dp))
-            Text(
-                modifier = Modifier
-                    .alpha(0.6f),
-                text = "INSTANCE NAME",
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.secondary,
-                fontSize = 12.sp
-            )
-            OutlinedTextField(
-                value = name,
-                maxLines = 1,
-                placeholder = {
-                    Text(
-                        text = "Name of your instance",
-                        modifier = Modifier.alpha(0.4f)
-                    )
+    when (openAlertDialog) {
+        "Add" -> {
+            CredentialDialog(
+                onDismissRequest = {
+                    openAlertDialog = ""
                 },
-                shape = ShapeDefaults.ExtraLarge,
-                onValueChange = {
-                    scope.launch {
-                        name = it
-                        if (state.servers.isNotEmpty()) {
-                            onAction(
-                                LoginAction.OnCredentialsChange
-                            )
-                        }
-                    }
+                onRefreshAfterSaved = {},
+                dialogTitle = "Create",
+                dialogText = "请输入一个哪吒监控的API实例、取一个容易记住的名字，并点击Test测试服务器连接状况",
+                icon = Icons.Rounded.Add,
+                state = state,
+                onAction = onAction,
+                instance = Instance("", "", "")
+            )
+        }
+        "Edit" -> {
+            CredentialDialog(
+                onDismissRequest = {
+                    openAlertDialog = ""
                 },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType
-                    = KeyboardType.Uri
-                ),
-                modifier = Modifier
-                    .fillMaxWidth(),
+                onRefreshAfterSaved = {},
+                dialogTitle = "Edit",
+                dialogText = "编辑当前实例配置",
+                icon = Icons.Rounded.Edit,
+                state = state,
+                onAction = onAction,
+                instance = appSettingsState.appSettings.instances[selectedInstanceIndex],
             )
-
-            Text(
-                modifier = Modifier
-                    .alpha(0.6f),
-                text = "API BACKEND",
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.secondary,
-                fontSize = 12.sp
-            )
-            OutlinedTextField(
-                value = api,
-                maxLines = 1,
-                placeholder = {
-                    Text(
-                        text = "https://your-api.example.com/",
-                        modifier = Modifier.alpha(0.4f)
-                    )
+        }
+        "Delete" -> {
+            DeleteConfirmDialog(
+                index = deleteInstanceIndex,
+                onDismissRequest = {
+                    openAlertDialog = ""
                 },
-                shape = ShapeDefaults.ExtraLarge,
-                onValueChange = {
-                    scope.launch {
-                        api = it
-                        if (state.servers.isNotEmpty()) {
-                            onAction(
-                                LoginAction.OnCredentialsChange
-                            )
-                        }
-                    }
-                },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType
-                    = KeyboardType.Uri
-                ),
-                modifier = Modifier
-                    .fillMaxWidth(),
+                onAction = onAction
             )
+        }
+    }
 
-            Text(
-                modifier = Modifier
-                    .alpha(0.6f),
-                text = "TOKEN",
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.secondary,
-                fontSize = 12.sp
-            )
-            OutlinedTextField(
-                value = token,
-                maxLines = 1,
-                shape = ShapeDefaults.ExtraLarge,
-                onValueChange = {
-                    scope.launch {
-                        token = it
-                        if (state.servers.isNotEmpty()) {
-                            onAction(
-                                LoginAction.OnCredentialsChange
-                            )
-                        }
-                    }
-                },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType
-                    = KeyboardType.Text
-                ),
-                modifier = Modifier
-                    .fillMaxWidth(),
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    openAlertDialog = "Add"
+                }
             ) {
-                Button(
-                    onClick = {
-                        onAction(
-                            LoginAction.OnTestClick(api, token)
-                        )
-                    },
-                    modifier = Modifier
-                        .height(60.dp)
-                        .weight(1f)
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        if (!state.servers.isEmpty()) {
-                            Icon(
-                                imageVector = Icons.Rounded.Check,
-                                contentDescription = "Check"
-                            )
-                        } else if (state.isLoading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                                color = LocalContentColor.current
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Rounded.NetworkCheck,
-                                contentDescription = "Login"
-                            )
-                        }
-                        Spacer(Modifier.width(4.dp))
-                        Text(
-                            style = MaterialTheme.typography.titleMedium,
-                            text = "Test"
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.weight(0.2f))
-                Button(
-                    enabled = !state.servers.isEmpty(),
-                    onClick = {
-                        scope.launch {
-                            onAction(
-                                LoginAction.OnSaveClicked(name, api, token)
-                            )
-                            delay(1000)
-                            onNavigateToServer()
-                        }
-                    },
-                    modifier = Modifier
-                        .height(60.dp)
-                        .weight(1f)
-                ) {
-                    Row {
-                        Icon(
-                            imageVector = Icons.Rounded.Save,
-                            contentDescription = "Save"
-                        )
-                        Spacer(Modifier.width(4.dp))
-                        Text(
-                            style = MaterialTheme.typography.titleMedium,
-                            text = "Save"
-                        )
-                    }
-                }
+                Icon(
+                    imageVector = Icons.Rounded.Add,
+                    contentDescription = "Add"
+                )
             }
         }
+    ) { innerPadding ->
+        if (appSettingsState.appSettings.instances.isNotEmpty()) {
+            Column(
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                val activated = appSettingsState.appSettings.activeInstance
 
-        Spacer(Modifier.weight(1f))
+                appSettingsState.appSettings.instances.mapIndexed { index, instance ->
+                    ListItem(
+                        modifier = Modifier.clickable(
+                            onClick = {
+                                scope.launch{
+                                    onLoad(
+                                        AppSettingsAction.OnChangeActiveInstance(index)
+                                    )
+                                    onNavigateToServer()
+                                }
+                            }
+                        ),
+                        headlineContent = {
+                            Text(
+                                text = instance.name,
+                                color = MaterialTheme.colorScheme.secondary
+                            ) },
+                        supportingContent = {
+                            Text(text = instance.apiUrl,
+                                color = MaterialTheme.colorScheme.tertiary
+                            ) },
+                        leadingContent = {
+                            Icon(
+                                imageVector =
+                                if (activated == index) Icons.Rounded.Star
+                                else Icons.Rounded.StarBorder,
+                                contentDescription = "Refresh",
+                                tint = MaterialTheme.colorScheme.secondary
+                            )
+                        },
+                        trailingContent = {
+                            Row {
+                                IconButton(
+                                    onClick = {
+                                        selectedInstanceIndex = index
+                                        openAlertDialog = "Edit"
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Edit,
+                                        contentDescription = null
+                                    )
+                                }
+                                IconButton(
+                                    onClick = {
+                                        deleteInstanceIndex = index
+                                        openAlertDialog = "Delete"
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Delete,
+                                        contentDescription = null
+                                    )
+                                }
+                            }
+                        }
+                    )
+                }
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .padding(top = innerPadding.calculateTopPadding() - 4.dp)
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "请先添加一个哪吒监控的API实例~"
+                )
+            }
+        }
+    }
+}
 
+@Composable
+fun DeleteConfirmDialog(
+    index: Int,
+    onDismissRequest: () -> Unit,
+    onAction: (LoginAction) -> Unit
+) {
+
+    val scope = rememberCoroutineScope()
+
+    AlertDialog(
+        icon = {
+            Icon(
+                imageVector = Icons.Rounded.Warning,
+                contentDescription = null
+            )
+        },
+        title = {
+            Text("Confirm")
+        },
+        text = {
+            Text("确定要删除吗？这个操作不可恢复！")
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    scope.launch {
+                        onAction(
+                            LoginAction.OnDeleteClick(index)
+                        )
+                        onDismissRequest()
+                    }
+                }
+            ) {
+                Text("确认")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    onDismissRequest()
+                }
+            ) {
+                Text("取消")
+            }
+        }
+    )
+}
+
+@Composable
+fun CredentialDialog(
+    instance: Instance,
+    onDismissRequest: () -> Unit,
+    onAction: (LoginAction) -> Unit,
+    onRefreshAfterSaved: (AppSettingsAction) -> Unit,
+    dialogTitle: String,
+    dialogText: String,
+    icon: ImageVector,
+    state: LoginState
+) {
+
+    val scope = rememberCoroutineScope()
+    var name by rememberSaveable { mutableStateOf(instance.name) }
+    var apiUrl by rememberSaveable { mutableStateOf(instance.apiUrl) }
+    var apiToken by rememberSaveable { mutableStateOf(instance.apiToken) }
+
+    AlertDialog(
+        icon = {
+            Icon(icon, contentDescription = "Example Icon")
+        },
+        title = {
+            Text(text = dialogTitle)
+        },
+        text = {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(text = dialogText)
+                Spacer(Modifier.height(16.dp))
+                Text(
+                    modifier = Modifier
+                        .alpha(0.6f),
+                    text = "INSTANCE NAME",
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.secondary,
+                    fontSize = 12.sp
+                )
+                OutlinedTextField(
+                    value = name,
+                    singleLine = true,
+                    placeholder = {
+                        Text(
+                            text = "Nezha instance name",
+                            modifier = Modifier.alpha(0.4f)
+                        )
+                    },
+                    shape = ShapeDefaults.ExtraLarge,
+                    onValueChange = {
+                        name = it
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                )
+                Text(
+                    modifier = Modifier
+                        .alpha(0.6f),
+                    text = "API BACKEND",
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.secondary,
+                    fontSize = 12.sp
+                )
+                OutlinedTextField(
+                    value = apiUrl,
+                    singleLine = true,
+                    placeholder = {
+                        Text(
+                            text = "https://your.nezha.api.com/",
+                            modifier = Modifier.alpha(0.4f)
+                        )
+                    },
+                    shape = ShapeDefaults.ExtraLarge,
+                    onValueChange = {
+                        apiUrl = it
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                )
+                Text(
+                    modifier = Modifier
+                        .alpha(0.6f),
+                    text = "TOKEN",
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.secondary,
+                    fontSize = 12.sp
+                )
+                OutlinedTextField(
+                    value = apiToken,
+                    singleLine = true,
+                    placeholder = {
+                        Text(
+                            text = "YOUR_NEZHA_API_TOKEN",
+                            modifier = Modifier.alpha(0.4f)
+                        )
+                    },
+                    shape = ShapeDefaults.ExtraLarge,
+                    onValueChange = {
+                        apiToken = it
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                )
+                Spacer(Modifier.height(16.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    TestButton(
+                        modifier = Modifier
+                            .height(48.dp)
+                            .weight(1f)
+                            .fillMaxWidth(),
+                        onClick = {
+                            onAction(
+                                LoginAction.OnTestClick(apiUrl, apiToken)
+                            )
+                        },
+                        state = state
+                    )
+                    Spacer(modifier = Modifier.weight(0.2f))
+                    SaveButton(
+                        modifier = Modifier
+                            .height(48.dp)
+                            .weight(1f)
+                            .fillMaxWidth(),
+                        onClick = {
+                            scope.launch {
+                                onAction(
+                                    LoginAction.OnSaveClicked(name, apiUrl, apiToken)
+                                )
+//                                delay(1000)
+//                                onRefreshAfterSaved(
+//                                    AppSettingsAction.OnInitLoadAppSettings
+//                                )
+                                onDismissRequest()
+                            }
+                        },
+                        state = state
+                    )
+                }
+            }
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {},
+        dismissButton = {}
+    )
+}
+
+@Composable
+private fun TestButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    state: LoginState
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (!state.servers.isEmpty()) {
+                Icon(
+                    imageVector = Icons.Rounded.Check,
+                    contentDescription = "Check"
+                )
+            } else if (state.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = LocalContentColor.current
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Rounded.NetworkCheck,
+                    contentDescription = "Login"
+                )
+            }
+            Spacer(Modifier.width(4.dp))
+            Text(
+                style = MaterialTheme.typography.titleMedium,
+                text = "Test"
+            )
+        }
+    }
+}
+
+@Composable
+private fun SaveButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    state: LoginState,
+) {
+
+    val scope = rememberCoroutineScope()
+
+    Button(
+        enabled = !state.servers.isEmpty(),
+        onClick = onClick,
+        modifier = modifier
+    ) {
+        Row {
+            Icon(
+                imageVector = Icons.Rounded.Save,
+                contentDescription = "Save"
+            )
+            Spacer(Modifier.width(4.dp))
+            Text(
+                style = MaterialTheme.typography.titleMedium,
+                text = "Save"
+            )
+        }
     }
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class)
-@PreviewLightDark
+@Preview(showBackground = true)
 @Composable
 private fun LoginScreenPreview() {
     MDPingsTheme {
@@ -289,7 +521,78 @@ private fun LoginScreenPreview() {
             state = LoginState(),
             onAction = {},
             onNavigateToServer = {},
-            appSettingsState = AppSettingsState()
+            appSettingsState = mockAppSettingsState1,
+            onLoad = {}
         )
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+private fun LoginScreenPreview2() {
+    MDPingsTheme {
+        LoginScreen(
+            modifier = Modifier.background(MaterialTheme.colorScheme.background),
+            state = LoginState(),
+            onAction = {},
+            onNavigateToServer = {},
+            appSettingsState = mockAppSettingsState2,
+            onLoad = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun LoginDialogPreview() {
+    MDPingsTheme {
+        CredentialDialog(
+            onDismissRequest = {},
+            onRefreshAfterSaved = {},
+            dialogTitle = "Login",
+            dialogText = "请输入一个哪吒监控的API实例、取一个容易记住的名字，并点击Test测试服务器连接状况。",
+            icon = Icons.AutoMirrored.Rounded.Login,
+            state = LoginState(),
+            onAction = {},
+            instance = Instance(
+                name = "",
+                apiUrl = "",
+                apiToken = ""
+            ),
+        )
+    }
+}
+
+private val mockAppSettingsState1 = AppSettingsState(
+    appSettings = AppSettings(
+        activeInstance = 0,
+        instances = persistentListOf(
+            Instance(
+                name = "test1",
+                apiUrl = "https://test1.example.com/",
+                apiToken = "AABBCCDDEEFFGGAABBCCDDEEFFGGAABBCCDDEEFFGG"
+            ),
+            Instance(
+                name = "test2",
+                apiUrl = "https://test2.example.com/",
+                apiToken = "AABBCCDDEEFFGGAABBCCDDEEFFGGAABBCCDDEEFFGG"
+            )
+            ,
+            Instance(
+                name = "test3",
+                apiUrl = "https://test3.example.com/",
+                apiToken = "AABBCCDDEEFFGGAABBCCDDEEFFGGAABBCCDDEEFFGG"
+            )
+        ),
+        refreshInterval = 5000
+    )
+)
+
+private val mockAppSettingsState2 = AppSettingsState(
+    appSettings = AppSettings(
+        activeInstance = 0,
+        instances = persistentListOf(),
+        refreshInterval = 5000
+    )
+)
