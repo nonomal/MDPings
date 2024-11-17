@@ -9,21 +9,28 @@ import com.sekusarisu.mdpings.vpings.domain.Instance
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlin.String
 
-const val USER_API_BACKEND = "user_api_backend"
-const val USER_API_TOKEN = "user_api_token"
-const val SERVER_LIST_REFRESH_INTERVAL = "server_list_refresh_interval"
-
 class AppSettingsViewModel(
-    private val appSettingsDataSource: AppSettingsDataSource
+    private val appSettingsDataSource: AppSettingsDataSource,
 ): ViewModel() {
 
     private val _state = MutableStateFlow(AppSettingsState())
-    val state = _state
+    val state = _state.asStateFlow()
+
+    init {
+        // 在 ViewModel 中订阅数据变化
+        viewModelScope.launch {
+            appSettingsDataSource.appSettingsFlow.collect { appSettings ->
+                Log.d("AppSettingsViewModel", "Received new settings: $appSettings")
+                _state.update { it.copy(appSettings = appSettings) }
+            }
+        }
+    }
 
     // 点击coinList coin操作
     fun onAction(action: AppSettingsAction) {

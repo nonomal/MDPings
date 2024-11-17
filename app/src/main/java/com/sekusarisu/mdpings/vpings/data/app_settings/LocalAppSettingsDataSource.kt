@@ -2,28 +2,31 @@ package com.sekusarisu.mdpings.vpings.data.app_settings
 
 import android.content.Context
 import android.util.Log
-import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
+import com.sekusarisu.mdpings.vpings.domain.AppSettings
 import com.sekusarisu.mdpings.vpings.domain.AppSettingsDataSource
 import com.sekusarisu.mdpings.vpings.domain.Instance
-import io.ktor.util.reflect.instanceOf
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.serialization.Serializable
 
 private val Context.dataStore by dataStore("AppSettings.json", AppSettingsSerializer)
 
 class LocalAppSettingsDataSource(
     private val context: Context
 ): AppSettingsDataSource {
+
+    override val appSettingsFlow: Flow<AppSettings> = context.dataStore.data
+        .catch { exception ->
+            Log.e("AppSettingsDataSource", "Error reading app settings", exception)
+            emit(AppSettings())
+        }
+        .distinctUntilChanged()
 
     override suspend fun getInstances(): PersistentList<Instance> {
         return try {
@@ -75,7 +78,7 @@ class LocalAppSettingsDataSource(
     override suspend fun setInterval(interval: Int) {
         context.dataStore.updateData {
             it.copy(
-                refreshInterval = 5000
+                refreshInterval = interval
             )
         }
     }

@@ -1,8 +1,12 @@
 package com.sekusarisu.mdpings.vpings.domain
 
 import kotlinx.collections.immutable.PersistentList
+import kotlinx.coroutines.flow.Flow
 
 interface AppSettingsDataSource {
+
+    val appSettingsFlow: Flow<AppSettings>
+
     suspend fun getInstances(): PersistentList<Instance>?
     suspend fun getActiveInstance(): Instance?
     suspend fun getActiveInstanceIndex(): Int?

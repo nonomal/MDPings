@@ -6,8 +6,6 @@ import com.sekusarisu.mdpings.core.domain.util.onError
 import com.sekusarisu.mdpings.core.domain.util.onSuccess
 import com.sekusarisu.mdpings.vpings.domain.AppSettingsDataSource
 import com.sekusarisu.mdpings.vpings.domain.ServerDataSource
-import com.sekusarisu.mdpings.vpings.presentation.app_settings.USER_API_BACKEND
-import com.sekusarisu.mdpings.vpings.presentation.app_settings.USER_API_TOKEN
 import com.sekusarisu.mdpings.vpings.presentation.models.toServerUi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow

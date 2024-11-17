@@ -50,6 +50,7 @@ import com.sekusarisu.mdpings.vpings.presentation.server_detail.ServerDetailStat
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewServerUi0
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
+import com.sekusarisu.mdpings.vpings.domain.AppSettings
 import com.sekusarisu.mdpings.vpings.domain.Monitor
 import com.sekusarisu.mdpings.vpings.presentation.models.MonitorUi
 import kotlinx.coroutines.Dispatchers
@@ -306,7 +307,7 @@ private fun NetworkMonitorPreview() {
                     monitors = mockMonitors
                 ),
                 onAction = {},
-                appSettingsState = AppSettingsState()
+                appSettingsState = AppSettingsState(AppSettings())
             )
         }
     }

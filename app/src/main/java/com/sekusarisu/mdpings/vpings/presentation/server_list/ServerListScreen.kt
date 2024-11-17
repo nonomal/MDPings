@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
+import com.sekusarisu.mdpings.vpings.domain.AppSettings
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsAction
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsState
 import com.sekusarisu.mdpings.vpings.presentation.models.ServerUi
@@ -36,14 +37,8 @@ fun ServerListScreen(
     state: ServerListState,
     modifier: Modifier = Modifier
 ) {
-
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(appSettingsState.appSettings) {
-        onLoad(
-            AppSettingsAction.OnInitLoadAppSettings
-        )
-    }
     LaunchedEffect(appSettingsState.appSettings) {
         delay(500)
         if (appSettingsState.appSettings.instances.isNotEmpty()) {
@@ -124,7 +119,7 @@ fun ServerListScreenPreview() {
                 servers = previewListServers,
             ),
             onLoad = {},
-            appSettingsState = AppSettingsState()
+            appSettingsState = AppSettingsState(AppSettings())
         )
     }
 }

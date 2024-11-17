@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
+import com.sekusarisu.mdpings.vpings.domain.AppSettings
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsState
 import com.sekusarisu.mdpings.vpings.presentation.models.ServerUi
 import com.sekusarisu.mdpings.vpings.presentation.server_detail.components.InstanceInfo
@@ -217,7 +218,7 @@ fun ServerDetailScreenPreviewOnline() {
                 monitors = mockMonitors
             ),
             onAction = {},
-            appSettingsState = AppSettingsState()
+            appSettingsState = AppSettingsState(AppSettings())
         )
     }
 }
@@ -236,7 +237,7 @@ fun ServerDetailScreenPreviewOffline() {
                 monitors = mockMonitors
             ),
             onAction = {},
-            appSettingsState = AppSettingsState()
+            appSettingsState = AppSettingsState(AppSettings())
         )
     }
 }

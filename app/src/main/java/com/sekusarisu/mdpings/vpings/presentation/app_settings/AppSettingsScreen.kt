@@ -13,7 +13,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Explore
-import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.AlertDialog
@@ -25,7 +24,6 @@ import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
+import com.sekusarisu.mdpings.vpings.domain.AppSettings
 import kotlinx.coroutines.launch
 
 @Composable
@@ -49,42 +48,16 @@ fun AppSettingsScreen(
     onNavigateToLogin: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // init load DataStore->AppSettingsState
-    LaunchedEffect(state) {
-        onAction(
-            AppSettingsAction.OnInitLoadAppSettings
-        )
-    }
+// init load DataStore->AppSettingsState
+//    LaunchedEffect(state) {
+//        onAction(
+//            AppSettingsAction.OnInitLoadAppSettings
+//        )
+//    }
 
     var openAlertDialog by remember { mutableStateOf("") }
 
     when (openAlertDialog) {
-//        "API 地址" -> {
-//            val value = state.appSettings.instances[state.appSettings.activeInstance].apiUrl
-//            AlertDialogExample(
-//                value = value,
-//                onConfirmation = onAction,
-//                onDismissRequest = {
-//                    openAlertDialog = ""
-//                },
-//                dialogTitle = openAlertDialog,
-//                dialogText = "更改哪吒监控的 API 访问地址",
-//                icon = Icons.Rounded.Explore
-//            )
-//        }
-//        "TOKEN" -> {
-//            val value = state.appSettings.instances[state.appSettings.activeInstance].apiToken
-//            AlertDialogExample(
-//                value = value,
-//                onConfirmation = onAction,
-//                onDismissRequest = {
-//                    openAlertDialog = ""
-//                },
-//                dialogTitle = openAlertDialog,
-//                dialogText = "更改哪吒监控的 TOKEN",
-//                icon = Icons.Rounded.Key
-//            )
-//        }
         "更新间隔" -> {
             val value = state.appSettings.refreshInterval
             AlertDialogExample(
@@ -125,54 +98,6 @@ fun AppSettingsScreen(
                 color = MaterialTheme.colorScheme.primary
             )
         }
-
-//        ListItem(
-//            modifier = Modifier.clickable(
-//                onClick = {
-//                    openAlertDialog = "API 地址"
-//                }
-//            ),
-//            headlineContent = {
-//                Text(
-//                    text = "API 地址",
-//                    color = MaterialTheme.colorScheme.secondary
-//                ) },
-//            supportingContent = {
-//                Text(text = "更改哪吒监控的 API 访问地址",
-//                    color = MaterialTheme.colorScheme.tertiary
-//                ) },
-//            leadingContent = {
-//                Icon(
-//                    imageVector = Icons.Rounded.Explore,
-//                    contentDescription = "Explore",
-//                    tint = MaterialTheme.colorScheme.secondary
-//                )
-//            },
-//        )
-//
-//        ListItem(
-//            modifier = Modifier.clickable(
-//                onClick = {
-//                    openAlertDialog = "TOKEN"
-//                }
-//            ),
-//            headlineContent = {
-//                Text(
-//                    text = "TOKEN",
-//                    color = MaterialTheme.colorScheme.secondary
-//                ) },
-//            supportingContent = {
-//                Text(text = "更改哪吒监控的 TOKEN",
-//                    color = MaterialTheme.colorScheme.tertiary
-//                ) },
-//            leadingContent = {
-//                Icon(
-//                    imageVector = Icons.Rounded.Key,
-//                    contentDescription = "Key",
-//                    tint = MaterialTheme.colorScheme.secondary
-//                )
-//            },
-//        )
 
         ListItem(
             modifier = Modifier.clickable(
@@ -303,7 +228,7 @@ fun AlertDialogExample(
 private fun AppSettingsScreenPreview() {
     MDPingsTheme {
         AppSettingsScreen(
-            state = AppSettingsState(),
+            state = AppSettingsState(AppSettings()),
             onAction = {},
             modifier = Modifier,
             onNavigateToLogin = {}
