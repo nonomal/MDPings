@@ -1,5 +1,6 @@
 package com.sekusarisu.mdpings.vpings.presentation.user_login
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -77,6 +81,7 @@ fun LoginScreen(
     var selectedInstanceIndex by remember { mutableIntStateOf(0) }
     var openAlertDialog by remember { mutableStateOf("") }
     var deleteInstanceIndex by remember { mutableIntStateOf(999) }
+    val activated = appSettingsState.appSettings.activeInstance
 
     when (openAlertDialog) {
         "Add" -> {
@@ -135,18 +140,24 @@ fun LoginScreen(
         }
     ) { innerPadding ->
         if (appSettingsState.appSettings.instances.isNotEmpty()) {
-            Column(
+            LazyColumn(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
+//                    .verticalScroll(rememberScrollState())
             ) {
-                val activated = appSettingsState.appSettings.activeInstance
-
-                appSettingsState.appSettings.instances.mapIndexed { index, instance ->
+//                item(
+//                    key = "Test",
+//                    content = { Text("Test") }
+//                )
+                itemsIndexed(
+                    items = appSettingsState.appSettings.instances,
+                ) { index, instance ->
                     ListItem(
-                        modifier = Modifier.clickable(
+                        modifier = Modifier
+                            .animateItem()
+                            .clickable(
                             onClick = {
                                 scope.launch{
                                     onLoad(

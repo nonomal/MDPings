@@ -1,5 +1,12 @@
 package com.sekusarisu.mdpings.vpings.presentation.server_detail
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -100,7 +108,9 @@ fun ServerDetailScreen(
         }
     }
 
-    if (state.serverUi == null || state.ipAPIUi == null) {
+    AnimatedVisibility(
+        visible = (state.serverUi == null || state.ipAPIUi == null)
+    ) {
         Column(
             modifier = modifier
                 .fillMaxSize(),
@@ -111,7 +121,21 @@ fun ServerDetailScreen(
             Spacer(Modifier.height(8.dp))
             Text("Loading...")
         }
-    } else {
+    }
+
+    AnimatedVisibility(
+        visible = (state.serverUi != null && state.ipAPIUi != null),
+        enter = slideInVertically(
+            spring(
+                stiffness = Spring.StiffnessLow,
+                visibilityThreshold = IntOffset.VisibilityThreshold
+            )
+        ) + expandVertically(
+            expandFrom = Alignment.Top
+        ) + fadeIn(
+            initialAlpha = 0.3f
+        )
+    ) {
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -119,13 +143,13 @@ fun ServerDetailScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
-            if (!state.serverUi.isOnline) {
+            if (!state.serverUi!!.isOnline) {
                 OfflineCard()
                 Spacer(Modifier.height(8.dp))
             }
             InstanceInfo(
                 serverUi = state.serverUi,
-                ipAPIUi = state.ipAPIUi,
+                ipAPIUi = state.ipAPIUi!!,
                 modifier = modifier
             )
             Spacer(Modifier.height(8.dp))
@@ -138,7 +162,8 @@ fun ServerDetailScreen(
             Spacer(Modifier.height(8.dp))
             PktLostAndAvgLatencyCard(
                 monitors = state.monitors,
-                modifier = modifier
+                modifier = modifier,
+                state = state
             )
             Spacer(Modifier.height(8.dp))
             ServerStatus(

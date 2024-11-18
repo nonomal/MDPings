@@ -31,5 +31,5 @@ enum class ServerSortField {
 @Serializable
 enum class ServerOrder {
     ASC,
-    DESC,
+    DESC
 }

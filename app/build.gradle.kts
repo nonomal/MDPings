@@ -36,6 +36,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.15"
+    }
     kotlinOptions {
         jvmTarget = "11"
     }
@@ -76,6 +79,8 @@ dependencies {
 
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.jetbrains.kotlinx.collections.immutable)
+
+    implementation("androidx.compose.foundation:foundation:1.7.5")
 
     dependencies {
         // For Jetpack Compose.

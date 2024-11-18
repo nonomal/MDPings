@@ -1,5 +1,14 @@
 package com.sekusarisu.mdpings.vpings.presentation.server_list
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,7 +24,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.dynamicanimation.animation.SpringForce
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
@@ -62,7 +73,9 @@ fun ServerListScreen(
         }
     }
 
-    if (appSettingsState.appSettings.instances.isEmpty()) {
+    AnimatedVisibility(
+        visible = appSettingsState.appSettings.instances.isEmpty()
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize(),
@@ -76,7 +89,13 @@ fun ServerListScreen(
             Spacer(Modifier.height(8.dp))
             Text("No Available Credentials!")
         }
-    } else if (state.servers == emptyList<ServerUi>()) {
+    }
+
+    AnimatedVisibility(
+        visible = state.servers == emptyList<ServerUi>() && state.isLoading,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize(),
@@ -87,7 +106,22 @@ fun ServerListScreen(
             Spacer(Modifier.height(8.dp))
             Text("Loading Servers...")
         }
-    } else {
+    }
+
+    AnimatedVisibility(
+        visible = state.servers != emptyList<ServerUi>(),
+        enter = slideInVertically(
+            spring(
+                stiffness = Spring.StiffnessLow,
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                visibilityThreshold = IntOffset.VisibilityThreshold
+            )
+        ) + expandVertically(
+            expandFrom = Alignment.Top
+        ) + fadeIn(
+            initialAlpha = 0.3f
+        )
+    ) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -102,6 +136,13 @@ fun ServerListScreen(
                     serverUi = serverUi,
                     onAction = onAction,
                     modifier = Modifier
+                        .animateItem(
+                            placementSpec = spring(
+                                stiffness = Spring.StiffnessLow,
+                                dampingRatio = Spring.DampingRatioLowBouncy,
+                                visibilityThreshold = IntOffset.VisibilityThreshold
+                            ),
+                        )
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                         .fillMaxWidth()
                 )
