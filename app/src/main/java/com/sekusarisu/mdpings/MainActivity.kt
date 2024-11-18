@@ -157,7 +157,9 @@ class MainActivity : ComponentActivity() {
                                     if (currentRoute != Screen.Login.route) {
                                         navController.navigate(Screen.Login.route)
                                     }
-                                }
+                                },
+                                onAction = appSettingsViewModel::onAction,
+                                appSettingsState = appSettingsState
                             )
                         }
                     ) { innerPadding ->

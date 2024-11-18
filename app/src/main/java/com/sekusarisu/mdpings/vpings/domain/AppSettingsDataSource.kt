@@ -16,4 +16,7 @@ interface AppSettingsDataSource {
     suspend fun removeInstance(index: Int)
     suspend fun getInterval(): Int?
     suspend fun setInterval(interval: Int)
+    suspend fun getServerSortField(): ServerSortField?
+    suspend fun setServerSortField(serverSortField: ServerSortField)
+    suspend fun setServerOrder(serverOrder: ServerOrder)
 }

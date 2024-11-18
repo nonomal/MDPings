@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.sekusarisu.mdpings.vpings.domain.AppSettings
 import com.sekusarisu.mdpings.vpings.domain.AppSettingsDataSource
 import com.sekusarisu.mdpings.vpings.domain.Instance
+import com.sekusarisu.mdpings.vpings.domain.ServerOrder
+import com.sekusarisu.mdpings.vpings.domain.ServerSortField
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -63,6 +65,12 @@ class AppSettingsViewModel(
             is AppSettingsAction.OnSaveIntervalClicked -> {
                 saveInterval(action.interval)
             }
+            is AppSettingsAction.OnSaveServerSortField -> {
+                saveServerSortField(action.serverSortField)
+            }
+            is AppSettingsAction.OnSaveServerOrder -> {
+                saveServerOrder(action.serverOrder)
+            }
         }
     }
 
@@ -108,6 +116,18 @@ class AppSettingsViewModel(
 
     fun getInterval(): Int? = runBlocking {
         appSettingsDataSource.getInterval()
+    }
+
+    fun saveServerSortField(serverSortField: ServerSortField) {
+        viewModelScope.launch {
+            appSettingsDataSource.setServerSortField(serverSortField)
+        }
+    }
+
+    fun saveServerOrder(serverOrder: ServerOrder) {
+        viewModelScope.launch {
+            appSettingsDataSource.setServerOrder(serverOrder)
+        }
     }
 
 }

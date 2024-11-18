@@ -44,13 +44,17 @@ fun ServerListScreen(
         if (appSettingsState.appSettings.instances.isNotEmpty()) {
             val apiURL = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiUrl
             val apiTOKEN = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiToken
+            val serverSortField = appSettingsState.appSettings.serverSortField
+            val serverOrder = appSettingsState.appSettings.serverOrder
             val interval = appSettingsState.appSettings.refreshInterval.toLong()
 
             while (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
                 onAction(
                     ServerListAction.OnLoadServer(
                         apiURL = apiURL,
-                        apiTOKEN = apiTOKEN
+                        apiTOKEN = apiTOKEN,
+                        sortField = serverSortField,
+                        order = serverOrder
                     )
                 )
                 delay(interval)

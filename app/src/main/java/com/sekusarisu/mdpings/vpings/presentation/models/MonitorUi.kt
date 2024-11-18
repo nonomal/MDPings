@@ -39,9 +39,6 @@ fun Monitor.toMonitorUi(): MonitorUi {
             avgDelay = emptyList(),
             pktLoss24h = pktLoss24h,
             avgDelay24h = "N/A",
-//            avgDelay6h = "N/A",
-//            avgDelay3h = "N/A",
-//            avgDelay1h = "N/A",
             avgDelay30mins = "N/A",
             pktLoss30mins = "N/A"
         )
@@ -82,9 +79,6 @@ fun Monitor.toMonitorUi(): MonitorUi {
         pktLoss30mins = calculatePktLoss30mins(TimeConstants.MINS_30),
         avgDelay24h = calculateAverageDelay(TimeConstants.HOURS_24),
         avgDelay30mins = calculateAverageDelay(TimeConstants.MINS_30),
-//        avgDelay6h = calculateAverageDelay(TimeConstants.HOURS_6),
-//        avgDelay3h = calculateAverageDelay(TimeConstants.HOURS_3),
-//        avgDelay1h = calculateAverageDelay(TimeConstants.HOURS_1),
     )
 }
 

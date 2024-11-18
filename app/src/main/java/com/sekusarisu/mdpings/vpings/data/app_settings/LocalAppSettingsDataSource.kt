@@ -6,6 +6,8 @@ import androidx.datastore.dataStore
 import com.sekusarisu.mdpings.vpings.domain.AppSettings
 import com.sekusarisu.mdpings.vpings.domain.AppSettingsDataSource
 import com.sekusarisu.mdpings.vpings.domain.Instance
+import com.sekusarisu.mdpings.vpings.domain.ServerOrder
+import com.sekusarisu.mdpings.vpings.domain.ServerSortField
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentListOf
@@ -79,6 +81,35 @@ class LocalAppSettingsDataSource(
         context.dataStore.updateData {
             it.copy(
                 refreshInterval = interval
+            )
+        }
+    }
+
+    override suspend fun getServerSortField(): ServerSortField? {
+        return try {
+            context.dataStore.data.first().serverSortField
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ServerSortField.ID
+        }
+    }
+
+    override suspend fun setServerSortField(serverSortField: ServerSortField) {
+        Log.d("InstanceManager", "Starting to put instance: $serverSortField")
+        context.dataStore.updateData { currentData ->
+            Log.d("InstanceManager", "Current data before update: $currentData")
+            val updatedData = currentData.copy(
+                serverSortField = serverSortField
+            )
+            Log.d("InstanceManager", "Updated data: $updatedData")
+            updatedData
+        }
+    }
+
+    override suspend fun setServerOrder(serverOrder: ServerOrder) {
+        context.dataStore.updateData {
+            it.copy(
+                serverOrder = serverOrder
             )
         }
     }

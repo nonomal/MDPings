@@ -11,6 +11,8 @@ data class AppSettings(
     @Serializable(with = MyPersistentListSerializer::class)
     val instances: PersistentList<Instance> = persistentListOf(),
     val refreshInterval: Int = 5000,
+    val serverSortField: ServerSortField = ServerSortField.ID,
+    val serverOrder: ServerOrder = ServerOrder.ASC
 )
 
 @Serializable
@@ -19,3 +21,15 @@ data class Instance(
     val apiUrl: String,
     val apiToken: String
 )
+
+@Serializable
+enum class ServerSortField {
+    ID,
+    ONLINE
+}
+
+@Serializable
+enum class ServerOrder {
+    ASC,
+    DESC,
+}

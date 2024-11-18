@@ -3,8 +3,6 @@ package com.sekusarisu.mdpings.vpings.data.app_settings
 import android.util.Log
 import androidx.datastore.core.Serializer
 import com.sekusarisu.mdpings.vpings.domain.AppSettings
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import java.io.InputStream
