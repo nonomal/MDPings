@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.sequences.filter
 
 // 使用枚举类来替代字符串常量
 enum class TimeSlice(val label: String, val milliseconds: Long) {
@@ -190,21 +191,20 @@ class ServerDetailViewModel(
         } else {
             val cutoffTime = System.currentTimeMillis() - slice.milliseconds
 
-            monitorsOrigin.map { monitor ->
-                // 使用序列操作来优化数据处理
-                val slicedData = monitor.createdAt.asSequence()
+            monitorsOrigin.mapNotNull { monitor ->
+                monitor.createdAt.asSequence()
                     .withIndex()
                     .filter { it.value > cutoffTime }
                     .toList()
-
-                val slicedIndices = slicedData.map { it.index }
-
-                monitor.copy(
-                    createdAt = slicedData.map { it.value },
-                    avgDelay = monitor.avgDelay.sliceByIndices(slicedIndices)
-                )
+                    .takeIf { it.isNotEmpty() }
+                    ?.let { slicedData ->
+                        val slicedIndices = slicedData.map { it.index }
+                        monitor.copy(
+                            createdAt = slicedData.map { it.value },
+                            avgDelay = monitor.avgDelay.sliceByIndices(slicedIndices)
+                        )
+                    }
             }
-
         }
 
         _state.update {
@@ -290,19 +290,35 @@ class ServerDetailViewModel(
 
             val cutoffTime = System.currentTimeMillis() - slice.milliseconds
 
-            val newMonitors = currentState.monitorsOrigin.map { monitor ->
-                // 使用序列操作来优化大数据集的处理
-                val slicedData = monitor.createdAt.asSequence()
+//            val newMonitors = currentState.monitorsOrigin.map { monitor ->
+//                // 使用序列操作来优化大数据集的处理
+//                val slicedData = monitor.createdAt.asSequence()
+//                    .withIndex()
+//                    .filter { it.value > cutoffTime }
+//                    .toList()
+//
+//                val slicedIndices = slicedData.map { it.index }
+//
+//                monitor.copy(
+//                    createdAt = slicedData.map { it.value },
+//                    avgDelay = monitor.avgDelay.sliceByIndices(slicedIndices)
+//                )
+//                // 筛掉.filter { it.value > cutoffTime }后的空集
+//            }.filter { monitor -> monitor.createdAt.isNotEmpty() && monitor.avgDelay.isNotEmpty() }
+
+            val newMonitors = currentState.monitorsOrigin.mapNotNull { monitor ->
+                monitor.createdAt.asSequence()
                     .withIndex()
                     .filter { it.value > cutoffTime }
                     .toList()
-
-                val slicedIndices = slicedData.map { it.index }
-
-                monitor.copy(
-                    createdAt = slicedData.map { it.value },
-                    avgDelay = monitor.avgDelay.sliceByIndices(slicedIndices)
-                )
+                    .takeIf { it.isNotEmpty() }
+                    ?.let { slicedData ->
+                        val slicedIndices = slicedData.map { it.index }
+                        monitor.copy(
+                            createdAt = slicedData.map { it.value },
+                            avgDelay = monitor.avgDelay.sliceByIndices(slicedIndices)
+                        )
+                    }
             }
 
             currentState.copy(
