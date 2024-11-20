@@ -19,6 +19,7 @@ import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.StarBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,10 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-@Preview(
-    showBackground = true,
-    device = "id:pixel_9"
-)
+@Preview(showBackground = true)
 @Composable
 fun AboutScreen(
     modifier: Modifier = Modifier
@@ -51,7 +49,7 @@ fun AboutScreen(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 18.dp, vertical = 8.dp)
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             Icon(
                 imageVector = Icons.Rounded.Info,
@@ -75,7 +73,7 @@ fun AboutScreen(
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 18.dp, vertical = 8.dp)
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             Icon(
                 imageVector = Icons.Rounded.MonitorHeart,
@@ -107,6 +105,9 @@ fun AboutScreen(
                     tint = MaterialTheme.colorScheme.secondary
                 )
             },
+            colors = ListItemDefaults.colors(
+                containerColor = MaterialTheme.colorScheme.background
+            )
         )
         ListItem(
             modifier = Modifier
@@ -183,7 +184,7 @@ fun AboutScreen(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .padding(horizontal = 18.dp, vertical = 8.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
                 .alpha(0.9f)
         ) {
             Icon(

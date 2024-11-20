@@ -48,12 +48,6 @@ fun AppSettingsScreen(
     onNavigateToLogin: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-// init load DataStore->AppSettingsState
-//    LaunchedEffect(state) {
-//        onAction(
-//            AppSettingsAction.OnInitLoadAppSettings
-//        )
-//    }
 
     var openAlertDialog by remember { mutableStateOf("") }
 
@@ -83,7 +77,7 @@ fun AppSettingsScreen(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(18.dp)
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             Icon(
                 imageVector = Icons.Rounded.Settings,
