@@ -11,4 +11,5 @@ sealed interface AppSettingsAction {
     data class OnSaveIntervalClicked(val interval: Int): AppSettingsAction
     data class OnSaveServerSortField(val serverSortField: ServerSortField): AppSettingsAction
     data class OnSaveServerOrder(val serverOrder: ServerOrder): AppSettingsAction
+    data class OnSaveServerListCardExpanded(val expanded: Boolean): AppSettingsAction
 }

@@ -26,17 +26,32 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.dynamicanimation.animation.SpringForce
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
 import com.sekusarisu.mdpings.vpings.domain.AppSettings
+import com.sekusarisu.mdpings.vpings.domain.ServerOrder
+import com.sekusarisu.mdpings.vpings.domain.ServerSortField
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsAction
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsState
 import com.sekusarisu.mdpings.vpings.presentation.models.ServerUi
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.ServerListCard
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewListServers
 import kotlinx.coroutines.delay
+
+private fun List<ServerUi>.sortByField(serverSortField: ServerSortField, serverOrder: ServerOrder): List<ServerUi> {
+    return if (serverOrder.ordinal == 0) {
+        when (serverSortField) {
+            ServerSortField.ID -> sortedBy { it.id }
+            ServerSortField.ONLINE -> sortedBy { it.isOnline }
+        }
+    } else {
+        when (serverSortField) {
+            ServerSortField.ID -> sortedByDescending { it.id }
+            ServerSortField.ONLINE -> sortedByDescending { it.isOnline }
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,22 +65,18 @@ fun ServerListScreen(
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(appSettingsState.appSettings) {
+    LaunchedEffect(appSettingsState.appSettings.activeInstance) {
         delay(500)
         if (appSettingsState.appSettings.instances.isNotEmpty()) {
             val apiURL = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiUrl
             val apiTOKEN = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiToken
-            val serverSortField = appSettingsState.appSettings.serverSortField
-            val serverOrder = appSettingsState.appSettings.serverOrder
             val interval = appSettingsState.appSettings.refreshInterval.toLong()
 
             while (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
                 onAction(
                     ServerListAction.OnLoadServer(
                         apiURL = apiURL,
-                        apiTOKEN = apiTOKEN,
-                        sortField = serverSortField,
-                        order = serverOrder
+                        apiTOKEN = apiTOKEN
                     )
                 )
                 delay(interval)
@@ -128,10 +139,14 @@ fun ServerListScreen(
                 .background(MaterialTheme.colorScheme.background)
         ) {
             items(
-                items = state.servers,
+                items = state.servers.sortByField(
+                    appSettingsState.appSettings.serverSortField,
+                    appSettingsState.appSettings.serverOrder
+                ),
                 key = { it.id }
             ) { serverUi ->
                 ServerListCard(
+                    isExpanded = appSettingsState.appSettings.expandedServerListCard,
                     onNavigateToDetail = { onNavigateToDetail(serverUi.id) },
                     serverUi = serverUi,
                     onAction = onAction,

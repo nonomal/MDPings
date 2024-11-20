@@ -42,9 +42,7 @@ class ServerListViewModel(
             is ServerListAction.OnLoadServer -> {
                 loadServers(
                     apiUrl = action.apiURL,
-                    token = action.apiTOKEN,
-                    sort = action.sortField,
-                    order = action.order,
+                    token = action.apiTOKEN
                 )
             }
             is ServerListAction.OnInitCleanSelectedServer -> {
@@ -53,7 +51,7 @@ class ServerListViewModel(
         }
     }
 
-    private fun loadServers(apiUrl: String, token: String, sort: ServerSortField, order: ServerOrder) {
+    private fun loadServers(apiUrl: String, token: String) {
         viewModelScope.launch{
             _state.update { it.copy(
                 isLoading = true
@@ -66,26 +64,11 @@ class ServerListViewModel(
                         isLoading = false,
                         servers = servers
                             .map { it.toServerUi() }
-                            .sortByField(sort, order)
                     ) }
                 }
                 .onError { error ->
                     _state.update { it.copy(isLoading = false) }
                 }
-        }
-    }
-
-    fun List<ServerUi>.sortByField(serverSortField: ServerSortField, serverOrder: ServerOrder): List<ServerUi> {
-        return if (serverOrder.ordinal == 0) {
-            when (serverSortField) {
-                ServerSortField.ID -> sortedBy { it.id }
-                ServerSortField.ONLINE -> sortedBy { it.isOnline }
-            }
-        } else {
-            when (serverSortField) {
-                ServerSortField.ID -> sortedByDescending { it.id }
-                ServerSortField.ONLINE -> sortedByDescending { it.isOnline }
-            }
         }
     }
 

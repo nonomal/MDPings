@@ -6,6 +6,7 @@ import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -109,7 +110,9 @@ fun ServerDetailScreen(
     }
 
     AnimatedVisibility(
-        visible = (state.serverUi == null || state.ipAPIUi == null)
+        visible = (state.serverUi == null || state.ipAPIUi == null),
+        enter = fadeIn(),
+        exit = fadeOut()
     ) {
         Column(
             modifier = modifier

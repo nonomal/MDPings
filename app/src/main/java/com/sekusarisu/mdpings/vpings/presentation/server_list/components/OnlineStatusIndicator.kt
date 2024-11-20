@@ -41,20 +41,20 @@ fun OnlineStatusIndicator(
 
     val infiniteTransition = rememberInfiniteTransition(label = "infinitePointSize")
     val animatedPointSizeScale by infiniteTransition.animateFloat(
-        initialValue = 0.8f,
+        initialValue = 0.4f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
-            animation = tween(1000, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
+            animation = tween(1500, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
         ),
         label = "pointSize"
     )
     val animatedAlpha by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
+        initialValue = 1f,
+        targetValue = 0f,
         animationSpec = infiniteRepeatable(
-            animation = tween(1000, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
+            animation = tween(1500, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
         ),
         label = "pointSize"
     )
@@ -80,7 +80,7 @@ fun OnlineStatusIndicator(
                 )
                 Canvas(
                     modifier = Modifier
-                        .size(16.dp)
+                        .size(24.dp)
                         .scale(animatedPointSizeScale)
                         .alpha(animatedAlpha),
                     onDraw = {
@@ -117,7 +117,7 @@ fun OnlineStatusIndicator(
                 )
                 Canvas(
                     modifier = Modifier
-                        .size(16.dp)
+                        .size(24.dp)
                         .scale(animatedPointSizeScale)
                         .alpha(animatedAlpha),
                     onDraw = {

@@ -12,7 +12,8 @@ data class AppSettings(
     val instances: PersistentList<Instance> = persistentListOf(),
     val refreshInterval: Int = 5000,
     val serverSortField: ServerSortField = ServerSortField.ID,
-    val serverOrder: ServerOrder = ServerOrder.ASC
+    val serverOrder: ServerOrder = ServerOrder.ASC,
+    val expandedServerListCard: Boolean = true
 )
 
 @Serializable

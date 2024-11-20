@@ -55,14 +55,16 @@ class RemoteServerDataSource(
         }
     }
 
-    override suspend fun getMonitors(apiUrl: String, serverId: Int): Result<List<Monitor>, NetworkError> {
+    override suspend fun getMonitors(apiUrl: String, token: String, serverId: Int): Result<List<Monitor>, NetworkError> {
         return safeCall<MonitorsResponsesDto> {
             httpClient.get(
                 urlString = constructUrl(
                     baseURL = apiUrl,
                     url = "/api/v1/monitor/$serverId"
                 )
-            )
+            ) {
+                header("Authorization", token)
+            }
         }.map { response ->
             response.result
                 ?.sortedBy { it.monitorId }

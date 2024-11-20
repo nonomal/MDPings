@@ -1,9 +1,11 @@
 package com.sekusarisu.mdpings.vpings.presentation.components
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +19,10 @@ import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
+import androidx.compose.material.icons.rounded.Expand
 import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material.icons.rounded.UnfoldLess
+import androidx.compose.material.icons.rounded.UnfoldMore
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -54,21 +59,23 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MDAppTopBar(
-    appSettingsState: AppSettingsState,
     title: String,
+    appSettingsState: AppSettingsState,
     navigationIcon: ImageVector = Icons.Rounded.Menu,
     isLoading: Boolean = false,
-    modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior,
     onNavigationIconClick: () -> Unit = {},
     onUserClick: () -> Unit,
-    onAction: (AppSettingsAction) -> Unit
+    onAction: (AppSettingsAction) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    var isDropDownExpanded by remember { mutableStateOf(false) }
-    val serverSortFieldString = listOf("ServerID", "Online")
     val scope = rememberCoroutineScope()
+    var isDropDownExpanded by remember { mutableStateOf(false) }
+    // ServerSortField -> serverSortFieldString
+    val serverSortFieldString = listOf("ServerID", "Online")
     val selectedServerSortField = appSettingsState.appSettings.serverSortField.ordinal
     val serverOrder = appSettingsState.appSettings.serverOrder.ordinal
+    val isExpanded = appSettingsState.appSettings.expandedServerListCard
 
     TopAppBar(
         modifier = modifier
@@ -100,7 +107,12 @@ fun MDAppTopBar(
                     )
                 }
                 Spacer(Modifier.width(8.dp))
-                if (isLoading) {
+                AnimatedVisibility (
+                    visible = isLoading,
+                    label = "AnimatedCircularProgressIndicator",
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(18.dp),
                         color = LocalContentColor.current
@@ -119,6 +131,30 @@ fun MDAppTopBar(
             }
         },
         actions = {
+            IconButton(
+                onClick = {
+                    onAction(
+                        AppSettingsAction.OnSaveServerListCardExpanded(
+                            expanded = !isExpanded
+                        )
+                    )
+                }
+            ) {
+                AnimatedContent(
+                    targetState = isExpanded,
+                    label = "isExpandedIcon",
+                    transitionSpec = {
+                        (fadeIn(animationSpec = tween(500, delayMillis = 90))
+                        + scaleIn(initialScale = 0.92f, animationSpec = tween(500, delayMillis = 90)))
+                        .togetherWith(fadeOut(animationSpec = tween(500)))
+                    }
+                ) { it ->
+                    Icon(
+                        imageVector = if (it) Icons.Rounded.UnfoldLess else Icons.Rounded.UnfoldMore,
+                        contentDescription = "isExpanded"
+                    )
+                }
+            }
             IconButton(
                 onClick = {
                     isDropDownExpanded = true

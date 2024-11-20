@@ -71,6 +71,9 @@ class AppSettingsViewModel(
             is AppSettingsAction.OnSaveServerOrder -> {
                 saveServerOrder(action.serverOrder)
             }
+            is AppSettingsAction.OnSaveServerListCardExpanded -> {
+                saveServerListCardExpanded(action.expanded)
+            }
         }
     }
 
@@ -127,6 +130,12 @@ class AppSettingsViewModel(
     fun saveServerOrder(serverOrder: ServerOrder) {
         viewModelScope.launch {
             appSettingsDataSource.setServerOrder(serverOrder)
+        }
+    }
+
+    fun saveServerListCardExpanded(expanded: Boolean) {
+        viewModelScope.launch {
+            appSettingsDataSource.setExpandedServerListCard(expanded)
         }
     }
 

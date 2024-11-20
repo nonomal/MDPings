@@ -19,4 +19,5 @@ interface AppSettingsDataSource {
     suspend fun getServerSortField(): ServerSortField?
     suspend fun setServerSortField(serverSortField: ServerSortField)
     suspend fun setServerOrder(serverOrder: ServerOrder)
+    suspend fun setExpandedServerListCard(isExpanded: Boolean)
 }

@@ -52,10 +52,10 @@ class ServerDetailViewModel(
     fun onAction(action: ServerDetailAction) {
         when(action) {
             is ServerDetailAction.OnLoadInfoAndMonitors -> {
-                loadSelectServerInfoAndMonitors(action.serverUi, action.monitorsTimeSlice, action.apiURL)
+                loadSelectServerInfoAndMonitors(action.serverUi, action.monitorsTimeSlice, action.apiURL, action.apiTOKEN)
             }
             is ServerDetailAction.OnMonitorsRefresh -> {
-                reloadMonitors(action.serverId, action.monitorsTimeSlice, apiURL = action.apiURL)
+                reloadMonitors(action.serverId, action.monitorsTimeSlice, action.apiURL, action.apiTOKEN)
             }
             is ServerDetailAction.OnLoadSingleServer -> {
                 loadSingleServerDetail(action.serverUi, action.apiURL, action.apiTOKEN)
@@ -100,13 +100,13 @@ class ServerDetailViewModel(
         }
     }
 
-    private fun reloadMonitors(serverId: Int, monitorsTimeSlice: String, apiURL: String) {
+    private fun reloadMonitors(serverId: Int, monitorsTimeSlice: String, apiURL: String, apiTOKEN: String) {
         _state.update { it.copy(isChartLoading = true) }
 
         viewModelScope.launch {
             if (apiURL.isNotEmpty()) {
                 serverDataSource
-                    .getMonitors(apiURL, serverId)
+                    .getMonitors(apiURL, apiTOKEN, serverId)
                     .onSuccess { monitors ->
                         val monitorUi = monitors.map { it.toMonitorUi() }
                         val sampleMonitorUi = sampleMonitorData(monitorUi)
@@ -131,7 +131,8 @@ class ServerDetailViewModel(
     private fun loadSelectServerInfoAndMonitors(
         serverUi: ServerUi,
         monitorsTimeSlice: String,
-        apiURL: String
+        apiURL: String,
+        apiTOKEN: String
     ) {
         if (apiURL.isEmpty()) return
 
@@ -145,7 +146,7 @@ class ServerDetailViewModel(
                 serverDataSource.getIpAPI(serverIp = serverUi.ipv4)
             }
             val monitorsDeferred = async {
-                serverDataSource.getMonitors(apiURL, serverUi.id)
+                serverDataSource.getMonitors(apiURL, apiTOKEN, serverUi.id)
             }
 
             // 处理 IP API 结果

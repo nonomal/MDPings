@@ -1,6 +1,8 @@
 package com.sekusarisu.mdpings.vpings.presentation.server_list.components
 
+import android.graphics.drawable.Icon
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -36,8 +38,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -72,13 +79,20 @@ private fun String.toLetterSpacing() = when(this) {
 
 @Composable
 fun ServerListCard(
+    isExpanded: Boolean,
     onNavigateToDetail: () -> Unit,
     serverUi: ServerUi,
     onAction: (ServerListAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+//    var isCardExpanded by remember { mutableStateOf(false) }
+
     if (serverUi.isOnline) {
         Card(
+//            onClick = {
+//                isCardExpanded = !isCardExpanded
+//            },
             modifier = modifier.wrapContentHeight(),
             shape = ShapeDefaults.Medium,
             colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer),
@@ -89,21 +103,38 @@ fun ServerListCard(
                 onAction = onAction,
                 onNavigateToDetail = onNavigateToDetail
             )
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = modifier
-                    .padding(horizontal = 12.dp)
-                    .padding(bottom = 8.dp)
+            AnimatedVisibility(
+                visible = isExpanded
             ) {
-                Status(serverUi)
-                Spacer(modifier = Modifier.height(2.dp))
-                NetworkIO(serverUi)
-                Spacer(modifier = Modifier.height(2.dp))
-                NetworkTransfer(serverUi)
-                Spacer(modifier = Modifier.height(2.dp))
-                LoadAndUptime(serverUi)
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = modifier
+                        .padding(horizontal = 12.dp)
+                        .padding(bottom = 8.dp)
+                ) {
+                    Status(serverUi)
+                    Spacer(modifier = Modifier.height(2.dp))
+                    NetworkIO(serverUi)
+                    Spacer(modifier = Modifier.height(2.dp))
+                    NetworkTransfer(serverUi)
+                    Spacer(modifier = Modifier.height(2.dp))
+                    LoadAndUptime(serverUi)
+                }
             }
+//            AnimatedVisibility(
+//                visible = !isExpanded
+//            ) {
+//                Column(
+//                    verticalArrangement = Arrangement.Center,
+//                    horizontalAlignment = Alignment.CenterHorizontally,
+//                    modifier = modifier
+//                        .padding(horizontal = 12.dp)
+//                        .padding(bottom = 8.dp)
+//                ) {
+//                    NetworkIOCollapse(server = serverUi)
+//                }
+//            }
         }
     } else {
         Card(
@@ -463,7 +494,18 @@ fun NetworkIO(server: ServerUi) {
     }
 }
 
+@Composable
+fun NetworkIOCollapse(
+    modifier: Modifier = Modifier,
+    server: ServerUi
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
 
+    }
+}
 
 // Preview Data
 @PreviewLightDark
@@ -475,14 +517,24 @@ fun ServerCardPreview() {
                 serverUi = previewServerUi0,
                 onAction = {},
                 modifier = Modifier,
-                onNavigateToDetail = {}
+                onNavigateToDetail = {},
+                isExpanded = true
             )
             Spacer(Modifier.height(8.dp))
             ServerListCard(
                 serverUi = previewServerUi1,
                 onAction = {},
                 modifier = Modifier,
-                onNavigateToDetail = {}
+                onNavigateToDetail = {},
+                isExpanded = true
+            )
+            Spacer(Modifier.height(8.dp))
+            ServerListCard(
+                serverUi = previewServerUi0,
+                onAction = {},
+                modifier = Modifier,
+                onNavigateToDetail = {},
+                isExpanded = false
             )
         }
     }

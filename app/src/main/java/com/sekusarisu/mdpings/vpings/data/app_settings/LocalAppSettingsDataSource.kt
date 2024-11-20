@@ -114,6 +114,14 @@ class LocalAppSettingsDataSource(
         }
     }
 
+    override suspend fun setExpandedServerListCard(isExpanded: Boolean) {
+        context.dataStore.updateData {
+            it.copy(
+                expandedServerListCard = isExpanded
+            )
+        }
+    }
+
     override suspend fun putInstance(name: String, apiUrl: String, apiToken: String) {
         try {
             Log.d("InstanceManager", "Starting to put instance: $name")
