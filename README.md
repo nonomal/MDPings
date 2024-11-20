@@ -40,7 +40,7 @@ MDPings 是一个基于哪吒监控 API 接口开发的 MD3 风格 Android 客�
 
 ---
 
-<a href="https://github.com/chen08209/FlClash/releases"><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" width="200px"/></a>
+<a href="https://github.com/icylian/MDPings/releases"><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" width="200px"/></a>
 
 ## TODO
 
