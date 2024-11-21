@@ -46,6 +46,10 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      - name: Retrieve Version
+        run: |
+          echo "VERSION_INFORMATION=$(${{github.workspace}}/gradlew -q printVersionInformation)" >> $GITHUB_ENV
+
       - name: Build Release apk
         env:
           RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
@@ -54,27 +58,27 @@ jobs:
         run:
           ./gradlew assembleRelease --stacktrace
 
-      - name: Build Release bundle
-        env:
-          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
-          RELEASE_KEYSTORE_ALIAS: ${{ secrets.RELEASE_KEYSTORE_ALIAS }}
-          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-        run:
-          ./gradlew bundleRelease --stacktrace
-
-      - name: Get release file aab path
-        id: releaseAab
-        run: echo "aabfile=$(find app/build/outputs/bundle/release/*.aab)" >> $GITHUB_OUTPUT
+#      - name: Build Release bundle
+#        env:
+#          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+#          RELEASE_KEYSTORE_ALIAS: ${{ secrets.RELEASE_KEYSTORE_ALIAS }}
+#          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+#        run:
+#          ./gradlew bundleRelease --stacktrace
+#
+#      - name: Get release file aab path
+#        id: releaseAab
+#        run: echo "aabfile=$(find app/build/outputs/bundle/release/*.aab)" >> $GITHUB_OUTPUT
 
       - name: Get release file apk path
         id: releaseApk
         run: echo "apkfile=$(find app/build/outputs/apk/release/*.apk)" >> $GITHUB_OUTPUT
 
-      - name: Zip Files
-        uses: papeloto/action-zip@v1
-        with:
-          files: ${{ steps.releaseAab.outputs.aabfile }} ${{ steps.releaseApk.outputs.apkfile }}
-          dest: ${{ steps.releaseApk.outputs.apkfile }}.zip
+#      - name: Zip Files
+#        uses: papeloto/action-zip@v1
+#        with:
+#          files: ${{ steps.releaseAab.outputs.aabfile }} ${{ steps.releaseApk.outputs.apkfile }}
+#          dest: ${{ steps.releaseApk.outputs.apkfile }}.zip
 
       #      - name: Sending release build to Slack
       #        uses: MeilCli/slack-upload-file@v3
@@ -93,7 +97,20 @@ jobs:
       #          file: ${{ steps.releaseApk.outputs.apkfile }}
 
       - name: Upload Release Build to Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: release-artifacts
           path: ${{ steps.releaseApk.outputs.apkfile }}
+
+      - uses: ncipollo/release-action@v1
+        with:
+          tag: "${{ env.VERSION_INFORMATION }}"
+          name: "${{ env.VERSION_INFORMATION }}"
+          artifacts: ${{ steps.releaseApk.outputs.apkfile }}
+          allowUpdates: true
+          removeArtifacts: false
+          replacesArtifacts: true
+          makeLatest: true
+          token: "${{ secrets.GITHUB_TOKEN }}"
+          body: |
+            **⚠The app is not tested by default. Please be prepared for date backup and version rollback.**

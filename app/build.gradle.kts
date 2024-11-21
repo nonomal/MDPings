@@ -14,7 +14,7 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -52,7 +52,7 @@ android {
         jvmTarget = "11"
     }
     buildFeatures {
-//        buildConfig = true
+        buildConfig = true
         compose = true
     }
 }
@@ -126,4 +126,10 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+tasks.register("printVersionName") {
+    doLast {
+        println("v" + android.defaultConfig.versionName)
+    }
 }

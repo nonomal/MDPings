@@ -30,6 +30,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.sekusarisu.mdpings.BuildConfig
 
 @Preview(showBackground = true)
 @Composable
@@ -38,6 +39,7 @@ fun AboutScreen(
 ) {
 
     val uriHandler = LocalUriHandler.current
+    val versionName = BuildConfig.VERSION_NAME
 
     Column(
         verticalArrangement = Arrangement.Top,
@@ -171,7 +173,7 @@ fun AboutScreen(
                     onClick = { }
                 ),
             headlineContent = { Text("当前版本", color = MaterialTheme.colorScheme.secondary) },
-            supportingContent = { Text("0.0.1 - Alpha", color = MaterialTheme.colorScheme.tertiary) },
+            supportingContent = { Text(versionName, color = MaterialTheme.colorScheme.tertiary) },
             leadingContent = {
                 Icon(
                     imageVector = Icons.Rounded.Info,
