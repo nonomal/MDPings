@@ -48,7 +48,7 @@ jobs:
 
       - name: Retrieve Version
         run: |
-          echo "VERSION_INFORMATION=$(${{github.workspace}}/gradlew -q printVersionInformation)" >> $GITHUB_ENV
+          echo "VERSION_INFORMATION=$(${{github.workspace}}/gradlew -q printVersionName)" >> $GITHUB_ENV
 
       - name: Build Release apk
         env:
