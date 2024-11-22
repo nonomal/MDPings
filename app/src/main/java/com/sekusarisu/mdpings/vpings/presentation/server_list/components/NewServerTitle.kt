@@ -46,7 +46,10 @@ fun NewServerTitle(
         modifier = Modifier
             .padding(horizontal = 12.dp),
         leadingIcon = {
-            if (serverUi.isOnline) Text(text = serverUi.host.countryCode)
+            if (serverUi.isOnline)
+                Text(
+                    text = serverUi.host.countryCode
+                )
             else Icon(
                 imageVector = Icons.Rounded.Warning,
                 contentDescription = null,

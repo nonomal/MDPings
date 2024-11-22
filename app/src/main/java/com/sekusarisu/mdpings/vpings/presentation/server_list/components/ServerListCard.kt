@@ -1,6 +1,5 @@
 package com.sekusarisu.mdpings.vpings.presentation.server_list.components
 
-import android.graphics.drawable.Icon
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -38,13 +37,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -58,6 +52,7 @@ import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
 import com.sekusarisu.mdpings.vpings.presentation.models.HostUi
 import com.sekusarisu.mdpings.vpings.presentation.models.ServerUi
 import com.sekusarisu.mdpings.vpings.presentation.models.StatusUi
+import com.sekusarisu.mdpings.vpings.presentation.models.countryCodeCheck
 import com.sekusarisu.mdpings.vpings.presentation.models.toCountryCodeToEmojiFlag
 import com.sekusarisu.mdpings.vpings.presentation.models.toDisplayableNumber
 import com.sekusarisu.mdpings.vpings.presentation.models.toNetTRLongDisplayableString
@@ -65,6 +60,11 @@ import com.sekusarisu.mdpings.vpings.presentation.models.toNetIOSpeedDisplayable
 import com.sekusarisu.mdpings.vpings.presentation.server_list.ServerListAction
 import kotlinx.coroutines.launch
 import kotlin.random.Random
+
+// 锁定文字不根据系统缩放走
+//val TextUnit.nonScaledSp
+//    @Composable
+//    get() = (this.value / LocalDensity.current.fontScale).sp
 
 private fun String.toLetterSpacing() = when(this) {
     "CPU" -> 5.5.sp
@@ -552,9 +552,9 @@ private fun previewHostUi(): HostUi {
         virtualization = "kvm",
         bootTime = 1725353936,
         countryCode = listOf<String>(
-            "hk", "nl", "us", "cn", "jp"
-        )[Random.nextInt(until = 5)]
-            .toCountryCodeToEmojiFlag(),
+            "hk", "nl", "us", "cn", "jp", "tw"
+        )[Random.nextInt(until = 6)]
+            .countryCodeCheck().toCountryCodeToEmojiFlag(),
         version = "0.20.3"
     )
 }

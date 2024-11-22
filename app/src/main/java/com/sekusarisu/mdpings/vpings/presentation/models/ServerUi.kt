@@ -86,7 +86,7 @@ private fun Host.toHostUi(): HostUi {
         arch = arch,
         virtualization = virtualization,
         bootTime = bootTime,
-        countryCode = countryCode.toCountryCodeToEmojiFlag(),
+        countryCode = countryCode.countryCodeCheck().toCountryCodeToEmojiFlag(),
         version = version
     )
 }
@@ -110,6 +110,10 @@ private fun Status.toStatusUi(): StatusUi {
         processCount = processCount,
         gpu = gpu
     )
+}
+
+fun String.countryCodeCheck(): String {
+    return if (this.lowercase() == "tw") "cn" else this
 }
 
 fun String.toCountryCodeToEmojiFlag(): String {
