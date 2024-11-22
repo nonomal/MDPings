@@ -34,11 +34,40 @@ MDPings 是一个基于哪吒监控 API 接口开发的 MD3 风格 Android 客�
 
 <a href="https://github.com/icylian/MDPings/releases"><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" width="200px"/></a>
 
+## 常见问题
+
+### 1.支持的哪吒监控版本？
+
+目前确认支持的有最新版的 **0.20.3** 和 **0.20.2**，其余版本未有条件测试。且已经确认出现过因为版本过老，API返回的json信息缺项而导致的应用闪退问题，因此如果出现类似 Test 后应用直接闪退的问题，请先更新哪吒监控到最新版本，本项目目前仅有精力维护和支持最新版本哪吒监控。
+
+### 2.我的应用闪退了
+
+请参照第一点，先更新哪吒监控的版本。
+
+### 3.点击 Test 后弹出 TOAST 显示 `Something went wrong, please try again later`.
+
+目前极少数用户反馈且暂未发现原因的问题，出现此类问题的用户有两种选择：
+
+1.下载本项目源码在 Android Studio 运行，重现该问题，并将 Logcat 反馈到项目群组让项目维护者尝试修复；
+
+2.将你无法连接上的哪吒监控内的敏感服务器删掉，创建一个临时 token 并将后端地址私发给项目维护者尝试修复。
+
+### 4.API BACKEND一项的格式？
+
+如空白截图显示，`https://your.nezha.api.com/` 
+
+> [!IMPORTANT]
+> 请不要漏掉链接里最后的斜杠**，否则 Test 将无法通过。
+
 ## TODO
 
 > [!CAUTION]
 > 由于预计哪吒监控1.0的API将会有大幅度变动，因此在1.0版更新出来前，将不会有大的改动
+
 - [ ] 横屏/平板适配
+
+- [ ] 日间/夜间/主题色切换
+
 - [ ] 统一界面语言、多语言支持
 
 ## 支持
