@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Commit
-import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.TableChart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -28,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -83,7 +83,7 @@ fun PktLostAndAvgLatencyCard(
                     .alpha(0.8f)
             ) {
                 Row(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1.2f),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -128,7 +128,7 @@ fun PktLostAndAvgLatencyCard(
                 Text(
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.End,
-                    text = "Los30",
+                    text = "Los30 ",
                     style = MaterialTheme.typography.bodyMedium,
                     fontSize = 12.sp
                 )
@@ -203,9 +203,9 @@ private fun PktLostAndAvgLatency(
             .fillMaxWidth()
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.weight(1f)
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.weight(1.2f)
         ) {
             Icon(
                 tint = chartColors[index],
@@ -217,6 +217,9 @@ private fun PktLostAndAvgLatency(
             )
             Text(
                 text = monitor.monitorName,
+                maxLines = 1,
+                textAlign = TextAlign.Center,
+                overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.bodyMedium,
                 fontSize = 12.sp,
                 modifier = Modifier

@@ -13,8 +13,8 @@ android {
         applicationId = "com.sekusarisu.mdpings"
         minSdk = 26
         targetSdk = 35
-        versionCode = 2
-        versionName = "1.0.1"
+        versionCode = 3
+        versionName = "1.0.2"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -72,6 +72,8 @@ dependencies {
     debugImplementation(libs.bundles.compose.debug)
     implementation(libs.bundles.koin)
     implementation(libs.bundles.ktor)
+//    implementation(libs.ktor.client.android)
+    implementation(libs.ktor.client.okhttp)
 
     // Preferences DataStore (SharedPreferences like APIs)
     dependencies {

@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.AlignHorizontalLeft
 import androidx.compose.material.icons.rounded.AlignHorizontalLeft
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
@@ -80,7 +81,7 @@ fun ServerSummaryCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.AlignHorizontalLeft,
+                    imageVector = Icons. AutoMirrored.Rounded.AlignHorizontalLeft,
                     contentDescription = null,
                     modifier = Modifier
                 )
