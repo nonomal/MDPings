@@ -12,44 +12,132 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
+import com.sekusarisu.mdpings.vpings.domain.ThemeConfig
+import com.sekusarisu.mdpings.vpings.domain.ThemeMode
+import com.sekusarisu.mdpings.vpings.domain.ThemeSeedColor
+import kotlinx.serialization.Serializable
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
-)
-
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
-)
+//private val DarkColorScheme = darkColorScheme(
+//    primary = primaryDark,
+//    onPrimary = onPrimaryDark,
+//    primaryContainer = primaryContainerDark,
+//    onPrimaryContainer = onPrimaryContainerDark,
+//    secondary = secondaryDark,
+//    onSecondary = onSecondaryDark,
+//    secondaryContainer = secondaryContainerDark,
+//    onSecondaryContainer = onSecondaryContainerDark,
+//    tertiary = tertiaryDark,
+//    onTertiary = onTertiaryDark,
+//    tertiaryContainer = tertiaryContainerDark,
+//    onTertiaryContainer = onTertiaryContainerDark,
+//    error = errorDark,
+//    onError = onErrorDark,
+//    errorContainer = errorContainerDark,
+//    onErrorContainer = onErrorContainerDark,
+//    background = backgroundDark,
+//    onBackground = onBackgroundDark,
+//    surface = surfaceDark,
+//    onSurface = onSurfaceDark,
+//    surfaceVariant = surfaceVariantDark,
+//    onSurfaceVariant = onSurfaceVariantDark,
+//    outline = outlineDark,
+//    outlineVariant = outlineVariantDark,
+//    scrim = scrimDark,
+//    inverseSurface = inverseSurfaceDark,
+//    inverseOnSurface = inverseOnSurfaceDark,
+//    inversePrimary = inversePrimaryDark,
+//    surfaceDim = surfaceDimDark,
+//    surfaceBright = surfaceBrightDark,
+//    surfaceContainerLowest = surfaceContainerLowestDark,
+//    surfaceContainerLow = surfaceContainerLowDark,
+//    surfaceContainer = surfaceContainerDark,
+//    surfaceContainerHigh = surfaceContainerHighDark,
+//    surfaceContainerHighest = surfaceContainerHighestDark,
+//)
+//
+//private val LightColorScheme = lightColorScheme(
+//    primary = primaryLight,
+//    onPrimary = onPrimaryLight,
+//    primaryContainer = primaryContainerLight,
+//    onPrimaryContainer = onPrimaryContainerLight,
+//    secondary = secondaryLight,
+//    onSecondary = onSecondaryLight,
+//    secondaryContainer = secondaryContainerLight,
+//    onSecondaryContainer = onSecondaryContainerLight,
+//    tertiary = tertiaryLight,
+//    onTertiary = onTertiaryLight,
+//    tertiaryContainer = tertiaryContainerLight,
+//    onTertiaryContainer = onTertiaryContainerLight,
+//    error = errorLight,
+//    onError = onErrorLight,
+//    errorContainer = errorContainerLight,
+//    onErrorContainer = onErrorContainerLight,
+//    background = backgroundLight,
+//    onBackground = onBackgroundLight,
+//    surface = surfaceLight,
+//    onSurface = onSurfaceLight,
+//    surfaceVariant = surfaceVariantLight,
+//    onSurfaceVariant = onSurfaceVariantLight,
+//    outline = outlineLight,
+//    outlineVariant = outlineVariantLight,
+//    scrim = scrimLight,
+//    inverseSurface = inverseSurfaceLight,
+//    inverseOnSurface = inverseOnSurfaceLight,
+//    inversePrimary = inversePrimaryLight,
+//    surfaceDim = surfaceDimLight,
+//    surfaceBright = surfaceBrightLight,
+//    surfaceContainerLowest = surfaceContainerLowestLight,
+//    surfaceContainerLow = surfaceContainerLowLight,
+//    surfaceContainer = surfaceContainerLight,
+//    surfaceContainerHigh = surfaceContainerHighLight,
+//    surfaceContainerHighest = surfaceContainerHighestLight,
+//)
 
 @Composable
 fun MDPingsTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+//    darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+//    dynamicColor: Boolean = true,
+    themeConfig: ThemeConfig = ThemeConfig(),
     content: @Composable () -> Unit
 ) {
+    val isDarkTheme = isSystemInDarkTheme()
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+        // 莫纳取色
+        themeConfig.isDynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            when(themeConfig.themeMode) {
+                ThemeMode.DARK -> dynamicDarkColorScheme(context)
+                ThemeMode.LIGHT -> dynamicLightColorScheme(context)
+                ThemeMode.SYSTEM -> if (isDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            }
         }
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        // 预设颜色
+        themeConfig.themeMode == ThemeMode.DARK -> when (themeConfig.themeSeedColor) {
+            ThemeSeedColor.GREEN -> darkColorSchemeGreen()
+            ThemeSeedColor.YELLOW -> darkColorSchemeYellow()
+            ThemeSeedColor.BLUE -> darkColorSchemeBlue()
+            ThemeSeedColor.RED -> darkColorSchemeRed()
+        }
+        themeConfig.themeMode == ThemeMode.LIGHT -> when (themeConfig.themeSeedColor) {
+            ThemeSeedColor.GREEN -> lightColorSchemeGreen()
+            ThemeSeedColor.YELLOW -> lightColorSchemeYellow()
+            ThemeSeedColor.BLUE -> lightColorSchemeBlue()
+            ThemeSeedColor.RED -> lightColorSchemeRed()
+        }
+        themeConfig.themeMode == ThemeMode.SYSTEM && isDarkTheme -> when (themeConfig.themeSeedColor) {
+            ThemeSeedColor.GREEN -> darkColorSchemeGreen()
+            ThemeSeedColor.YELLOW -> darkColorSchemeYellow()
+            ThemeSeedColor.BLUE -> darkColorSchemeBlue()
+            ThemeSeedColor.RED -> darkColorSchemeRed()
+        }
+        else -> when (themeConfig.themeSeedColor) {
+            ThemeSeedColor.GREEN -> lightColorSchemeGreen()
+            ThemeSeedColor.YELLOW -> lightColorSchemeYellow()
+            ThemeSeedColor.BLUE -> lightColorSchemeBlue()
+            ThemeSeedColor.RED -> lightColorSchemeRed()
+        }
     }
 
     CompositionLocalProvider(

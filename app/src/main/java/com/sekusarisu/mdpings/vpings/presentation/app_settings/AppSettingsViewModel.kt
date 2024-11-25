@@ -8,6 +8,8 @@ import com.sekusarisu.mdpings.vpings.domain.AppSettingsDataSource
 import com.sekusarisu.mdpings.vpings.domain.Instance
 import com.sekusarisu.mdpings.vpings.domain.ServerOrder
 import com.sekusarisu.mdpings.vpings.domain.ServerSortField
+import com.sekusarisu.mdpings.vpings.domain.ThemeMode
+import com.sekusarisu.mdpings.vpings.domain.ThemeSeedColor
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -74,6 +76,9 @@ class AppSettingsViewModel(
             is AppSettingsAction.OnSaveServerListCardExpanded -> {
                 saveServerListCardExpanded(action.expanded)
             }
+            is AppSettingsAction.OnSaveThemeConfig -> {
+                saveThemeConfig(action.themeMode, action.themeSeedColor, action.isDynamicColor)
+            }
         }
     }
 
@@ -139,4 +144,9 @@ class AppSettingsViewModel(
         }
     }
 
+    fun saveThemeConfig(themeMode: ThemeMode, themeSeedColor: ThemeSeedColor, isDynamicColor: Boolean) {
+        viewModelScope.launch {
+            appSettingsDataSource.saveThemeConfig(themeMode, themeSeedColor, isDynamicColor)
+        }
+    }
 }

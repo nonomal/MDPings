@@ -8,6 +8,9 @@ import com.sekusarisu.mdpings.vpings.domain.AppSettingsDataSource
 import com.sekusarisu.mdpings.vpings.domain.Instance
 import com.sekusarisu.mdpings.vpings.domain.ServerOrder
 import com.sekusarisu.mdpings.vpings.domain.ServerSortField
+import com.sekusarisu.mdpings.vpings.domain.ThemeConfig
+import com.sekusarisu.mdpings.vpings.domain.ThemeMode
+import com.sekusarisu.mdpings.vpings.domain.ThemeSeedColor
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentListOf
@@ -118,6 +121,31 @@ class LocalAppSettingsDataSource(
         context.dataStore.updateData {
             it.copy(
                 expandedServerListCard = isExpanded
+            )
+        }
+    }
+
+    override suspend fun getThemeConfig(): ThemeConfig? {
+        return try {
+            context.dataStore.data.first().themeConfig
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ThemeConfig()
+        }
+    }
+
+    override suspend fun saveThemeConfig(
+        themeMode: ThemeMode,
+        themeSeedColor: ThemeSeedColor,
+        isDynamicColor: Boolean
+    ) {
+        context.dataStore.updateData {
+            it.copy(
+                themeConfig = ThemeConfig(
+                    themeMode = themeMode,
+                    themeSeedColor = themeSeedColor,
+                    isDynamicColor = isDynamicColor
+                )
             )
         }
     }

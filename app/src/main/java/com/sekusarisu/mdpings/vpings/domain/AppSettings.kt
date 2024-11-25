@@ -13,9 +13,11 @@ data class AppSettings(
     val refreshInterval: Int = 5000,
     val serverSortField: ServerSortField = ServerSortField.ID,
     val serverOrder: ServerOrder = ServerOrder.ASC,
-    val expandedServerListCard: Boolean = true
+    val expandedServerListCard: Boolean = true,
+    val themeConfig: ThemeConfig = ThemeConfig()
 )
 
+// 哪吒监控实例
 @Serializable
 data class Instance(
     val name: String,
@@ -23,6 +25,7 @@ data class Instance(
     val apiToken: String
 )
 
+// 分类和排序
 @Serializable
 enum class ServerSortField {
     ID,
@@ -34,3 +37,21 @@ enum class ServerOrder {
     ASC,
     DESC
 }
+
+// 主题
+@Serializable
+enum class ThemeMode {
+    LIGHT, DARK, SYSTEM
+}
+
+@Serializable
+enum class ThemeSeedColor {
+    RED, GREEN, BLUE, YELLOW
+}
+
+@Serializable
+data class ThemeConfig(
+    val themeMode: ThemeMode = ThemeMode.SYSTEM,
+    val themeSeedColor: ThemeSeedColor = ThemeSeedColor.BLUE,
+    val isDynamicColor: Boolean = true
+)

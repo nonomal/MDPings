@@ -47,6 +47,7 @@ import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
 import com.sekusarisu.mdpings.vpings.presentation.AboutScreen
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsScreen
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsViewModel
+import com.sekusarisu.mdpings.vpings.presentation.app_settings.child_screens.VisualSettingsScreen
 import com.sekusarisu.mdpings.vpings.presentation.components.DrawerContent
 import com.sekusarisu.mdpings.vpings.presentation.server_detail.ServerDetailScreen
 import com.sekusarisu.mdpings.vpings.presentation.server_detail.ServerDetailViewModel
@@ -65,7 +66,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MDPingsTheme {
+
+            val appSettingsViewModel = koinViewModel<AppSettingsViewModel>()
+            val appSettingsState by appSettingsViewModel.state.collectAsStateWithLifecycle()
+
+            MDPingsTheme(
+                themeConfig = appSettingsState.appSettings.themeConfig
+            ) {
 
                 // TopAppBar scrollBehavior
                 val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
@@ -85,8 +92,7 @@ class MainActivity : ComponentActivity() {
                 val serverListState by serverListViewModel.state.collectAsStateWithLifecycle()
                 val serverDetailViewModel = koinViewModel<ServerDetailViewModel>()
                 val serverDetailState by serverDetailViewModel.state.collectAsStateWithLifecycle()
-                val appSettingsViewModel = koinViewModel<AppSettingsViewModel>()
-                val appSettingsState by appSettingsViewModel.state.collectAsStateWithLifecycle()
+
 
                 // Error Handle
                 val context = LocalContext.current
@@ -178,6 +184,7 @@ class MainActivity : ComponentActivity() {
                         NavHost(
                             navController = navController,
                             startDestination = Screen.Loading.route,
+                            // TODO 部分机型切换日夜间模式的时候会negative闪退？
                             modifier = Modifier.padding(top = innerPadding.calculateTopPadding() - 4.dp)
                         ) {
                             // Loading screen
@@ -251,10 +258,18 @@ class MainActivity : ComponentActivity() {
                                         onAction = appSettingsViewModel::onAction,
                                         onNavigateToLogin = {
                                             navController.navigate(Screen.Login.route)
+                                        },
+                                        onNavigateToVisualSettings = {
+                                            navController.navigate(Screen.VisualSettings.route)
                                         }
                                     )
                                 }
-
+                                composable(Screen.VisualSettings.route) {
+                                    VisualSettingsScreen(
+                                        state = appSettingsState,
+                                        onAction = appSettingsViewModel::onAction
+                                    )
+                                }
                                 composable(Screen.About.route) {
                                     AboutScreen()
                                 }
@@ -285,6 +300,7 @@ sealed class Screen(val route: String) {
     // Settings graph
     object Settings : Screen("settings")
     object AppSettings : Screen("settings/app")
+    object VisualSettings : Screen("settings/visual")
     object About : Screen("settings/about")
 }
 
