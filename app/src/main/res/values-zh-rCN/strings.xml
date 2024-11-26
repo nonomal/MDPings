@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     // 报错
@@ -103,7 +104,7 @@
 
     // App Settings (Visual)
     <string name="app_settings_visual_title">视觉与样式</string>
-    <string name="app_settings_visual_content">深色主题、动态色彩</string>
+    <string name="app_settings_visual_content">深色主题、动态色彩、界面语言</string>
     <string name="app_settings_dialog_confirm">确认</string>
     <string name="app_settings_dialog_cancel">取消</string>
     <string name="app_settings_visual_dynamic_color_title">动态颜色</string>

@@ -1,10 +1,12 @@
 package com.sekusarisu.mdpings
 
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
@@ -61,6 +64,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -121,12 +125,12 @@ class MainActivity : ComponentActivity() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
                 val topAppBarTitle =
-                    if (currentRoute == Screen.Login.route) "Instances List"
-                    else if (currentRoute == Screen.AppSettings.route) "Settings"
-                    else if (currentRoute == Screen.About.route) "About"
+                    if (currentRoute == Screen.Login.route) stringResource(R.string.appbar_title_login)
+                    else if (currentRoute == Screen.AppSettings.route) stringResource(R.string.appbar_title_appsettings)
+                    else if (currentRoute == Screen.About.route) stringResource(R.string.appbar_title_about)
                     else if (currentRoute == Screen.ServerDetail.route)
                         "${serverListState.selectedServer!!.host.countryCode} ${serverListState.selectedServer!!.name}"
-                    else "MDPings"
+                    else stringResource(R.string.app_name)
 
                 ModalNavigationDrawer(
                     gesturesEnabled = true,
@@ -313,6 +317,6 @@ private fun LoadingScreen() {
     ) {
         CircularProgressIndicator()
         Spacer(Modifier.height(8.dp))
-        Text("Initializing MDPings...")
+        Text(stringResource(R.string.initializing_mdpings))
     }
 }

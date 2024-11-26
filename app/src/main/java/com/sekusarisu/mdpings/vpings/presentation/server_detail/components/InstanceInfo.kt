@@ -20,9 +20,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import com.sekusarisu.mdpings.R
 import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
 import com.sekusarisu.mdpings.vpings.presentation.models.IpAPIUi
 import com.sekusarisu.mdpings.vpings.presentation.models.ServerUi
@@ -60,7 +62,7 @@ fun InstanceInfo(
                     modifier = Modifier
                 )
                 Text(
-                    text = "Instance Info",
+                    text = stringResource(R.string.server_detail_card_instance_info),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier
@@ -70,35 +72,35 @@ fun InstanceInfo(
 
             Column {
                 InfoRow(
-                    title = "System:",
+                    title = stringResource(R.string.server_detail_card_system),
                     content = "${serverUi.host.platform} ${serverUi.host.platformVersion}"
                 )
                 InfoRow(
-                    title = "CPU:",
+                    title = stringResource(R.string.server_detail_card_cpu),
                     content = serverUi.host.cpu
                 )
                 InfoRow(
-                    title = "RAM:",
+                    title = stringResource(R.string.server_detail_card_ram),
                     content = serverUi.host.memTotal.toMemDiskLongDisplayableString()
                 )
                 InfoRow(
-                    title = "Storage:",
+                    title = stringResource(R.string.server_detail_card_storage),
                     content = serverUi.host.diskTotal.toMemDiskLongDisplayableString()
                 )
                 InfoRow(
-                    title = "ISP:",
+                    title = stringResource(R.string.server_detail_card_isp),
                     content = if (ipAPIUi.isp.isNotEmpty()) ipAPIUi.isp else "N/A"
                 )
                 InfoRow(
-                    title = "ORG:",
+                    title = stringResource(R.string.server_detail_card_org),
                     content = if (ipAPIUi.org.isNotEmpty()) ipAPIUi.org else "N/A"
                 )
                 InfoRow(
-                    title = "Location:",
+                    title = stringResource(R.string.server_detail_card_location),
                     content = "${ipAPIUi.lat}, ${ipAPIUi.lon}"
                 )
                 InfoRow(
-                    title = "Nezha Version:",
+                    title = stringResource(R.string.server_detail_card_nezha_version),
                     content = serverUi.host.version
                 )
             }

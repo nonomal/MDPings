@@ -35,12 +35,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.sekusarisu.mdpings.R
 import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
 import com.sekusarisu.mdpings.vpings.domain.AppSettings
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsState
@@ -122,7 +124,7 @@ fun ServerDetailScreen(
         ) {
             CircularProgressIndicator()
             Spacer(Modifier.height(8.dp))
-            Text("Loading...")
+            Text(stringResource(R.string.server_detail_loading))
         }
     }
 
@@ -206,7 +208,7 @@ fun ServerStatus(
                     modifier = Modifier.weight(0.4f)
                 )
                 Text(
-                    text = "Realtime Status",
+                    text = stringResource(R.string.server_detail_realtime_status),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier

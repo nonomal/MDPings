@@ -1,5 +1,6 @@
 package com.sekusarisu.mdpings.vpings.presentation.server_detail
 
+import com.sekusarisu.mdpings.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sekusarisu.mdpings.core.domain.util.onError

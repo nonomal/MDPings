@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    // 報錯
+    <string name="error_request_timeout">請求超時</string>
+    <string name="error_forbidden">伺服器傳回了403，請檢查你的登入憑據</string>
+    <string name="error_too_many_requests">請求過於頻繁，請稍後再試</string>
+    <string name="error_no_internet">沒有網路，請檢查你的網路連線</string>
+    <string name="error_unknown">不明錯誤，請稍後再試</string>
+    <string name="error_serialization">解析伺服器資訊時發生了錯誤</string>
+
+    // mainActivity
+    <string name="app_name">MDPings</string>
+    <string name="appbar_title_login">實例清單</string>
+    <string name="appbar_title_appsettings">設定</string>
+    <string name="appbar_title_about">關於</string>
+    <string name="initializing_mdpings">正在初始化 MDPings……</string>
+
+    // About
+    <string name="about_about">關於</string>
+    <string name="about_content">MDPings 是一個基於哪吒監控 API 介面開發的 MD3 風格 Android 用戶端，支援同時監控多個伺服器的狀態，提供歷史網路狀態和延遲圖表。</string>
+    <string name="about_github">檢視 MDPings GitHub 專案位址和應用說明</string>
+    <string name="about_github_issue">GitHub 議題</string>
+    <string name="about_github_issue_content">提交錯誤報告或改進建議</string>
+    <string name="about_support_title">贊助</string>
+    <string name="about_support_content">謝謝！來 GitHub 點個 ⭐ 吧~</string>
+    <string name="about_telegram_title">Telegram 頻道</string>
+    <string name="about_telegram_content">https://t.me/mdpings_app</string>
+    <string name="about_version_title">當前版本</string>
+    <string name="about_thanks_title">鳴謝專案</string>
+    <string name="about_thanks_nezha_title">哪吒監控</string>
+    <string name="about_thanks_nezha_content">檢視哪吒監控的官方網站</string>
+    <string name="about_thanks_vpings_title">VPings</string>
+    <string name="about_thanks_vpings_content">哪吒監控 iOS 用戶端，部分介面參考其構建</string>
+    <string name="about_thanks_nezha_dash_title">Nezha-dash</string>
+    <string name="about_thanks_nezha_dash_content">一個基於 Next.js 和 哪吒監控 的儀表板，部分介面參考其構建</string>
+    <string name="about_thanks_vico_title">Vico</string>
+    <string name="about_thanks_vico_content">開源的圖表繪製程式庫</string>
+
+    // Server List
+    <string name="server_list_no_available_credentials">沒有可用的實例！</string>
+    <string name="server_list_loading_servers">正在載入伺服器……</string>
+    <string name="server_list_summary_title">總覽</string>
+    <string name="server_list_summary_count">伺服器總數</string>
+    <string name="server_list_summary_status">伺服器狀態</string>
+    <string name="server_list_summary_transfer">總流量</string>
+    <string name="server_list_card_cpu">CPU</string>
+    <string name="server_list_card_ram">RAM</string>
+    <string name="server_list_card_swap">SWAP</string>
+    <string name="server_list_card_disk">DISK</string>
+    <string name="server_list_card_load">LOAD</string>
+    <string name="server_list_card_uptime">UPTIME</string>
+    <string name="server_list_card_nettr">NetTR</string>
+    <string name="server_list_card_netio">NetIO</string>
+
+    // Server Detail
+    <string name="server_detail_loading">正在載入伺服器……</string>
+    <string name="server_detail_realtime_status">即時狀態</string>
+
+    // Server Detail Card (Instance info)
+    <string name="server_detail_card_instance_info">伺服器資訊</string>
+    <string name="server_detail_card_system">系統:</string>
+    <string name="server_detail_card_cpu">處理器:</string>
+    <string name="server_detail_card_ram">記憶體:</string>
+    <string name="server_detail_card_storage">儲存:</string>
+    <string name="server_detail_card_isp">ISP：</string>
+    <string name="server_detail_card_org">ORG：</string>
+    <string name="server_detail_card_location">位置:</string>
+    <string name="server_detail_card_nezha_version">哪吒版本:</string>
+
+    // Server Detail Card (Network Monitor)
+    <string name="server_detail_card_network_monitor">網路監控</string>
+    <string name="server_detail_card_loading_chart">正在載入網路圖表……</string>
+    <string name="server_detail_card_no_monitor_data_available">沒有可用的資料</string>
+    <string name="server_detail_card_30_mins">30 mins</string>
+    <string name="server_detail_card_1_hour">1 hour</string>
+    <string name="server_detail_card_3_hours">3 hours</string>
+    <string name="server_detail_card_6_hours">6 hours</string>
+
+    // Server Detail Card (Offline)
+    <string name="server_detail_card_the_server_is_offline">該伺服器已離線</string>
+
+    // Server Detail Card (Network Delay and Packet Loss)
+    <string name="server_detail_card_network_delay_packet_loss">網路延遲和封包遺失</string>
+    <string name="server_detail_card_node">節點</string>
+    <string name="server_detail_card_delay24h">延遲24h</string>
+    <string name="server_detail_card_los24h">遺失24h</string>
+    <string name="server_detail_card_delay30">延遲30m</string>
+    <string name="server_detail_card_los30">遺失30m</string>
+    <string name="server_detail_card_no_data_available">沒有可用的資料</string>
+
+    // Drawer
+    <string name="drawer_home">主頁</string>
+    <string name="drawer_settings">設定</string>
+    <string name="drawer_about">關於</string>
+
+    // App Settings
+    <string name="app_settings_refresh_interval_dialog_title">更新間隔</string>
+    <string name="app_settings_refresh_interval_dialog_content">變更應用程式的資料重新整理間隔（毫秒），不建議將其設定到3000ms以下</string>
+    <string name="app_settings_settings">設定</string>
+    <string name="app_settings_switch_instance">編輯/切換實例</string>
+    <string name="app_settings_curd_instance">新增、刪除或切換哪吒監控實例</string>
+    <string name="app_settings_refresh_interval_content">變更 MDPings 的預設資料重新整理間隔（毫秒）</string>
+
+    // App Settings (Visual)
+    <string name="app_settings_visual_title">視覺與樣式</string>
+    <string name="app_settings_visual_content">深色主題、動態色彩、介面語言</string>
+    <string name="app_settings_dialog_confirm">確認</string>
+    <string name="app_settings_dialog_cancel">取消</string>
+    <string name="app_settings_visual_dynamic_color_title">動態色彩</string>
+    <string name="app_settings_visual_dynamic_color_content">將桌布顏色套用於應用程式主題</string>
+    <string name="app_settings_visual_theme_follow_title">跟隨系統</string>
+    <string name="app_settings_visual_theme_follow_content">開關深色模式跟隨系統</string>
+    <string name="app_settings_visual_dark_mode_title">深色模式</string>
+    <string name="app_settings_visual_dark_mode_content">開關深色模式</string>
+    <string name="app_settings_visual_dynamic_color_dialog_title">選擇主題色</string>
+    <string name="app_settings_visual_dynamic_color_dialog_content">選擇希望使用的主題色，配色方案來自 Material Theme Builder</string>
+    <string name="app_settings_visual_theme_color_red">紅</string>
+    <string name="app_settings_visual_theme_color_green">綠</string>
+    <string name="app_settings_visual_theme_color_blue">藍</string>
+    <string name="app_settings_visual_theme_color_yellow">黃</string>
+    <string name="app_settings_visual_language_title">介面語言</string>
+    <string name="app_settings_visual_language_content">變更介面語言</string>
+
+</resources>

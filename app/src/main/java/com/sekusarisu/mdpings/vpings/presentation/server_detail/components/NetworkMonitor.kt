@@ -37,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -49,6 +50,7 @@ import com.sekusarisu.mdpings.vpings.presentation.server_detail.ServerDetailStat
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewServerUi0
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
+import com.sekusarisu.mdpings.R
 import com.sekusarisu.mdpings.vpings.domain.AppSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -111,7 +113,7 @@ fun NetworkMonitor(
                         .size(24.dp)
                 )
                 Text(
-                    text = "Network Monitor",
+                    text = stringResource(R.string.server_detail_card_network_monitor),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier
@@ -168,7 +170,7 @@ fun NetworkMonitor(
                         ) {
                             CircularProgressIndicator()
                             Spacer(Modifier.height(8.dp))
-                            Text("Loading Chart...")
+                            Text(stringResource(R.string.server_detail_card_loading_chart))
                         }
                     }
                 } else if (it) {
@@ -182,7 +184,7 @@ fun NetworkMonitor(
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text("No monitor data available.")
+                            Text(stringResource(R.string.server_detail_card_no_monitor_data_available))
                         }
                     }
                 } else {
@@ -210,7 +212,7 @@ fun NetworkMonitor(
                     modifier = Modifier
                         .wrapContentHeight()
                         .fillMaxWidth()
-                        .requiredHeightIn(max = (18*4).dp)
+                        .requiredHeightIn(max = (18 * 4).dp)
                 ) {
                     itemsIndexed(
                         items = it
@@ -254,7 +256,12 @@ private fun DateFilterChipGroup(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        listOf<String>("30 mins", "1 hour", "3 hours", "6 hours").map { text ->
+        listOf<String>(
+            stringResource(R.string.server_detail_card_30_mins),
+            stringResource(R.string.server_detail_card_1_hour),
+            stringResource(R.string.server_detail_card_3_hours),
+            stringResource(R.string.server_detail_card_6_hours)
+        ).map { text ->
             FilterChip(
                 selected = state.monitorsTimeSlice == text,
                 onClick = {

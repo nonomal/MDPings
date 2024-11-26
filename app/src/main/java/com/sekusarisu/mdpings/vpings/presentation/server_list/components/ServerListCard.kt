@@ -42,12 +42,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sekusarisu.mdpings.R
 import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
 import com.sekusarisu.mdpings.vpings.presentation.models.HostUi
 import com.sekusarisu.mdpings.vpings.presentation.models.ServerUi
@@ -229,25 +231,25 @@ fun ServerTitle(
 @Composable
 fun Status(server: ServerUi) {
     ProgressBar(
-        text = "CPU",
+        text = stringResource(R.string.server_list_card_cpu),
         total = 100F,
         used = server.status.cpu.toFloat()
     )
     Spacer(modifier = Modifier.height(2.dp))
     ProgressBar(
-        text = "RAM",
+        text = stringResource(R.string.server_list_card_ram),
         total = server.host.memTotal.toFloat(),
         used = server.status.memUsed.toFloat()
     )
     Spacer(modifier = Modifier.height(2.dp))
     ProgressBar(
-        text = "SWAP",
+        text = stringResource(R.string.server_list_card_swap),
         total = server.host.swapTotal.toFloat(),
         used = server.status.swapUsed.toFloat()
     )
     Spacer(modifier = Modifier.height(2.dp))
     ProgressBar(
-        text = "DISK",
+        text = stringResource(R.string.server_list_card_disk),
         total = server.host.diskTotal.toFloat(),
         used = server.status.diskUsed.toFloat()
     )
@@ -325,7 +327,7 @@ fun LoadAndUptime(server: ServerUi) {
             modifier = Modifier
         ) {
             Text(
-                text = "LOAD",
+                text = stringResource(R.string.server_list_card_load),
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.SemiBold,
                 style = MaterialTheme.typography.bodyMedium.copy(
@@ -355,7 +357,7 @@ fun LoadAndUptime(server: ServerUi) {
             )
         }
         Text(
-            text = "UPTIME",
+            text = stringResource(R.string.server_list_card_uptime),
             fontWeight = FontWeight.SemiBold,
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
@@ -382,7 +384,7 @@ fun NetworkTransfer(server: ServerUi) {
                 .weight(1f)
         ) {
             Text(
-                text = "NetTR",
+                text = stringResource(R.string.server_list_card_nettr),
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.SemiBold,
                 style = MaterialTheme.typography.bodyMedium,
@@ -432,7 +434,7 @@ fun NetworkIO(server: ServerUi) {
                 .weight(1f)
         ) {
             Text(
-                text = "NetIO",
+                text = stringResource(R.string.server_list_card_netio),
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.SemiBold,
                 style = MaterialTheme.typography.bodyMedium.copy(

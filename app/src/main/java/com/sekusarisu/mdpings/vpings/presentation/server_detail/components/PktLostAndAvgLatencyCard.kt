@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Commit
-import androidx.compose.material.icons.rounded.TableChart
+import androidx.compose.material.icons.rounded.ViewColumn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -25,12 +25,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sekusarisu.mdpings.R
 import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
 import com.sekusarisu.mdpings.vpings.presentation.models.MonitorUi
 import com.sekusarisu.mdpings.vpings.presentation.server_detail.ServerDetailState
@@ -61,12 +63,12 @@ fun PktLostAndAvgLatencyCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.TableChart,
+                    imageVector = Icons.Rounded.ViewColumn,
                     contentDescription = null,
                     modifier = Modifier
                 )
                 Text(
-                    text = "Network Delay & Packet Loss",
+                    text = stringResource(R.string.server_detail_card_network_delay_packet_loss),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier
@@ -95,7 +97,7 @@ fun PktLostAndAvgLatencyCard(
                             .weight(1f)
                     )
                     Text(
-                        text = "NODE",
+                        text = stringResource(R.string.server_detail_card_node),
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium,
                         fontSize = 12.sp,
@@ -107,28 +109,28 @@ fun PktLostAndAvgLatencyCard(
                 Text(
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.End,
-                    text = "Delay24h",
+                    text = stringResource(R.string.server_detail_card_delay24h),
                     style = MaterialTheme.typography.bodyMedium,
                     fontSize = 12.sp
                 )
                 Text(
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.End,
-                    text = "Los24h",
+                    text = stringResource(R.string.server_detail_card_los24h),
                     style = MaterialTheme.typography.bodyMedium,
                     fontSize = 12.sp
                 )
                 Text(
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.End,
-                    text = "Delay30",
+                    text = stringResource(R.string.server_detail_card_delay30),
                     style = MaterialTheme.typography.bodyMedium,
                     fontSize = 12.sp
                 )
                 Text(
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.End,
-                    text = "Los30 ",
+                    text = stringResource(R.string.server_detail_card_los30),
                     style = MaterialTheme.typography.bodyMedium,
                     fontSize = 12.sp
                 )
@@ -152,7 +154,7 @@ fun PktLostAndAvgLatencyCard(
                         ) {
                             CircularProgressIndicator()
                             Spacer(Modifier.height(8.dp))
-                            Text("Loading Chart...")
+                            Text(stringResource(R.string.server_detail_card_loading_chart))
                         }
                     }
                 } else if (it) {
@@ -166,7 +168,7 @@ fun PktLostAndAvgLatencyCard(
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text("No data available.")
+                            Text(stringResource(R.string.server_detail_card_no_data_available))
                         }
                     }
                 } else {

@@ -1,5 +1,6 @@
 package com.sekusarisu.mdpings.vpings.presentation.components
 
+import com.sekusarisu.mdpings.R
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,15 +24,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.sekusarisu.mdpings.Screen
-//import com.sekusarisu.mdpings.AboutScreen
-//import com.sekusarisu.mdpings.AppSettingsScreen
-//import com.sekusarisu.mdpings.ServerListScreen
 import kotlinx.coroutines.launch
 
 @Preview(showBackground = true)
@@ -62,7 +61,7 @@ fun DrawerContent(
                 contentDescription = Icons.Rounded.Monitor.name
             )
             Text(
-                text = "MDPings",
+                text = stringResource(R.string.app_name),
                 fontWeight = FontWeight.Normal,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier
@@ -86,7 +85,7 @@ fun DrawerContent(
                 },
                 label = {
                     Text(
-                        text = "Home",
+                        text = stringResource(R.string.drawer_home),
                         style = MaterialTheme.typography.bodyLarge
                     )
                 },
@@ -122,7 +121,7 @@ fun DrawerContent(
                 },
                 label = {
                     Text(
-                        text = "Settings",
+                        text = stringResource(R.string.drawer_settings),
                         style = MaterialTheme.typography.bodyLarge
                     )
                 },
@@ -154,7 +153,7 @@ fun DrawerContent(
                 },
                 label = {
                     Text(
-                        text = "About",
+                        text = stringResource(R.string.drawer_about),
                         style = MaterialTheme.typography.bodyLarge
                     )
                 },

@@ -27,10 +27,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sekusarisu.mdpings.BuildConfig
+import com.sekusarisu.mdpings.R
 
 @Preview(showBackground = true)
 @Composable
@@ -59,7 +61,7 @@ fun AboutScreen(
                 tint = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = "About",
+                text = stringResource(R.string.about_about),
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(8.dp),
@@ -67,7 +69,7 @@ fun AboutScreen(
             )
         }
         Text(
-            text = body,
+            text = stringResource(R.string.about_content),
             textAlign = TextAlign.Start,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(horizontal = 26.dp, vertical = 8.dp),
@@ -98,8 +100,8 @@ fun AboutScreen(
                         uriHandler.openUri("https://github.com/icylian/MDPings")
                     }
                 ),
-            headlineContent = { Text(text = "MDPings", color = MaterialTheme.colorScheme.secondary) },
-            supportingContent = { Text(text = "查看 MDPings GitHub 项目地址和应用说明", color = MaterialTheme.colorScheme.tertiary) },
+            headlineContent = { Text(text = stringResource(R.string.app_name), color = MaterialTheme.colorScheme.secondary) },
+            supportingContent = { Text(text = stringResource(R.string.about_github), color = MaterialTheme.colorScheme.tertiary) },
             leadingContent = {
                 Icon(
                     imageVector = Icons.Rounded.MonitorHeart,
@@ -118,8 +120,8 @@ fun AboutScreen(
                         uriHandler.openUri("https://github.com/icylian/MDPings/issues")
                     }
                 ),
-            headlineContent = { Text("GitHub 议题", color = MaterialTheme.colorScheme.secondary) },
-            supportingContent = { Text("提交错误报告或改进建议", color = MaterialTheme.colorScheme.tertiary) },
+            headlineContent = { Text(stringResource(R.string.about_github_issue), color = MaterialTheme.colorScheme.secondary) },
+            supportingContent = { Text(stringResource(R.string.about_github_issue_content), color = MaterialTheme.colorScheme.tertiary) },
             leadingContent = {
                 Icon(
                     imageVector = Icons.Rounded.BugReport,
@@ -135,10 +137,10 @@ fun AboutScreen(
                         uriHandler.openUri("https://github.com/icylian/MDPings")
                     }
                 ),
-            headlineContent = { Text("赞助", color = MaterialTheme.colorScheme.secondary) },
+            headlineContent = { Text(stringResource(R.string.about_support_title), color = MaterialTheme.colorScheme.secondary) },
             supportingContent = {
                 Text(
-                    text = "谢谢！来 GitHub 点个 ⭐ 吧~",
+                    text = stringResource(R.string.about_support_content),
                     color = MaterialTheme.colorScheme.tertiary
                 )
             },
@@ -157,8 +159,8 @@ fun AboutScreen(
                         uriHandler.openUri("https://t.me/mdpings_app")
                     }
                 ),
-            headlineContent = { Text("Telegram 频道", color = MaterialTheme.colorScheme.secondary) },
-            supportingContent = { Text("https://t.me/mdpings_app", color = MaterialTheme.colorScheme.tertiary) },
+            headlineContent = { Text(stringResource(R.string.about_telegram_title), color = MaterialTheme.colorScheme.secondary) },
+            supportingContent = { Text(stringResource(R.string.about_telegram_content), color = MaterialTheme.colorScheme.tertiary) },
             leadingContent = {
                 Icon(
                     imageVector = Icons.AutoMirrored.Rounded.Send,
@@ -174,7 +176,7 @@ fun AboutScreen(
                         uriHandler.openUri("https://github.com/icylian/MDPings/releases")
                     }
                 ),
-            headlineContent = { Text("当前版本", color = MaterialTheme.colorScheme.secondary) },
+            headlineContent = { Text(stringResource(R.string.about_version_title), color = MaterialTheme.colorScheme.secondary) },
             supportingContent = { Text(versionName, color = MaterialTheme.colorScheme.tertiary) },
             leadingContent = {
                 Icon(
@@ -197,7 +199,7 @@ fun AboutScreen(
                 tint = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = "鸣谢项目",
+                text = stringResource(R.string.about_thanks_title),
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(8.dp),
@@ -211,17 +213,15 @@ fun AboutScreen(
                         uriHandler.openUri("https://nezha.wiki/")
                     }
                 ),
-            headlineContent = { Text("哪吒监控", color = MaterialTheme.colorScheme.secondary) },
-            supportingContent = { Text("查看哪吒监控的官方网站", color = MaterialTheme.colorScheme.tertiary) },
-//            supportingContent = { Text("查看哪吒监控 GitHub 项目地址和应用说明") },
+            headlineContent = { Text(stringResource(R.string.about_thanks_nezha_title), color = MaterialTheme.colorScheme.secondary) },
+            supportingContent = { Text(stringResource(R.string.about_thanks_nezha_content), color = MaterialTheme.colorScheme.tertiary) },
             leadingContent = {
                 Icon(
                     imageVector = Icons.Rounded.StarBorder,
                     contentDescription = "Star",
                     tint = MaterialTheme.colorScheme.secondary
                 )
-            },
-//            trailingContent = { Text("meta") }
+            }
         )
         ListItem(
             modifier = Modifier
@@ -230,8 +230,8 @@ fun AboutScreen(
                         uriHandler.openUri("https://apps.apple.com/us/app/vpings/id6479573031")
                     }
                 ),
-            headlineContent = { Text("VPings", color = MaterialTheme.colorScheme.secondary) },
-            supportingContent = { Text("哪吒监控 IOS 客户端，部分界面参考其构建", color = MaterialTheme.colorScheme.tertiary) },
+            headlineContent = { Text(stringResource(R.string.about_thanks_vpings_title), color = MaterialTheme.colorScheme.secondary) },
+            supportingContent = { Text(stringResource(R.string.about_thanks_vpings_content), color = MaterialTheme.colorScheme.tertiary) },
             leadingContent = {
                 Icon(
                     imageVector = Icons.Rounded.Star,
@@ -247,8 +247,8 @@ fun AboutScreen(
                         uriHandler.openUri("https://nezha-cf.buycoffee.top/")
                     }
                 ),
-            headlineContent = { Text("Nezha-dash", color = MaterialTheme.colorScheme.secondary) },
-            supportingContent = { Text("一个基于 Next.js 和 哪吒监控 的仪表盘，部分界面参考其构建", color = MaterialTheme.colorScheme.tertiary) },
+            headlineContent = { Text(stringResource(R.string.about_thanks_nezha_dash_title), color = MaterialTheme.colorScheme.secondary) },
+            supportingContent = { Text(stringResource(R.string.about_thanks_nezha_dash_content), color = MaterialTheme.colorScheme.tertiary) },
             leadingContent = {
                 Icon(
                     imageVector = Icons.Rounded.StarBorder,
@@ -264,8 +264,8 @@ fun AboutScreen(
                         uriHandler.openUri("https://github.com/patrykandpatrick/vico")
                     }
                 ),
-            headlineContent = { Text("Vico", color = MaterialTheme.colorScheme.secondary) },
-            supportingContent = { Text("开源的图表绘制库", color = MaterialTheme.colorScheme.tertiary) },
+            headlineContent = { Text(stringResource(R.string.about_thanks_vico_title), color = MaterialTheme.colorScheme.secondary) },
+            supportingContent = { Text(stringResource(R.string.about_thanks_vico_content), color = MaterialTheme.colorScheme.tertiary) },
             leadingContent = {
                 Icon(
                     imageVector = Icons.Rounded.Star,
@@ -274,42 +274,5 @@ fun AboutScreen(
                 )
             },
         )
-//        ListItem(
-//            modifier = Modifier
-//                .clickable(
-//                    onClick = {
-//                        uriHandler.openUri("https://ktor.io/")
-//                    }
-//                ),
-//            headlineContent = { Text("Ktor", color = MaterialTheme.colorScheme.secondary) },
-//            supportingContent = { Text("开源的 Http 客户端", color = MaterialTheme.colorScheme.tertiary) },
-//            leadingContent = {
-//                Icon(
-//                    imageVector = Icons.Rounded.Star,
-//                    contentDescription = "Star",
-//                    tint = MaterialTheme.colorScheme.secondary
-//                )
-//            },
-//        )
-//        ListItem(
-//            modifier = Modifier
-//                .clickable(
-//                    onClick = {
-//                        uriHandler.openUri("https://insert-koin.io/")
-//                    }
-//                ),
-//            headlineContent = { Text("Koin", color = MaterialTheme.colorScheme.secondary) },
-//            supportingContent = { Text("开源的 DI 框架", color = MaterialTheme.colorScheme.tertiary) },
-//            leadingContent = {
-//                Icon(
-//                    imageVector = Icons.Rounded.StarBorder,
-//                    contentDescription = "Star",
-//                    tint = MaterialTheme.colorScheme.secondary
-//                )
-//            },
-//        )
     }
 }
-
-private const val body: String =
-    "MDPings 是一个基于哪吒监控 API 接口开发的 MD3 风格 Android 客户端，支持同时监控多个服务器的状态，提供历史网络状态和延迟图表。"

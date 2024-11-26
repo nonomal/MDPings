@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.AlignHorizontalLeft
-import androidx.compose.material.icons.rounded.AlignHorizontalLeft
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.Download
@@ -45,9 +44,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.sekusarisu.mdpings.R
 import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
 import com.sekusarisu.mdpings.vpings.presentation.models.ServerUi
 import com.sekusarisu.mdpings.vpings.presentation.models.toNetIOSpeedDisplayableString
@@ -86,7 +87,7 @@ fun ServerSummaryCard(
                     modifier = Modifier
                 )
                 Text(
-                    text = "Summary",
+                    text = stringResource(R.string.server_list_summary_title),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier
@@ -104,7 +105,7 @@ fun ServerSummaryCard(
             ) {
                 SummaryOutlinedCard(
                     modifier = Modifier.weight(1f),
-                    title = "服务器总数",
+                    title = stringResource(R.string.server_list_summary_count),
                     content = {
                         OutlinedCardOnlineCount(
                             counts = servers.size,
@@ -115,7 +116,7 @@ fun ServerSummaryCard(
                 Spacer(Modifier.width(16.dp))
                 SummaryOutlinedCard(
                     modifier = Modifier.weight(1f),
-                    title = "服务器状态",
+                    title = stringResource(R.string.server_list_summary_status),
                     content = {
                         OutlinedCardOnlineCount(
                             modifier = Modifier
@@ -156,7 +157,7 @@ fun ServerSummaryCard(
 //                Spacer(Modifier.width(16.dp))
                 SummaryOutlinedCard(
                     modifier = Modifier.weight(1f),
-                    title = "总流量",
+                    title = stringResource(R.string.server_list_summary_transfer),
                     content = {
                         OutlinedCardTransferredCount(
                             netInTransfer = servers.sumOf { it.status.netInTransfer.value },

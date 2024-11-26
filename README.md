@@ -21,7 +21,7 @@ MDPings 是一个基于哪吒监控 API 接口开发的 MD3 风格 Android 客�
 ### 其他
 
 <p style="text-align: center;">
-    <img alt="desktop" src="snapshots/Screenshot_Login_Night.png" width="360"> <img alt="desktop" src="snapshots/Screenshot_Settings_Night.png" width="360">
+    <img alt="desktop" src="snapshots/Screenshot_Login_Night.png" width="360"> <img alt="desktop" src="snapshots/Screenshot_Visual_Light.png" width="360">
 </p>
 
 ## Features
@@ -46,12 +46,6 @@ MDPings 是一个基于哪吒监控 API 接口开发的 MD3 风格 Android 客�
 
 #### 3.点击 Test 后弹出 TOAST 显示 `Something went wrong, please try again later`.
 
-~~目前极少数用户反馈且暂未发现原因的问题，出现此类问题的用户有两种选择：~~
-
-~~1.下载本项目源码在 Android Studio 运行，重现该问题，并将 Logcat 反馈到项目群组让项目维护者尝试修复；~~
-
-~~2.将你无法连接上的哪吒监控内的敏感服务器删掉，创建一个临时 token 并将后端地址私发给项目维护者尝试修复。~~
-
 已修复，感谢 tg@呆呆 提供的debug用实例。
 
 #### 4.API BACKEND一项的格式？
@@ -68,9 +62,9 @@ MDPings 是一个基于哪吒监控 API 接口开发的 MD3 风格 Android 客�
 
 - [ ] 横屏/平板适配
 
-- [ ] 日间/夜间/主题色切换
+- [x] 日间/夜间/主题色切换
 
-- [ ] 统一界面语言、多语言支持
+- [x] 统一界面语言、多语言支持
 
 ## 支持
 

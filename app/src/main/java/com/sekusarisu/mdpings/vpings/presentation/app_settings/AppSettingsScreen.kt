@@ -35,9 +35,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.sekusarisu.mdpings.R
 import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
 import com.sekusarisu.mdpings.vpings.domain.AppSettings
 import kotlinx.coroutines.launch
@@ -62,8 +64,8 @@ fun AppSettingsScreen(
                 onDismissRequest = {
                     openAlertDialog = ""
                 },
-                dialogTitle = openAlertDialog,
-                dialogText = "更改应用的数据刷新间隔（毫秒），不建议将其设置到3000ms以下",
+                dialogTitle = stringResource(R.string.app_settings_refresh_interval_dialog_title),
+                dialogText = stringResource(R.string.app_settings_refresh_interval_dialog_content),
                 icon = Icons.Rounded.Refresh
             )
         }
@@ -87,7 +89,7 @@ fun AppSettingsScreen(
                 tint = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = "设置",
+                text = stringResource(R.string.app_settings_settings),
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(8.dp),
@@ -101,11 +103,11 @@ fun AppSettingsScreen(
             ),
             headlineContent = {
                 Text(
-                    text = "编辑/切换实例",
+                    text = stringResource(R.string.app_settings_switch_instance),
                     color = MaterialTheme.colorScheme.secondary
                 ) },
             supportingContent = {
-                Text(text = "新增、删除或切换哪吒监控实例",
+                Text(text = stringResource(R.string.app_settings_curd_instance),
                     color = MaterialTheme.colorScheme.tertiary
                 ) },
             leadingContent = {
@@ -125,11 +127,11 @@ fun AppSettingsScreen(
             ),
             headlineContent = {
                 Text(
-                    text = "更新间隔",
+                    text = stringResource(R.string.app_settings_refresh_interval_dialog_title),
                     color = MaterialTheme.colorScheme.secondary
                 ) },
             supportingContent = {
-                Text(text = "更改 MDPings 的默认数据刷新间隔（毫秒）",
+                Text(text = stringResource(R.string.app_settings_refresh_interval_content),
                     color = MaterialTheme.colorScheme.tertiary
                 ) },
             leadingContent = {
@@ -147,11 +149,11 @@ fun AppSettingsScreen(
             ),
             headlineContent = {
                 Text(
-                    text = "视觉与样式",
+                    text = stringResource(R.string.app_settings_visual_title),
                     color = MaterialTheme.colorScheme.secondary
                 ) },
             supportingContent = {
-                Text(text = "深色主题、动态色彩",
+                Text(text = stringResource(R.string.app_settings_visual_content),
                     color = MaterialTheme.colorScheme.tertiary
                 ) },
             leadingContent = {
@@ -225,7 +227,7 @@ fun AlertDialogExample(
                     }
                 }
             ) {
-                Text("确认")
+                Text(stringResource(R.string.app_settings_dialog_confirm))
             }
         },
         dismissButton = {
@@ -234,7 +236,7 @@ fun AlertDialogExample(
                     onDismissRequest()
                 }
             ) {
-                Text("取消")
+                Text(stringResource(R.string.app_settings_dialog_cancel))
             }
         }
     )

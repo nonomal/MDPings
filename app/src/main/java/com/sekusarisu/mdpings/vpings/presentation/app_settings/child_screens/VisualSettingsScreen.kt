@@ -1,5 +1,8 @@
 package com.sekusarisu.mdpings.vpings.presentation.app_settings.child_screens
 
+import android.content.Intent
+import android.os.Build
+import com.sekusarisu.mdpings.R
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -19,6 +22,7 @@ import androidx.compose.material.icons.rounded.ColorLens
 import androidx.compose.material.icons.rounded.Colorize
 import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.HdrAuto
+import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -33,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,7 +54,14 @@ import com.sekusarisu.mdpings.vpings.presentation.server_list.components.ServerL
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewServerUi0
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewServerUi1
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewServerUi2
+import android.net.Uri
+import android.provider.Settings
+import android.widget.Toast
+import androidx.annotation.RequiresApi
+import androidx.compose.ui.platform.LocalContext
+import com.sekusarisu.mdpings.vpings.presentation.app_settings.components.AppSettingsSwitch
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun VisualSettingsScreen(
     state: AppSettingsState,
@@ -59,6 +71,8 @@ fun VisualSettingsScreen(
 
     val isSystemInDarkTheme = isSystemInDarkTheme()
     var openAlertDialog by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val alternativeLanguage = context.resources.configuration.locales.get(0).toLanguageTag()
 
     when (openAlertDialog) {
         "动态颜色" -> {
@@ -67,18 +81,23 @@ fun VisualSettingsScreen(
                 onDismissRequest = {
                     openAlertDialog = ""
                 },
-                dialogTitle = "选择主题色",
-                dialogText = "选择希望使用的主题色，配色方案来自Material Theme Builder",
+                dialogTitle = stringResource(R.string.app_settings_visual_dynamic_color_dialog_title),
+                dialogText = stringResource(R.string.app_settings_visual_dynamic_color_dialog_content),
                 icon = Icons.Rounded.ColorLens,
                 content = {
                     Column {
                         Text(
-                            text = "配色方案来自Material Theme Builder",
+                            text = stringResource(R.string.app_settings_visual_dynamic_color_dialog_content),
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
                         )
                         Spacer(Modifier.height(8.dp))
-                        listOf<String>("红", "绿", "蓝", "黄").forEachIndexed { index, colorString ->
+                        listOf<String>(
+                            stringResource(R.string.app_settings_visual_theme_color_red),
+                            stringResource(R.string.app_settings_visual_theme_color_green),
+                            stringResource(R.string.app_settings_visual_theme_color_blue),
+                            stringResource(R.string.app_settings_visual_theme_color_yellow)
+                        ).forEachIndexed { index, colorString ->
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -91,7 +110,7 @@ fun VisualSettingsScreen(
                                             )
                                         )
                                     }
-                                ),
+                                    ),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 RadioButton(
@@ -113,7 +132,7 @@ fun VisualSettingsScreen(
                             }
                         }
                     }
-                },
+                }
             )
         }
     }
@@ -137,7 +156,7 @@ fun VisualSettingsScreen(
                 tint = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = "视觉与样式",
+                text = stringResource(R.string.app_settings_visual_title),
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(8.dp),
@@ -186,11 +205,11 @@ fun VisualSettingsScreen(
             ),
             headlineContent = {
                 Text(
-                    text = "动态颜色",
+                    text = stringResource(R.string.app_settings_visual_dynamic_color_title),
                     color = MaterialTheme.colorScheme.secondary
                 ) },
             supportingContent = {
-                Text(text = "将壁纸颜色应用于应用主题",
+                Text(text = stringResource(R.string.app_settings_visual_dynamic_color_content),
                     color = MaterialTheme.colorScheme.tertiary
                 ) },
             leadingContent = {
@@ -233,11 +252,11 @@ fun VisualSettingsScreen(
             ),
             headlineContent = {
                 Text(
-                    text = "跟随系统",
+                    text = stringResource(R.string.app_settings_visual_theme_follow_title),
                     color = MaterialTheme.colorScheme.secondary
                 ) },
             supportingContent = {
-                Text(text = "开关深色模式跟随系统",
+                Text(text = stringResource(R.string.app_settings_visual_theme_follow_content),
                     color = MaterialTheme.colorScheme.tertiary
                 ) },
             leadingContent = {
@@ -248,7 +267,7 @@ fun VisualSettingsScreen(
                 )
             },
             trailingContent = {
-                AppSettingsSwitchWithDivider(
+                AppSettingsSwitch(
                     checked = state.appSettings.themeConfig.themeMode == ThemeMode.SYSTEM,
                     onCheckedChange = {
                         onAction(
@@ -283,11 +302,11 @@ fun VisualSettingsScreen(
                 ),
                 headlineContent = {
                     Text(
-                        text = "深色模式",
+                        text = stringResource(R.string.app_settings_visual_dark_mode_title),
                         color = MaterialTheme.colorScheme.secondary
                     ) },
                 supportingContent = {
-                    Text(text = "开关深色模式",
+                    Text(text = stringResource(R.string.app_settings_visual_dark_mode_content),
                         color = MaterialTheme.colorScheme.tertiary
                     ) },
                 leadingContent = {
@@ -329,7 +348,7 @@ fun VisualSettingsScreen(
                     }
                 },
                 trailingContent = {
-                    AppSettingsSwitchWithDivider(
+                    AppSettingsSwitch(
                         checked =
                         state.appSettings.themeConfig.themeMode == ThemeMode.SYSTEM && isSystemInDarkTheme()
                                 || state.appSettings.themeConfig.themeMode == ThemeMode.DARK,
@@ -346,10 +365,45 @@ fun VisualSettingsScreen(
                 }
             )
         }
+        ListItem(
+            modifier = Modifier.clickable(
+                onClick = {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        val intent = Intent(Settings.ACTION_APP_LOCALE_SETTINGS).apply {
+                            data = Uri.fromParts("package", context.packageName, null)
+                        }
+                        context.startActivity(intent)
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "当前系统（小于Android13）不支持应用语言单独设置。",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            ),
+            headlineContent = {
+                Text(
+                    text = stringResource(R.string.app_settings_visual_language_title),
+                    color = MaterialTheme.colorScheme.secondary
+                ) },
+            supportingContent = {
+                Text(text = alternativeLanguage,
+                    color = MaterialTheme.colorScheme.tertiary
+                ) },
+            leadingContent = {
+                Icon(
+                    imageVector = Icons.Rounded.Language,
+                    contentDescription = "Language",
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+            }
+        )
 
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 @Preview(showBackground = true)
 fun VisualSettingsScreenPreview() {
