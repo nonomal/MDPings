@@ -72,8 +72,10 @@ dependencies {
     debugImplementation(libs.bundles.compose.debug)
     implementation(libs.bundles.koin)
     implementation(libs.bundles.ktor)
-//    implementation(libs.ktor.client.android)
     implementation(libs.ktor.client.okhttp)
+
+    implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
+    implementation(libs.androidx.compose.material3.adaptive.navigation)
 
     // Preferences DataStore (SharedPreferences like APIs)
     dependencies {
@@ -120,8 +122,11 @@ dependencies {
 
     }
 
+    implementation(libs.androidx.material3.windowsizeclass)
+
     implementation ("androidx.appcompat:appcompat:1.7.0")
     implementation ("androidx.core:core:1.15.0")
+
 
     implementation(libs.gson)
     testImplementation(libs.junit)
