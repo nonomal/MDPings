@@ -12,14 +12,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Commit
 import androidx.compose.material.icons.rounded.NetworkPing
@@ -31,6 +27,9 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MultiChoiceSegmentedButtonRow
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,7 +44,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsState
@@ -151,7 +149,7 @@ fun NetworkMonitor(
             Spacer(modifier = Modifier.height(4.dp))
 
             // FilterChips
-            DateFilterChipGroup(
+            SegmentedButtonRow(
                 state = state,
                 modifier = Modifier,
                 onAction = onAction
@@ -289,6 +287,53 @@ private fun DateFilterChipGroup(
                     .wrapContentWidth()
                     .weight(1f),
                 shape = ShapeDefaults.Large,
+            )
+        }
+    }
+}
+
+@Composable
+private fun SegmentedButtonRow(
+    state: ServerDetailState,
+    modifier: Modifier = Modifier,
+    onAction: (ServerDetailAction) -> Unit = { }
+) {
+    val options = listOf<String>(
+        stringResource(R.string.server_detail_card_30_mins),
+        stringResource(R.string.server_detail_card_1_hour),
+        stringResource(R.string.server_detail_card_3_hours),
+        stringResource(R.string.server_detail_card_6_hours)
+    )
+    MultiChoiceSegmentedButtonRow(
+        modifier = Modifier
+            .padding(vertical = 4.dp)
+            .heightIn(max = 36.dp)
+    ){
+        options.forEachIndexed { index, label ->
+            SegmentedButton(
+                shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
+                checked = state.monitorsTimeSlice == label,
+                onCheckedChange = {
+                    if (state.monitorsTimeSlice == label) {
+                        onAction(
+                            ServerDetailAction.OnSliceMonitorsTime("all")
+                        )
+                    } else {
+                        onAction(
+                            ServerDetailAction.OnSliceMonitorsTime(label)
+                        )
+                    }
+                },
+                label = {
+                    Text(
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.Center,
+                        text = label,
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.width(46.dp)
+                    )
+                }
             )
         }
     }
