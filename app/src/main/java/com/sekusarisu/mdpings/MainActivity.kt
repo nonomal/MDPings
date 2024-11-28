@@ -151,8 +151,6 @@ class MainActivity : ComponentActivity() {
                         maxHorizontalPartitions = when {
                             isPortrait -> when (width) {
                                 WindowWidthSizeClass.Compact -> 1
-//                                WindowWidthSizeClass.Medium -> 2
-//                                WindowWidthSizeClass.Expanded -> 2
                                 else -> 2
                             }
                             else -> 2
@@ -241,7 +239,8 @@ class MainActivity : ComponentActivity() {
                                         appSettingsState = appSettingsState,
                                         onAction = loginViewModel::onAction,
                                         onNavigateToServer = {
-                                            navController.navigate(Screen.ServerList.route) {
+                                            serverListViewModel.onSwitchInstanceCleanUp()
+                                            navController.navigate(Screen.ServerListDetailPane.route) {
                                                 popUpTo(Screen.Auth.route) { inclusive = true }
                                             }
                                         },

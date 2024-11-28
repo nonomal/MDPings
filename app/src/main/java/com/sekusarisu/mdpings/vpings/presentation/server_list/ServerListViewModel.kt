@@ -34,6 +34,17 @@ class ServerListViewModel(
             ServerListState()
         )
 
+    fun onSwitchInstanceCleanUp() {
+        viewModelScope.launch{
+            _state.update { it.copy(
+                selectedServer = null,
+                servers = emptyList(),
+                ipAPIUi = null,
+                monitors = emptyList()
+            ) }
+        }
+    }
+
     fun onAction(action: ServerListAction) {
         when(action) {
             is ServerListAction.OnServerClick -> {

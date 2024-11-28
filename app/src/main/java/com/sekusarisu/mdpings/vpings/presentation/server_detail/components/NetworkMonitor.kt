@@ -4,6 +4,8 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,8 +42,10 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsState
@@ -55,6 +59,7 @@ import com.sekusarisu.mdpings.vpings.domain.AppSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun NetworkMonitor(
     appSettingsState: AppSettingsState,
@@ -205,24 +210,16 @@ fun NetworkMonitor(
                 label = "AnimatedTags"
             ) { it ->
                 // TAG
-                LazyVerticalGrid(
-                    columns = GridCells.Adaptive(80.dp),
+                FlowRow(
                     verticalArrangement = Arrangement.Center,
-                    // 指定高度不然LazyGrid会爆炸
-                    modifier = Modifier
-                        .wrapContentHeight()
-                        .fillMaxWidth()
-                        .requiredHeightIn(max = (18 * 4).dp)
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    itemsIndexed(
-                        items = it
-                    ) { index, monitor ->
+                    it.forEachIndexed { index, monitor ->
                         Row(
                             modifier = Modifier
-                                .fillMaxWidth()
                                 .padding(horizontal = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
                                 tint = chartColors[index],
@@ -231,6 +228,8 @@ fun NetworkMonitor(
                                 modifier = Modifier.size(16.dp)
                             )
                             Text(
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
                                 text = monitor.monitorName,
                                 textAlign = TextAlign.Center,
                                 style = MaterialTheme.typography.bodyMedium,
@@ -240,6 +239,7 @@ fun NetworkMonitor(
                         }
                     }
                 }
+
             }
         }
     }
@@ -277,15 +277,16 @@ private fun DateFilterChipGroup(
                 },
                 label = {
                     Text(
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         textAlign = TextAlign.Center,
                         text = text,
                         style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier.width(64.dp)
+                        modifier = Modifier.width(46.dp)
                     )
                 },
                 modifier = Modifier
                     .wrapContentWidth()
-                    .padding(horizontal = 4.dp)
                     .weight(1f),
                 shape = ShapeDefaults.Large,
             )

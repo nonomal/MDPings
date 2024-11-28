@@ -89,15 +89,15 @@ fun DrawerContent(
                         style = MaterialTheme.typography.bodyLarge
                     )
                 },
-                selected = currentRoute == Screen.ServerList.route,
+                selected = currentRoute == Screen.ServerListDetailPane.route,
                 onClick = {
-                    if (currentRoute != Screen.ServerList.route) {
+                    if (currentRoute != Screen.ServerListDetailPane.route) {
                         scope.launch {
                             drawerState.apply {
                                 if (isClosed) open() else close()
                             }
                             navController.navigate(
-                                route = Screen.ServerList.route
+                                route = Screen.ServerListDetailPane.route
                             ) {
                                 popUpTo(0)
                             }

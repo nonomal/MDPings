@@ -1,6 +1,5 @@
 package com.sekusarisu.mdpings.vpings.presentation
 
-import android.app.Activity
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,12 +13,10 @@ import androidx.compose.material3.adaptive.navigation.ThreePaneScaffoldNavigator
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,7 +36,6 @@ import com.sekusarisu.mdpings.vpings.presentation.server_list.ServerListScreen
 import com.sekusarisu.mdpings.vpings.presentation.server_list.ServerListState
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewListServers
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewServerUi0
-import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewServerUi1
 import kotlinx.collections.immutable.persistentListOf
 import kotlin.Any
 
@@ -60,8 +56,7 @@ fun ListDetailLayoutScreen(
         navigator = navigator,
         listPane = {
             ServerListScreen(
-                modifier = modifier
-                    .preferredWidth(720.dp),
+                modifier = modifier,
                 state = serverListState,
                 onAction = onServerListAction,
                 onNavigateToDetail = { serverId ->
@@ -140,7 +135,7 @@ private fun ListDetailLayoutScreenPreview() {
                     horizontalPartitionSpacerSize = 0.dp,
                     maxVerticalPartitions = 2,
                     verticalPartitionSpacerSize = 0.dp,
-                    defaultPanePreferredWidth = 400.dp,
+                    defaultPanePreferredWidth = 380.dp,
                     excludedBounds = listOf()
                 )
             ),
