@@ -56,6 +56,7 @@
     // Server Detail
     <string name="server_detail_loading">正在載入伺服器……</string>
     <string name="server_detail_realtime_status">即時狀態</string>
+    <string name="select_a_server">選擇一個伺服器查看詳細信息</string>
 
     // Server Detail Card (Instance info)
     <string name="server_detail_card_instance_info">伺服器資訊</string>
@@ -63,8 +64,8 @@
     <string name="server_detail_card_cpu">處理器:</string>
     <string name="server_detail_card_ram">記憶體:</string>
     <string name="server_detail_card_storage">儲存:</string>
-    <string name="server_detail_card_isp">ISP：</string>
-    <string name="server_detail_card_org">ORG：</string>
+    <string name="server_detail_card_isp">ISP:</string>
+    <string name="server_detail_card_org">ORG:</string>
     <string name="server_detail_card_location">位置:</string>
     <string name="server_detail_card_nezha_version">哪吒版本:</string>
 

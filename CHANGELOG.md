@@ -1,4 +1,8 @@
 
+### v1.0.4
+
+- Init: Tablet layout support.
+
 ### v1.0.3
 
 - Init: Theme && Language Settings.

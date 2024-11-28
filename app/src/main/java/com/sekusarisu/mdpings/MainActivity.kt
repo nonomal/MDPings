@@ -1,5 +1,6 @@
 package com.sekusarisu.mdpings
 
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
@@ -14,7 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,8 +25,12 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
+import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,6 +38,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -48,6 +54,7 @@ import com.sekusarisu.mdpings.core.presentation.util.ObserveAsEvents
 import com.sekusarisu.mdpings.core.presentation.util.toString
 import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
 import com.sekusarisu.mdpings.vpings.presentation.AboutScreen
+import com.sekusarisu.mdpings.vpings.presentation.ListDetailLayoutScreen
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsScreen
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsViewModel
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.child_screens.VisualSettingsScreen
@@ -62,10 +69,15 @@ import com.sekusarisu.mdpings.vpings.presentation.user_login.LoginScreen
 import com.sekusarisu.mdpings.vpings.presentation.user_login.LoginViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    @OptIn(ExperimentalMaterial3Api::class)
+    @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class,
+        ExperimentalMaterial3WindowSizeClassApi::class
+    )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -101,9 +113,6 @@ class MainActivity : ComponentActivity() {
                 // Error Handle
                 val context = LocalContext.current
 
-                // AppSettings json
-//                val appSettings by context.dataStore.data.collectAsStateWithLifecycle(AppSettings())
-
                 ObserveAsEvents(events = loginViewModel.events) { event ->
                     when (event) {
                         is LoginEvent.Error -> {
@@ -128,9 +137,31 @@ class MainActivity : ComponentActivity() {
                     if (currentRoute == Screen.Login.route) stringResource(R.string.appbar_title_login)
                     else if (currentRoute == Screen.AppSettings.route) stringResource(R.string.appbar_title_appsettings)
                     else if (currentRoute == Screen.About.route) stringResource(R.string.appbar_title_about)
-                    else if (currentRoute == Screen.ServerDetail.route)
+                    else if (currentRoute == Screen.ServerListDetailPane.route && serverDetailState.serverUi != null)
                         "${serverListState.selectedServer!!.host.countryCode} ${serverListState.selectedServer!!.name}"
                     else stringResource(R.string.app_name)
+
+                // Orientation && windowSizeClass -> ListDetailPane Navigator's maxHorizontalPartitions
+                val configuration = LocalConfiguration.current
+                val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+                val windowSizeClass = calculateWindowSizeClass(activity = this)
+                val width = windowSizeClass.widthSizeClass
+                val navigator = rememberListDetailPaneScaffoldNavigator<Any>(
+                    scaffoldDirective = PaneScaffoldDirective(
+                        maxHorizontalPartitions = when {
+                            isPortrait -> when (width) {
+                                WindowWidthSizeClass.Compact -> 1
+                                else -> 2
+                            }
+                            else -> 2
+                        },
+                        horizontalPartitionSpacerSize = 0.dp,
+                        maxVerticalPartitions = 2,
+                        verticalPartitionSpacerSize = 0.dp,
+                        defaultPanePreferredWidth = 400.dp,
+                        excludedBounds = emptyList()
+                    )
+                )
 
                 ModalNavigationDrawer(
                     gesturesEnabled = true,
@@ -138,7 +169,7 @@ class MainActivity : ComponentActivity() {
                     drawerContent = {
                         ModalDrawerSheet {
                             DrawerContent(
-                                modifier = Modifier.requiredWidth(280.dp),
+                                modifier = Modifier.width(280.dp),
                                 navController = navController,
                                 currentRoute = currentRoute,
                                 drawerState = drawerState
@@ -177,7 +208,7 @@ class MainActivity : ComponentActivity() {
                         LaunchedEffect(Unit) {
                             val isSettingsNull = apiURL == null || apiTOKEN == null
                             navController.navigate(
-                                if (isSettingsNull) Screen.Login.route else Screen.ServerList.route
+                                if (isSettingsNull) Screen.Login.route else Screen.ServerListDetailPane.route
                             ) {
                                 popUpTo(Screen.Loading.route) {
                                     inclusive = true  // 这会移除 Loading 屏幕
@@ -208,7 +239,8 @@ class MainActivity : ComponentActivity() {
                                         appSettingsState = appSettingsState,
                                         onAction = loginViewModel::onAction,
                                         onNavigateToServer = {
-                                            navController.navigate(Screen.ServerList.route) {
+                                            serverListViewModel.onSwitchInstanceCleanUp()
+                                            navController.navigate(Screen.ServerListDetailPane.route) {
                                                 popUpTo(Screen.Auth.route) { inclusive = true }
                                             }
                                         },
@@ -247,6 +279,19 @@ class MainActivity : ComponentActivity() {
                                         selectedServerUi = selectedServer,
                                         onAction = serverDetailViewModel::onAction,
                                         appSettingsState = appSettingsState,
+                                    )
+                                }
+
+                                composable(Screen.ServerListDetailPane.route) {
+                                    ListDetailLayoutScreen(
+                                        modifier = Modifier,
+                                        navigator = navigator,
+                                        serverListState = serverListState,
+                                        serverDetailState = serverDetailState,
+                                        appSettingsState = appSettingsState,
+                                        onServerListAction = serverListViewModel::onAction,
+                                        onServerDetailAction = serverDetailViewModel::onAction,
+                                        onAppSettingsAction = appSettingsViewModel::onAction
                                     )
                                 }
                             }
@@ -300,6 +345,7 @@ sealed class Screen(val route: String) {
     object ServerDetail : Screen("main/servers/{serverId}") {
         fun createRoute(serverId: String) = "main/servers/$serverId"
     }
+    object ServerListDetailPane : Screen("main/serverListDetail")
 
     // Settings graph
     object Settings : Screen("settings")

@@ -73,7 +73,7 @@ fun ServerDetailScreen(
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(selectedServerUi.id) {
         val apiURL = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiUrl
         val apiTOKEN = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiToken
         val interval = appSettingsState.appSettings.refreshInterval
@@ -87,7 +87,7 @@ fun ServerDetailScreen(
             )
         )
     }
-    LaunchedEffect(Unit) {
+    LaunchedEffect(selectedServerUi.id) {
         val apiURL = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiUrl
         val apiTOKEN = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiToken
         val interval = appSettingsState.appSettings.refreshInterval

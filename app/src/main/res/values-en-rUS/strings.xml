@@ -56,6 +56,7 @@
     // Server Detail
     <string name="server_detail_loading">Loading server...</string>
     <string name="server_detail_realtime_status">Real-time Status</string>
+    <string name="select_a_server">Select a server.</string>
 
     // Server Detail Card (Instance info)
     <string name="server_detail_card_instance_info">Server Information</string>

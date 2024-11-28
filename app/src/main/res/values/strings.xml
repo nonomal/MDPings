@@ -55,6 +55,7 @@
     // Server Detail
     <string name="server_detail_loading">正在加载服务器……</string>
     <string name="server_detail_realtime_status">实时状态</string>
+    <string name="select_a_server">选择一个服务器查看详细信息</string>
 
     // Server Detail Card (Instance info)
     <string name="server_detail_card_instance_info">服务器信息</string>
