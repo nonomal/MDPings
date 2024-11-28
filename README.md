@@ -6,13 +6,23 @@ MDPings 是一个基于哪吒监控 API 接口开发的 MD3 风格 Android 客�
 
 ## 界面
 
-### 主页
+### 主页（平板）
+
+<p style="text-align: center;">
+    <img alt="desktop" src="snapshots/Tablet_Screenshot_Home_Portrait_Night.png" width="720">
+</p>
+
+<p style="text-align: center;">
+    <img alt="desktop" src="snapshots/Tablet_Screenshot_Home_Landscape_Light.png" width="720">
+</p>
+
+### 主页（手机）
 
 <p style="text-align: center;">
     <img alt="desktop" src="snapshots/Screenshot_Light.png" width="360"> <img alt="desktop" src="snapshots/Screenshot_Night.png" width="360">
 </p>
 
-### 详情页
+### 详情页（手机）
 
 <p style="text-align: center;">
     <img alt="desktop" src="snapshots/Screenshot_ServerDetail_Night.png" width="360"> <img alt="desktop" src="snapshots/Screenshot_Monitors_Night.png" width="360">
@@ -28,7 +38,9 @@ MDPings 是一个基于哪吒监控 API 接口开发的 MD3 风格 Android 客�
 
 ✈️ 多后端切换
 
-💡 MD3风格
+🖥️ 总流量监控
+
+💡 MD3风格、自适应布局
 
 ## Download
 
@@ -60,11 +72,17 @@ MDPings 是一个基于哪吒监控 API 接口开发的 MD3 风格 Android 客�
 > [!CAUTION]
 > 由于预计哪吒监控1.0的API将会有大幅度变动，因此在1.0版更新出来前，将不会有大的改动
 
-- [ ] 横屏/平板适配
+- [x] 横屏/平板适配
 
 - [x] 日间/夜间/主题色切换
 
 - [x] 统一界面语言、多语言支持
+
+- [ ] 桌面小部件
+
+- [ ] 主页列表卡片内容优化/重做
+
+- [ ] 排序筛选功能（静候官方1.0版更新后适配）
 
 ## 支持
 

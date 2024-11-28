@@ -196,6 +196,6 @@ fun Long.toMemDiskLongDisplayableString(): String {
 fun Long.toISOnline(): Boolean {
     val current = System.currentTimeMillis() / 1000
     val timeDifference = kotlin.math.abs(current - this)
-    return timeDifference <= 120
+    return timeDifference <= 600
 }
 
