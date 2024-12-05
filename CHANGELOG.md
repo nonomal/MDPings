@@ -1,4 +1,8 @@
 
+### v1.1.0
+
+- Init: Nezha V1 support.
+
 ### v1.0.4
 
 - Init: Tablet layout support.
