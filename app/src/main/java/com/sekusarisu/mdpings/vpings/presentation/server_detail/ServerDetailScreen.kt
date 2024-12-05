@@ -54,6 +54,7 @@ import com.sekusarisu.mdpings.vpings.presentation.server_detail.components.Offli
 import com.sekusarisu.mdpings.vpings.presentation.server_detail.components.PktLostAndAvgLatencyCard
 import com.sekusarisu.mdpings.vpings.presentation.server_detail.components.mockIpAPIUi
 import com.sekusarisu.mdpings.vpings.presentation.server_detail.components.mockMonitors
+import com.sekusarisu.mdpings.vpings.presentation.server_list.ServerListState
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.LoadAndUptime
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.NetworkIO
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.NetworkTransfer
@@ -69,6 +70,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun ServerDetailScreen(
     state: ServerDetailState,
+    serverListState: ServerListState,
     appSettingsState: AppSettingsState,
     selectedServerUi: WSServerUi,
     onAction: (ServerDetailAction) -> Unit,
@@ -92,23 +94,6 @@ fun ServerDetailScreen(
             )
         )
     }
-    // Interval Load Server Status
-//    LaunchedEffect(selectedServerUi.id) {
-//        val apiURL = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiUrl
-//        val apiTOKEN = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiToken
-//        val interval = appSettingsState.appSettings.refreshInterval
-//        while (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-//            onAction(
-//                ServerDetailAction.OnLoadSingleServer(
-//                    serverUi = selectedServerUi,
-//                    apiURL = apiURL,
-//                    apiTOKEN = apiTOKEN,
-//                    interval = interval
-//                )
-//            )
-//            delay(interval.toLong())
-//        }
-//    }
     DisposableEffect(lifecycleOwner) {
         onDispose{
             onAction(
@@ -119,6 +104,7 @@ fun ServerDetailScreen(
 
     AnimatedVisibility(
         visible = (state.wsServerUi == null || state.ipAPIUi == null),
+//        visible = (state.wsServerUi == null),
         enter = fadeIn(),
         exit = fadeOut()
     ) {
@@ -136,6 +122,7 @@ fun ServerDetailScreen(
 
     AnimatedVisibility(
         visible = (state.wsServerUi != null && state.ipAPIUi != null),
+//        visible = (state.wsServerUi != null),
         enter = slideInVertically(
             spring(
                 stiffness = Spring.StiffnessLow,
@@ -154,7 +141,7 @@ fun ServerDetailScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
-            if (!state.serverUi!!.isOnline) {
+            if (!selectedServerUi.isOnline) {
                 OfflineCard()
                 Spacer(Modifier.height(8.dp))
             }
@@ -168,7 +155,8 @@ fun ServerDetailScreen(
                 appSettingsState = appSettingsState,
                 state = state,
                 onAction = onAction,
-                modifier = modifier
+                modifier = modifier,
+                serverId = serverListState.selectedServer!!.id
             )
             Spacer(Modifier.height(8.dp))
             PktLostAndAvgLatencyCard(
@@ -178,7 +166,8 @@ fun ServerDetailScreen(
             )
             Spacer(Modifier.height(8.dp))
             ServerStatus(
-                serverUi = state.wsServerUi,
+                state = serverListState,
+                selectedServerUi = selectedServerUi,
                 modifier = modifier
             )
         }
@@ -187,9 +176,13 @@ fun ServerDetailScreen(
 
 @Composable
 fun ServerStatus(
-    serverUi: WSServerUi,
+    state: ServerListState,
+    selectedServerUi: WSServerUi,
     modifier: Modifier = Modifier
 ) {
+
+    val serverUi = state.wsServers.first { server -> server.id == selectedServerUi.id }
+
     Card(
         modifier = Modifier.wrapContentHeight(),
         shape = ShapeDefaults.Medium,
@@ -254,7 +247,8 @@ fun ServerDetailScreenPreviewOnline() {
                 monitors = mockMonitors
             ),
             onAction = {},
-            appSettingsState = AppSettingsState(AppSettings())
+            appSettingsState = AppSettingsState(AppSettings()),
+            serverListState = ServerListState()
         )
     }
 }
@@ -273,7 +267,8 @@ fun ServerDetailScreenPreviewOffline() {
                 monitors = mockMonitors
             ),
             onAction = {},
-            appSettingsState = AppSettingsState(AppSettings())
+            appSettingsState = AppSettingsState(AppSettings()),
+            serverListState = ServerListState()
         )
     }
 }

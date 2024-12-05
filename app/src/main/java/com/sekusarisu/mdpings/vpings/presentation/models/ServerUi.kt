@@ -4,6 +4,7 @@ import android.icu.text.NumberFormat
 import com.sekusarisu.mdpings.vpings.domain.Host
 import com.sekusarisu.mdpings.vpings.domain.Server
 import com.sekusarisu.mdpings.vpings.domain.Status
+import java.time.Instant
 import java.util.Locale
 import kotlin.math.pow
 
@@ -194,8 +195,11 @@ fun Long.toMemDiskLongDisplayableString(): String {
 }
 
 fun Long.toISOnline(): Boolean {
-    val current = System.currentTimeMillis() / 1000
+    val current = System.currentTimeMillis()
     val timeDifference = kotlin.math.abs(current - this)
-    return timeDifference <= 600
+    return timeDifference <= 120000
 }
 
+fun String.toEpochMilli(): Long {
+    return Instant.parse(this).toEpochMilli()
+}

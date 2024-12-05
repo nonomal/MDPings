@@ -53,7 +53,7 @@ fun WSServer.toWSServerUi(): WSServerUi {
         status = status.toWSStatusUi(),
         countryCode = countryCode.countryCodeCheck().toCountryCodeToEmojiFlag(),
         lastActive = lastActive,
-        isOnline = true
+        isOnline = lastActive.toEpochMilli().toISOnline()
     )
 }
 

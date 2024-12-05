@@ -25,7 +25,7 @@ fun Monitor.toMonitorUi(): MonitorUi {
 
     // 过滤超时数据并将时间戳和延迟配对
     val filtered = createdAt.zip(avgDelay)
-        .filter { (_, delay) -> delay != 1000.0 }
+//        .filter { (_, delay) -> delay != 1000.0 }
         .takeIf { it.isNotEmpty() } // 确保有数据
 
     // 如果没有有效数据，返回所有统计数据为N/A的对象

@@ -92,51 +92,51 @@ fun MonitorsChart(modelProducer: CartesianChartModelProducer, modifier: Modifier
             easing = FastOutSlowInEasing
         ),
         chart =
-            rememberCartesianChart(
-                rememberLineCartesianLayer(
-                    // 线段样式调整
-                    lineProvider = LineCartesianLayer.LineProvider.series(
-                        lines =
-                            chartColors.map { color ->
-                                LineCartesianLayer.rememberLine(
-                                    fill = remember { LineCartesianLayer.LineFill.single(fill(color)) },
-                                    // 注释areaFill以降低3个monitors以上同时显示的可读性
-                                    areaFill = null
-                                )
-                            }
-                    )
-                ),
-                // Y轴
-                startAxis =
-                    VerticalAxis.rememberStart(
-                        label = rememberStartAxisLabel(),
-                        // 标签（暂时没用）
-                        titleComponent =
-                            rememberTextComponent(
-                                color = Color.Black,
-                                margins = dimensions(end = 4.dp),
-                                padding = dimensions(8.dp, 2.dp),
-                                background = rememberShapeComponent(),
-                            ),
-                        horizontalLabelPosition = VerticalAxis.HorizontalLabelPosition.Inside,
-                    ),
-                // X轴
-                bottomAxis =
-                    HorizontalAxis.rememberBottom(
-                        valueFormatter = bottomAxisValueFormatter,
-                        itemPlacer =
-                            remember {
-                                HorizontalAxis.ItemPlacer.aligned(spacing = 4, addExtremeLabelPadding = true)
-                            },
-                    ),
-                marker = rememberMarker(
-                    labelPosition = DefaultCartesianMarker.LabelPosition.Top,
-//                    showIndicator = false
-                ),
-                layerPadding = cartesianLayerPadding(scalableStart = 16.dp, scalableEnd = 16.dp),
-                // 名字标注
-//                legend = rememberLegend(),
+        rememberCartesianChart(
+            rememberLineCartesianLayer(
+                // 线段样式调整
+                lineProvider = LineCartesianLayer.LineProvider.series(
+                    lines =
+                    chartColors.map { color ->
+                        LineCartesianLayer.rememberLine(
+                            fill = remember { LineCartesianLayer.LineFill.single(fill(color)) },
+                            // 注释areaFill以降低3个monitors以上同时显示的可读性
+                            areaFill = null
+                        )
+                    }
+                )
             ),
+            // Y轴
+            startAxis =
+            VerticalAxis.rememberStart(
+                label = rememberStartAxisLabel(),
+                // 标签（暂时没用）
+                titleComponent =
+                rememberTextComponent(
+                    color = Color.Black,
+                    margins = dimensions(end = 4.dp),
+                    padding = dimensions(8.dp, 2.dp),
+                    background = rememberShapeComponent(),
+                ),
+                horizontalLabelPosition = VerticalAxis.HorizontalLabelPosition.Inside,
+            ),
+            // X轴
+            bottomAxis =
+            HorizontalAxis.rememberBottom(
+                valueFormatter = bottomAxisValueFormatter,
+                itemPlacer =
+                remember {
+                    HorizontalAxis.ItemPlacer.aligned(spacing = 4, addExtremeLabelPadding = true)
+                },
+            ),
+            marker = rememberMarker(
+                labelPosition = DefaultCartesianMarker.LabelPosition.Top,
+//                    showIndicator = false
+            ),
+            layerPadding = cartesianLayerPadding(scalableStart = 16.dp, scalableEnd = 16.dp),
+            // 名字标注
+//                legend = rememberLegend(),
+        ),
         modifier = modifier.fillMaxHeight(),
         zoomState = rememberVicoZoomState(
             // 初始最小放大
@@ -155,7 +155,7 @@ private fun rememberStartAxisLabel() =
         margins = dimensions(4.dp),
         padding = dimensions(4.dp, 0.dp),
         background = rememberShapeComponent(
-//            color = MaterialTheme.colorScheme.primaryContainer,
+            color = MaterialTheme.colorScheme.primaryContainer,
             shape = CorneredShape.rounded(4.dp),
             shadow = Shadow(
                 radiusDp = 8f,

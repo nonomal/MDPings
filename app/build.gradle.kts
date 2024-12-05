@@ -13,8 +13,8 @@ android {
         applicationId = "com.sekusarisu.mdpings"
         minSdk = 26
         targetSdk = 35
-        versionCode = 5
-        versionName = "1.0.4"
+        versionCode = 6
+        versionName = "1.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -99,7 +99,7 @@ dependencies {
     implementation(libs.androidx.foundation)
 
     dependencies {
-        val vico_version = "2.0.0-beta.3"
+        val vico_version = "2.0.0-beta.2"
         // For Jetpack Compose.
         implementation("com.patrykandpatrick.vico:compose:$vico_version")
         // For `compose`. Creates a `ChartStyle` based on an M2 Material Theme.

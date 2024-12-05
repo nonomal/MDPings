@@ -51,7 +51,7 @@ internal fun rememberMarker(
     val labelBackgroundShape = markerCorneredShape(Corner.FullyRounded)
     val labelBackground =
         rememberShapeComponent(
-//            fill = MaterialTheme.colorScheme.surfaceBright,
+            color = MaterialTheme.colorScheme.surfaceBright,
             shape = labelBackgroundShape,
             shadow =
             shadow(radius = LABEL_BACKGROUND_SHADOW_RADIUS_DP.dp, dy = LABEL_BACKGROUND_SHADOW_DY_DP.dp),
@@ -65,8 +65,7 @@ internal fun rememberMarker(
             minWidth = TextComponent.MinWidth.fixed(40.dp),
         )
     val indicatorFrontComponent =
-//        rememberShapeComponent(MaterialTheme.colorScheme.surface, CorneredShape.Pill)
-        rememberShapeComponent()
+        rememberShapeComponent(MaterialTheme.colorScheme.surface, CorneredShape.Pill)
     val indicatorCenterComponent = rememberShapeComponent(shape = CorneredShape.Pill)
     val indicatorRearComponent = rememberShapeComponent(shape = CorneredShape.Pill)
     val indicator =
@@ -90,11 +89,12 @@ internal fun rememberMarker(
                 if (showIndicator) {
                     { color ->
                         LayeredComponent(
-                            rear = ShapeComponent(),
+                            rear = ShapeComponent(ColorUtils.setAlphaComponent(color, 38), CorneredShape.Pill),
                             front =
                             LayeredComponent(
                                 rear =
                                 ShapeComponent(
+                                    color = color,
                                     shape = CorneredShape.Pill,
                                     shadow = Shadow(radiusDp = 12f, color = color),
                                 ),

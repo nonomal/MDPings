@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.sekusarisu.mdpings.R
@@ -93,6 +94,7 @@ fun ListDetailLayoutScreen(
                         selectedServerUi = serverListState.selectedServer,
                         onAction = onServerDetailAction,
                         appSettingsState = appSettingsState,
+                        serverListState = serverListState,
                     )
                 } else {
                     Box(
@@ -113,12 +115,12 @@ fun ListDetailLayoutScreen(
 @Composable
 @Preview(showBackground = true, device = "spec:width=2560px,height=1600px,dpi=320,isRound=true",
     fontScale = 1.5f, showSystemUi = false,
-    wallpaper = androidx.compose.ui.tooling.preview.Wallpapers.NONE
+    wallpaper = Wallpapers.NONE
 )
 @Preview(showBackground = true,
     device = "spec:width=2560px,height=1600px,dpi=320,isRound=true,orientation=portrait",
     fontScale = 1.5f, showSystemUi = false,
-    wallpaper = androidx.compose.ui.tooling.preview.Wallpapers.NONE
+    wallpaper = Wallpapers.NONE
 )
 @Preview
 @Preview(device = "spec:parent=pixel_5,orientation=landscape")

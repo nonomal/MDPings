@@ -9,6 +9,7 @@ import com.sekusarisu.mdpings.vpings.data.mappers.toIpAPI
 import com.sekusarisu.mdpings.vpings.data.mappers.toLoginData
 import com.sekusarisu.mdpings.vpings.data.mappers.toMonitor
 import com.sekusarisu.mdpings.vpings.data.mappers.toServer
+import com.sekusarisu.mdpings.vpings.data.networking.dto.DashboardServersResponsesDto
 import com.sekusarisu.mdpings.vpings.data.networking.dto.IpAPIDto
 import com.sekusarisu.mdpings.vpings.data.networking.dto.LoginResponsesDto
 import com.sekusarisu.mdpings.vpings.data.networking.dto.MonitorsResponsesDto
@@ -55,6 +56,22 @@ class RemoteServerDataSource(
         }
     }
 
+    override suspend fun getSingleServerIP(
+        baseUrl: String,
+        serverId: Int
+    ): Result<String, NetworkError> {
+        return safeCall<DashboardServersResponsesDto> {
+            httpClient.get(
+                urlString = constructUrl(
+                    baseURL = baseUrl,
+                    url = "/api/v1/server"
+                )
+            )
+        }.map { response ->
+            response.data.first { it.id == serverId }.geoip.ip.ipv4Addr
+        }
+    }
+
     override suspend fun getServers(apiUrl: String, token: String): Result<List<Server>, NetworkError> {
         return safeCall<ServersResponsesDto> {
             httpClient.get(
@@ -92,13 +109,11 @@ class RemoteServerDataSource(
             httpClient.get(
                 urlString = constructUrl(
                     baseURL = apiUrl,
-                    url = "/api/v1/monitor/$serverId"
+                    url = "/api/v1/service/$serverId"
                 )
-            ) {
-                header("Authorization", token)
-            }
+            )
         }.map { response ->
-            response.result
+            response.data
                 ?.sortedBy { it.monitorId }
                 ?.map { it.toMonitor() } ?: emptyList()
         }

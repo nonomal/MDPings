@@ -26,8 +26,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.sekusarisu.mdpings.R
 import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
 import com.sekusarisu.mdpings.vpings.domain.AppSettings
@@ -35,39 +33,23 @@ import com.sekusarisu.mdpings.vpings.domain.ServerOrder
 import com.sekusarisu.mdpings.vpings.domain.ServerSortField
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsAction
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsState
-import com.sekusarisu.mdpings.vpings.presentation.models.ServerUi
 import com.sekusarisu.mdpings.vpings.presentation.models.WSServerUi
-import com.sekusarisu.mdpings.vpings.presentation.server_detail.ServerDetailAction
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.ServerListCard
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.ServerSummaryCard
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewListServers
 import kotlinx.coroutines.delay
 
-//private fun List<ServerUi>.sortByField(serverSortField: ServerSortField, serverOrder: ServerOrder): List<ServerUi> {
-//    return if (serverOrder.ordinal == 0) {
-//        when (serverSortField) {
-//            ServerSortField.ID -> sortedBy { it.id }
-//            ServerSortField.ONLINE -> sortedBy { it.isOnline }
-//        }
-//    } else {
-//        when (serverSortField) {
-//            ServerSortField.ID -> sortedByDescending { it.id }
-//            ServerSortField.ONLINE -> sortedByDescending { it.isOnline }
-//        }
-//    }
-//}
-
 private fun List<WSServerUi>.sortByField(serverSortField: ServerSortField, serverOrder: ServerOrder): List<WSServerUi> {
     return if (serverOrder.ordinal == 0) {
         when (serverSortField) {
             ServerSortField.ID -> sortedBy { it.id }
-//            ServerSortField.ONLINE -> sortedBy { it.isOnline }
+            ServerSortField.ONLINE -> sortedBy { it.isOnline }
             else -> sortedBy { it.id }
         }
     } else {
         when (serverSortField) {
             ServerSortField.ID -> sortedByDescending { it.id }
-//            ServerSortField.ONLINE -> sortedByDescending { it.isOnline }
+            ServerSortField.ONLINE -> sortedByDescending { it.isOnline }
             else -> sortedBy { it.id }
         }
     }
@@ -83,7 +65,6 @@ fun ServerListScreen(
     state: ServerListState,
     modifier: Modifier = Modifier
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
 
     LaunchedEffect(appSettingsState.appSettings.activeInstance) {
         delay(500)

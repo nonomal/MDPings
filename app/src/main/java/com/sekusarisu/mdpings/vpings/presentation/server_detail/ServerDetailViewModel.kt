@@ -139,31 +139,47 @@ class ServerDetailViewModel(
         if (apiURL.isEmpty()) return
 
         _state.update {
-            it.copy(isLoading = true, isChartLoading = true)
+            it.copy(isLoading = true, isChartLoading = true, wsServerUi = serverUi)
         }
 
         viewModelScope.launch {
             // 并行执行两个网络请求
-//            val ipApiDeferred = async {
-//                serverDataSource.getIpAPI(serverIp = serverUi.ipv4)
-//            }
+            val getSingleServerIPDeferred = async {
+                serverDataSource.getSingleServerIP(apiURL, serverUi.id)
+            }
             val monitorsDeferred = async {
                 serverDataSource.getMonitors(apiURL, apiTOKEN, serverUi.id)
             }
 
-            // 处理 IP API 结果
-//            ipApiDeferred.await()
-//                .onSuccess { result ->
-//                    _state.update {
-//                        it.copy(
-//                            ipAPIUi = result.toIpAPIUi(),
-//                            isLoading = false
-//                        )
-//                    }
-//                }
-//                .onError {
-//                    _state.update { it.copy(isLoading = false) }
-//                }
+            getSingleServerIPDeferred.await()
+                .onSuccess { serverIP ->
+                    serverDataSource.getIpAPI(serverIp = serverIP)
+                        .onSuccess { result ->
+                            _state.update {
+                                it.copy(
+                                    ipAPIUi = result.toIpAPIUi(),
+                                    isLoading = false
+                                )
+                            }
+                        }
+                        .onError {
+                            _state.update { it.copy(isLoading = false) }
+                        }
+                }
+                .onError {
+                    serverDataSource.getIpAPI(serverIp = "1.1.1.1")
+                        .onSuccess { result ->
+                            _state.update {
+                                it.copy(
+                                    ipAPIUi = result.toIpAPIUi(),
+                                    isLoading = false
+                                )
+                            }
+                        }
+                        .onError {
+                            _state.update { it.copy(isLoading = false) }
+                        }
+                }
 
             // 处理 Monitors 结果
             monitorsDeferred.await()
@@ -292,22 +308,6 @@ class ServerDetailViewModel(
             }
 
             val cutoffTime = System.currentTimeMillis() - slice.milliseconds
-
-//            val newMonitors = currentState.monitorsOrigin.map { monitor ->
-//                // 使用序列操作来优化大数据集的处理
-//                val slicedData = monitor.createdAt.asSequence()
-//                    .withIndex()
-//                    .filter { it.value > cutoffTime }
-//                    .toList()
-//
-//                val slicedIndices = slicedData.map { it.index }
-//
-//                monitor.copy(
-//                    createdAt = slicedData.map { it.value },
-//                    avgDelay = monitor.avgDelay.sliceByIndices(slicedIndices)
-//                )
-//                // 筛掉.filter { it.value > cutoffTime }后的空集
-//            }.filter { monitor -> monitor.createdAt.isNotEmpty() && monitor.avgDelay.isNotEmpty() }
 
             val newMonitors = currentState.monitorsOrigin.mapNotNull { monitor ->
                 monitor.createdAt.asSequence()

@@ -23,7 +23,7 @@ data class WSHostDto(
     @SerialName(value = "disk_total") val diskTotal: Long,
     @SerialName(value = "swap_total") val swapTotal: Long = 0L,
     val arch: String,
-    val virtualization: String = "Unknown",
+    val virtualization: String = "unknown",
     @SerialName(value = "boot_time") val bootTime: Long,
     val version: String = "unknown"
 )
