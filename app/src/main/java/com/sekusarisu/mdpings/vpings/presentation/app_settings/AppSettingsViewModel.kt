@@ -62,7 +62,7 @@ class AppSettingsViewModel(
                 deleteInstance(action.index)
             }
             is AppSettingsAction.OnSaveInstanceClicked -> {
-                saveInstance(action.name, action.apiUrl, action.apiToken)
+                saveInstance(action.name, action.baseUrl, action.username, action.password)
             }
             is AppSettingsAction.OnSaveIntervalClicked -> {
                 saveInterval(action.interval)
@@ -96,9 +96,9 @@ class AppSettingsViewModel(
         appSettingsDataSource.getInstances()
     }
 
-    fun saveInstance(name: String, apiUrl: String, apiToken: String) {
+    fun saveInstance(name: String, baseUrl: String, username: String, password: String) {
         viewModelScope.launch{
-            appSettingsDataSource.putInstance(name, apiUrl, apiToken)
+            appSettingsDataSource.putInstance(name, baseUrl, username, password)
         }
     }
 
@@ -108,12 +108,12 @@ class AppSettingsViewModel(
         }
     }
 
-    fun getApiURL(): String? = runBlocking {
-        appSettingsDataSource.getActiveInstance()?.apiUrl
+    fun getBaseUrl(): String? = runBlocking {
+        appSettingsDataSource.getActiveInstance()?.baseUrl
     }
 
     fun getApiTOKEN(): String? = runBlocking {
-        appSettingsDataSource.getActiveInstance()?.apiToken
+        appSettingsDataSource.getActiveInstance()?.token
     }
 
     fun saveInterval(interval: Int) {

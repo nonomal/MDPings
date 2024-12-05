@@ -122,4 +122,14 @@
     <string name="app_settings_visual_language_title">界面语言</string>
     <string name="app_settings_visual_language_content">更改界面语言</string>
 
+    // Login
+    <string name="login_instance_name_title">实例名称</string>
+    <string name="login_instance_name_content">起一个好记的名字吧~</string>
+    <string name="login_dashboard_url_title">面板地址</string>
+    <string name="login_dashboard_url_content">https://nezha.dashboard.url/</string>
+    <string name="login_username_title">用户名</string>
+    <string name="login_username_content">输入在后台创建的用户名</string>
+    <string name="login_password_title">密码</string>
+    <string name="login_password_content">输入密码</string>
+
 </resources>

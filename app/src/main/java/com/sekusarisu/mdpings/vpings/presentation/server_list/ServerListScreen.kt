@@ -36,21 +36,39 @@ import com.sekusarisu.mdpings.vpings.domain.ServerSortField
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsAction
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsState
 import com.sekusarisu.mdpings.vpings.presentation.models.ServerUi
+import com.sekusarisu.mdpings.vpings.presentation.models.WSServerUi
+import com.sekusarisu.mdpings.vpings.presentation.server_detail.ServerDetailAction
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.ServerListCard
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.ServerSummaryCard
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewListServers
 import kotlinx.coroutines.delay
 
-private fun List<ServerUi>.sortByField(serverSortField: ServerSortField, serverOrder: ServerOrder): List<ServerUi> {
+//private fun List<ServerUi>.sortByField(serverSortField: ServerSortField, serverOrder: ServerOrder): List<ServerUi> {
+//    return if (serverOrder.ordinal == 0) {
+//        when (serverSortField) {
+//            ServerSortField.ID -> sortedBy { it.id }
+//            ServerSortField.ONLINE -> sortedBy { it.isOnline }
+//        }
+//    } else {
+//        when (serverSortField) {
+//            ServerSortField.ID -> sortedByDescending { it.id }
+//            ServerSortField.ONLINE -> sortedByDescending { it.isOnline }
+//        }
+//    }
+//}
+
+private fun List<WSServerUi>.sortByField(serverSortField: ServerSortField, serverOrder: ServerOrder): List<WSServerUi> {
     return if (serverOrder.ordinal == 0) {
         when (serverSortField) {
             ServerSortField.ID -> sortedBy { it.id }
-            ServerSortField.ONLINE -> sortedBy { it.isOnline }
+//            ServerSortField.ONLINE -> sortedBy { it.isOnline }
+            else -> sortedBy { it.id }
         }
     } else {
         when (serverSortField) {
             ServerSortField.ID -> sortedByDescending { it.id }
-            ServerSortField.ONLINE -> sortedByDescending { it.isOnline }
+//            ServerSortField.ONLINE -> sortedByDescending { it.isOnline }
+            else -> sortedBy { it.id }
         }
     }
 }
@@ -70,19 +88,10 @@ fun ServerListScreen(
     LaunchedEffect(appSettingsState.appSettings.activeInstance) {
         delay(500)
         if (appSettingsState.appSettings.instances.isNotEmpty()) {
-            val apiURL = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiUrl
-            val apiTOKEN = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiToken
-            val interval = appSettingsState.appSettings.refreshInterval.toLong()
-
-            while (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-                onAction(
-                    ServerListAction.OnLoadServer(
-                        apiURL = apiURL,
-                        apiTOKEN = apiTOKEN
-                    )
-                )
-                delay(interval)
-            }
+            val baseUrl = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].baseUrl
+            onAction(
+                ServerListAction.OnLoadWSServer(baseUrl = baseUrl)
+            )
         }
     }
 
@@ -105,7 +114,7 @@ fun ServerListScreen(
     }
 
     AnimatedVisibility(
-        visible = state.servers == emptyList<ServerUi>() && state.isLoading,
+        visible = state.wsServers == emptyList<WSServerUi>() && state.isLoading,
         enter = fadeIn(),
         exit = fadeOut()
     ) {
@@ -122,7 +131,7 @@ fun ServerListScreen(
     }
 
     AnimatedVisibility(
-        visible = state.servers != emptyList<ServerUi>(),
+        visible = state.wsServers != emptyList<WSServerUi>(),
         enter = slideInVertically(
             spring(
                 stiffness = Spring.StiffnessLow,
@@ -145,14 +154,14 @@ fun ServerListScreen(
             ) {
                 ServerSummaryCard(
                     isExpanded = true,
-                    servers = state.servers,
+                    servers = state.wsServers,
                     onAction = {},
                     modifier = Modifier
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 )
             }
             items(
-                items = state.servers.sortByField(
+                items = state.wsServers.sortByField(
                     appSettingsState.appSettings.serverSortField,
                     appSettingsState.appSettings.serverOrder
                 ),

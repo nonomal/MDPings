@@ -71,6 +71,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import com.sekusarisu.mdpings.vpings.domain.Instance
 
 
 class MainActivity : ComponentActivity() {
@@ -126,8 +127,9 @@ class MainActivity : ComponentActivity() {
                 }
 
                 // AppSettings
-                val apiURL = appSettingsViewModel.getApiURL()
-                val apiTOKEN = appSettingsViewModel.getApiTOKEN()
+//                val baseUrl = appSettingsViewModel.getBaseUrl()
+//                val apiTOKEN = appSettingsViewModel.getApiTOKEN()
+//                val activeInstance = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance]
 
                 // Nav && currentRoute -> topAppBarTitle
                 val navController = rememberNavController()
@@ -138,7 +140,7 @@ class MainActivity : ComponentActivity() {
                     else if (currentRoute == Screen.AppSettings.route) stringResource(R.string.appbar_title_appsettings)
                     else if (currentRoute == Screen.About.route) stringResource(R.string.appbar_title_about)
                     else if (currentRoute == Screen.ServerListDetailPane.route && serverDetailState.serverUi != null)
-                        "${serverListState.selectedServer!!.host.countryCode} ${serverListState.selectedServer!!.name}"
+                        "${serverListState.selectedServer!!.countryCode} ${serverListState.selectedServer!!.name}"
                     else stringResource(R.string.app_name)
 
                 // Orientation && windowSizeClass -> ListDetailPane Navigator's maxHorizontalPartitions
@@ -206,9 +208,15 @@ class MainActivity : ComponentActivity() {
                     ) { innerPadding ->
 
                         LaunchedEffect(Unit) {
-                            val isSettingsNull = apiURL == null || apiTOKEN == null
+                            val instance = appSettingsViewModel.getInstances()
+                            if (instance!!.isNotEmpty()) {
+                                val activeInstance = instance[appSettingsViewModel.getActiveInstanceIndex() ?: 0]
+                                loginViewModel.testConnection(
+                                    activeInstance.baseUrl, activeInstance.username, activeInstance.password
+                                )
+                            }
                             navController.navigate(
-                                if (isSettingsNull) Screen.Login.route else Screen.ServerListDetailPane.route
+                                if (instance.isNotEmpty()) Screen.ServerListDetailPane.route else Screen.Login.route
                             ) {
                                 popUpTo(Screen.Loading.route) {
                                     inclusive = true  // 这会移除 Loading 屏幕
@@ -268,19 +276,19 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
 
-                                composable(
-                                    route = Screen.ServerDetail.route,
-                                    arguments = listOf(navArgument("serverId") { type = NavType.StringType })
-                                ) { backStackEntry ->
-                                    val serverId = backStackEntry.arguments?.getString("serverId")?.toInt()
-                                    val selectedServer = serverListState.servers.first { it.id == serverId }
-                                    ServerDetailScreen(
-                                        state = serverDetailState,
-                                        selectedServerUi = selectedServer,
-                                        onAction = serverDetailViewModel::onAction,
-                                        appSettingsState = appSettingsState,
-                                    )
-                                }
+//                                composable(
+//                                    route = Screen.ServerDetail.route,
+//                                    arguments = listOf(navArgument("serverId") { type = NavType.StringType })
+//                                ) { backStackEntry ->
+//                                    val serverId = backStackEntry.arguments?.getString("serverId")?.toInt()
+//                                    val selectedServer = serverListState.servers.first { it.id == serverId }
+//                                    ServerDetailScreen(
+//                                        state = serverDetailState,
+//                                        selectedServerUi = selectedServer,
+//                                        onAction = serverDetailViewModel::onAction,
+//                                        appSettingsState = appSettingsState,
+//                                    )
+//                                }
 
                                 composable(Screen.ServerListDetailPane.route) {
                                     ListDetailLayoutScreen(

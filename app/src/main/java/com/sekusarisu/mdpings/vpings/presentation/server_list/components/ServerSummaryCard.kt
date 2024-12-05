@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import com.sekusarisu.mdpings.R
 import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
 import com.sekusarisu.mdpings.vpings.presentation.models.ServerUi
+import com.sekusarisu.mdpings.vpings.presentation.models.WSServerUi
 import com.sekusarisu.mdpings.vpings.presentation.models.toNetIOSpeedDisplayableString
 import com.sekusarisu.mdpings.vpings.presentation.models.toNetTRLongDisplayableString
 import com.sekusarisu.mdpings.vpings.presentation.server_list.ServerListAction
@@ -58,7 +59,7 @@ import com.sekusarisu.mdpings.vpings.presentation.server_list.ServerListAction
 @Composable
 fun ServerSummaryCard(
     isExpanded: Boolean,
-    servers: List<ServerUi>,
+    servers: List<WSServerUi>,
     onAction: (ServerListAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -383,7 +384,7 @@ private fun ServerSummaryCardPreview() {
     MDPingsTheme {
         ServerSummaryCard(
             isExpanded = true,
-            servers = previewListServers,
+            servers = previewListWSServers,
             onAction = {},
             modifier = Modifier
         )

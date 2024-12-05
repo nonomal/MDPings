@@ -53,10 +53,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sekusarisu.mdpings.R
 import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
 import com.sekusarisu.mdpings.vpings.domain.AppSettings
 import com.sekusarisu.mdpings.vpings.domain.Instance
@@ -92,7 +94,7 @@ fun LoginScreen(
                 icon = Icons.Rounded.Add,
                 state = state,
                 onAction = onAction,
-                instance = Instance("", "", "")
+                instance = Instance("", "", "", "", "")
             )
         }
         "Edit" -> {
@@ -142,12 +144,7 @@ fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxSize()
-//                    .verticalScroll(rememberScrollState())
             ) {
-//                item(
-//                    key = "Test",
-//                    content = { Text("Test") }
-//                )
                 itemsIndexed(
                     items = appSettingsState.appSettings.instances,
                 ) { index, instance ->
@@ -155,22 +152,22 @@ fun LoginScreen(
                         modifier = Modifier
                             .animateItem()
                             .clickable(
-                            onClick = {
-                                scope.launch{
-                                    onLoad(
-                                        AppSettingsAction.OnChangeActiveInstance(index)
-                                    )
-                                    onNavigateToServer()
+                                onClick = {
+                                    scope.launch {
+                                        onLoad(
+                                            AppSettingsAction.OnChangeActiveInstance(index)
+                                        )
+                                        onNavigateToServer()
+                                    }
                                 }
-                            }
-                        ),
+                            ),
                         headlineContent = {
                             Text(
                                 text = instance.name,
                                 color = MaterialTheme.colorScheme.secondary
                             ) },
                         supportingContent = {
-                            Text(text = instance.apiUrl,
+                            Text(text = instance.baseUrl,
                                 color = MaterialTheme.colorScheme.tertiary
                             ) },
                         leadingContent = {
@@ -301,8 +298,9 @@ fun CredentialDialog(
 
     val scope = rememberCoroutineScope()
     var name by rememberSaveable { mutableStateOf(instance.name) }
-    var apiUrl by rememberSaveable { mutableStateOf(instance.apiUrl) }
-    var apiToken by rememberSaveable { mutableStateOf(instance.apiToken) }
+    var baseUrl by rememberSaveable { mutableStateOf(instance.baseUrl) }
+    var username by rememberSaveable { mutableStateOf(instance.username) }
+    var password by rememberSaveable { mutableStateOf(instance.password) }
 
     AlertDialog(
         icon = {
@@ -321,7 +319,7 @@ fun CredentialDialog(
                 Text(
                     modifier = Modifier
                         .alpha(0.6f),
-                    text = "INSTANCE NAME",
+                    text = stringResource(R.string.login_instance_name_title),
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.secondary,
                     fontSize = 12.sp
@@ -331,7 +329,7 @@ fun CredentialDialog(
                     singleLine = true,
                     placeholder = {
                         Text(
-                            text = "Nezha instance name",
+                            text = stringResource(R.string.login_instance_name_content),
                             modifier = Modifier.alpha(0.4f)
                         )
                     },
@@ -348,23 +346,23 @@ fun CredentialDialog(
                 Text(
                     modifier = Modifier
                         .alpha(0.6f),
-                    text = "API BACKEND",
+                    text = stringResource(R.string.login_dashboard_url_title),
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.secondary,
                     fontSize = 12.sp
                 )
                 OutlinedTextField(
-                    value = apiUrl,
+                    value = baseUrl,
                     singleLine = true,
                     placeholder = {
                         Text(
-                            text = "https://your.nezha.api.com/",
+                            text = stringResource(R.string.login_dashboard_url_content),
                             modifier = Modifier.alpha(0.4f)
                         )
                     },
                     shape = ShapeDefaults.ExtraLarge,
                     onValueChange = {
-                        apiUrl = it
+                        baseUrl = it
                         onAction(
                             LoginAction.OnCredentialsChange
                         )
@@ -375,23 +373,50 @@ fun CredentialDialog(
                 Text(
                     modifier = Modifier
                         .alpha(0.6f),
-                    text = "TOKEN",
+                    text = stringResource(R.string.login_username_title),
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.secondary,
                     fontSize = 12.sp
                 )
                 OutlinedTextField(
-                    value = apiToken,
+                    value = username,
                     singleLine = true,
                     placeholder = {
                         Text(
-                            text = "YOUR_NEZHA_API_TOKEN",
+                            text = stringResource(R.string.login_username_content),
                             modifier = Modifier.alpha(0.4f)
                         )
                     },
                     shape = ShapeDefaults.ExtraLarge,
                     onValueChange = {
-                        apiToken = it
+                        username = it
+                        onAction(
+                            LoginAction.OnCredentialsChange
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                )
+                Text(
+                    modifier = Modifier
+                        .alpha(0.6f),
+                    text = stringResource(R.string.login_password_title),
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.secondary,
+                    fontSize = 12.sp
+                )
+                OutlinedTextField(
+                    value = password,
+                    singleLine = true,
+                    placeholder = {
+                        Text(
+                            text = stringResource(R.string.login_password_content),
+                            modifier = Modifier.alpha(0.4f)
+                        )
+                    },
+                    shape = ShapeDefaults.ExtraLarge,
+                    onValueChange = {
+                        password = it
                         onAction(
                             LoginAction.OnCredentialsChange
                         )
@@ -411,7 +436,7 @@ fun CredentialDialog(
                             .fillMaxWidth(),
                         onClick = {
                             onAction(
-                                LoginAction.OnTestClick(apiUrl, apiToken)
+                                LoginAction.OnTestClick(baseUrl, username, password)
                             )
                         },
                         state = state
@@ -426,12 +451,12 @@ fun CredentialDialog(
                             scope.launch {
                                 if (dialogTitle == "Create") {
                                     onAction(
-                                        LoginAction.OnSaveClicked(name, apiUrl, apiToken)
+                                        LoginAction.OnSaveClicked(name, baseUrl, username, password)
                                     )
                                 }
                                 if (dialogTitle == "Edit") {
                                     onAction(
-                                        LoginAction.OnEditSaveClicked(index, name, apiUrl, apiToken)
+                                        LoginAction.OnEditSaveClicked(index, name, baseUrl, username, password)
                                     )
                                 }
                                 onAction(
@@ -439,7 +464,6 @@ fun CredentialDialog(
                                 )
                                 onDismissRequest()
                             }
-
                         },
                         state = state
                     )
@@ -503,7 +527,7 @@ private fun SaveButton(
     val scope = rememberCoroutineScope()
 
     Button(
-        enabled = !state.servers.isEmpty(),
+        enabled = state.isTestSucceed,
         onClick = onClick,
         modifier = modifier
     ) {
@@ -538,21 +562,21 @@ private fun LoginScreenPreview() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
-@Composable
-private fun LoginScreenPreview2() {
-    MDPingsTheme {
-        LoginScreen(
-            modifier = Modifier.background(MaterialTheme.colorScheme.background),
-            state = LoginState(),
-            onAction = {},
-            onNavigateToServer = {},
-            appSettingsState = mockAppSettingsState2,
-            onLoad = {}
-        )
-    }
-}
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Preview(showBackground = true)
+//@Composable
+//private fun LoginScreenPreview2() {
+//    MDPingsTheme {
+//        LoginScreen(
+//            modifier = Modifier.background(MaterialTheme.colorScheme.background),
+//            state = LoginState(),
+//            onAction = {},
+//            onNavigateToServer = {},
+//            appSettingsState = mockAppSettingsState2,
+//            onLoad = {}
+//        )
+//    }
+//}
 
 @Preview(showBackground = true)
 @Composable
@@ -568,8 +592,10 @@ private fun LoginDialogPreview() {
             onAction = {},
             instance = Instance(
                 name = "",
-                apiUrl = "",
-                apiToken = ""
+                baseUrl = "",
+                username = "",
+                password = "",
+                token = ""
             ),
         )
     }
@@ -581,19 +607,25 @@ private val mockAppSettingsState1 = AppSettingsState(
         instances = persistentListOf(
             Instance(
                 name = "test1",
-                apiUrl = "https://test1.example.com/",
-                apiToken = "AABBCCDDEEFFGGAABBCCDDEEFFGGAABBCCDDEEFFGG"
+                username = "",
+                password = "",
+                baseUrl = "https://test1.example.com/",
+                token = "AABBCCDDEEFFGGAABBCCDDEEFFGGAABBCCDDEEFFGG"
             ),
             Instance(
                 name = "test2",
-                apiUrl = "https://test2.example.com/",
-                apiToken = "AABBCCDDEEFFGGAABBCCDDEEFFGGAABBCCDDEEFFGG"
+                username = "",
+                password = "",
+                baseUrl = "https://test2.example.com/",
+                token = "AABBCCDDEEFFGGAABBCCDDEEFFGGAABBCCDDEEFFGG"
             )
             ,
             Instance(
                 name = "test3",
-                apiUrl = "https://test3.example.com/",
-                apiToken = "AABBCCDDEEFFGGAABBCCDDEEFFGGAABBCCDDEEFFGG"
+                username = "",
+                password = "",
+                baseUrl = "https://test3.example.com/",
+                token = "AABBCCDDEEFFGGAABBCCDDEEFFGGAABBCCDDEEFFGG"
             )
         ),
         refreshInterval = 5000

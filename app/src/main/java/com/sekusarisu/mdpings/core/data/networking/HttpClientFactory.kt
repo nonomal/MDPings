@@ -10,6 +10,7 @@ import io.ktor.client.plugins.logging.ANDROID
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
@@ -21,6 +22,9 @@ object HttpClientFactory {
     @OptIn(ExperimentalSerializationApi::class)
     fun create(engine: HttpClientEngine): HttpClient {
         return HttpClient(engine) {
+            install(WebSockets) {
+                pingIntervalMillis = 20_000
+            }
             install(HttpRequestRetry) {
                 maxRetries = 3
                 retryOnExceptionIf { request, cause ->

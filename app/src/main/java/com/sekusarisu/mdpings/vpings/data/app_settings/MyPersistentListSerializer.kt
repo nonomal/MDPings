@@ -1,11 +1,9 @@
 package com.sekusarisu.mdpings.vpings.data.app_settings
 
-import com.sekusarisu.mdpings.vpings.domain.AppSettings
 import com.sekusarisu.mdpings.vpings.domain.Instance
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.Serializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -14,7 +12,6 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
 @OptIn(ExperimentalSerializationApi::class)
-//@Serializer(forClass = PersistentList::class)
 class MyPersistentListSerializer(
     private val serializer: KSerializer<Instance>,
 ) : KSerializer<PersistentList<Instance>> {

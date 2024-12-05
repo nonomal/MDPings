@@ -125,10 +125,10 @@ fun NetworkMonitor(
                 )
                 IconButton(
                     onClick = {
-                        val apiUrl = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiUrl
-                        val apiToken = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiToken
+                        val baseUrl = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].baseUrl
+                        val token = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].token
                         onAction(
-                            ServerDetailAction.OnMonitorsRefresh(serverId, state.monitorsTimeSlice, apiUrl, apiToken)
+                            ServerDetailAction.OnMonitorsRefresh(serverId, state.monitorsTimeSlice, baseUrl, token)
                         )
                     },
                     modifier = Modifier

@@ -21,8 +21,10 @@ data class AppSettings(
 @Serializable
 data class Instance(
     val name: String,
-    val apiUrl: String,
-    val apiToken: String
+    val baseUrl: String,
+    val username: String,
+    val password: String,
+    val token: String,
 )
 
 // 分类和排序

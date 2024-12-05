@@ -1,11 +1,20 @@
 package com.sekusarisu.mdpings.vpings.data.mappers
 
 import com.sekusarisu.mdpings.vpings.data.networking.dto.HostDto
+import com.sekusarisu.mdpings.vpings.data.networking.dto.LoginDataDto
 import com.sekusarisu.mdpings.vpings.data.networking.dto.ServerDto
 import com.sekusarisu.mdpings.vpings.data.networking.dto.StatusDto
 import com.sekusarisu.mdpings.vpings.domain.Host
+import com.sekusarisu.mdpings.vpings.domain.LoginData
 import com.sekusarisu.mdpings.vpings.domain.Server
 import com.sekusarisu.mdpings.vpings.domain.Status
+
+fun LoginDataDto.toLoginData(): LoginData {
+    return LoginData(
+        token = token,
+        expire = expire
+    )
+}
 
 fun ServerDto.toServer(): Server {
     return Server(

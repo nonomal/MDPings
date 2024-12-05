@@ -14,12 +14,14 @@ import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaf
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.sekusarisu.mdpings.R
 import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
 import com.sekusarisu.mdpings.vpings.domain.AppSettings
@@ -36,6 +38,7 @@ import com.sekusarisu.mdpings.vpings.presentation.server_list.ServerListScreen
 import com.sekusarisu.mdpings.vpings.presentation.server_list.ServerListState
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewListServers
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewServerUi0
+import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewWSServerUi0
 import kotlinx.collections.immutable.persistentListOf
 import kotlin.Any
 
@@ -51,6 +54,17 @@ fun ListDetailLayoutScreen(
     onServerDetailAction: (ServerDetailAction) -> Unit,
     onAppSettingsAction: (AppSettingsAction) -> Unit
 ) {
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        onDispose{
+            onServerListAction(
+                ServerListAction.OnCloseSession
+            )
+        }
+    }
+
     NavigableListDetailPaneScaffold(
         modifier = modifier,
         navigator = navigator,
@@ -142,7 +156,7 @@ private fun ListDetailLayoutScreenPreview() {
             serverListState = ServerListState(
                 isLoading = false,
                 servers = previewListServers,
-                selectedServer = previewServerUi0
+                selectedServer = previewWSServerUi0
             ),
             serverDetailState = ServerDetailState(
                 isLoading = false,
@@ -153,8 +167,10 @@ private fun ListDetailLayoutScreenPreview() {
             appSettingsState = AppSettingsState(AppSettings().copy(
                 instances = persistentListOf(Instance(
                     name = "TODO()",
-                    apiUrl = "TODO()",
-                    apiToken = "TODO()"
+                    baseUrl = "TODO()",
+                    username = "TODO()",
+                    password = "TODO()",
+                    token = "TODO()"
                 ))
             )),
             onServerListAction = {},

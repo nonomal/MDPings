@@ -47,6 +47,7 @@ import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
 import com.sekusarisu.mdpings.vpings.domain.AppSettings
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsState
 import com.sekusarisu.mdpings.vpings.presentation.models.ServerUi
+import com.sekusarisu.mdpings.vpings.presentation.models.WSServerUi
 import com.sekusarisu.mdpings.vpings.presentation.server_detail.components.InstanceInfo
 import com.sekusarisu.mdpings.vpings.presentation.server_detail.components.NetworkMonitor
 import com.sekusarisu.mdpings.vpings.presentation.server_detail.components.OfflineCard
@@ -60,6 +61,8 @@ import com.sekusarisu.mdpings.vpings.presentation.server_list.components.OnlineS
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.Status
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewServerUi0
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewServerUi1
+import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewWSServerUi0
+import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewWSServerUi1
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,42 +70,45 @@ import kotlinx.coroutines.delay
 fun ServerDetailScreen(
     state: ServerDetailState,
     appSettingsState: AppSettingsState,
-    selectedServerUi: ServerUi,
+    selectedServerUi: WSServerUi,
     onAction: (ServerDetailAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
+    // Load Info & Monitors
     LaunchedEffect(selectedServerUi.id) {
-        val apiURL = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiUrl
-        val apiTOKEN = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiToken
+        val baseUrl = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].baseUrl
+        val username = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].username
+        val password = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].password
         val interval = appSettingsState.appSettings.refreshInterval
         onAction(
             ServerDetailAction.OnLoadInfoAndMonitors(
                 serverUi = selectedServerUi,
                 monitorsTimeSlice = state.monitorsTimeSlice,
-                apiURL = apiURL,
-                apiTOKEN = apiTOKEN,
+                apiURL = baseUrl,
+                apiTOKEN = username,
                 interval = interval
             )
         )
     }
-    LaunchedEffect(selectedServerUi.id) {
-        val apiURL = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiUrl
-        val apiTOKEN = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiToken
-        val interval = appSettingsState.appSettings.refreshInterval
-        while (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-            onAction(
-                ServerDetailAction.OnLoadSingleServer(
-                    serverUi = selectedServerUi,
-                    apiURL = apiURL,
-                    apiTOKEN = apiTOKEN,
-                    interval = interval
-                )
-            )
-            delay(interval.toLong())
-        }
-    }
+    // Interval Load Server Status
+//    LaunchedEffect(selectedServerUi.id) {
+//        val apiURL = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiUrl
+//        val apiTOKEN = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiToken
+//        val interval = appSettingsState.appSettings.refreshInterval
+//        while (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+//            onAction(
+//                ServerDetailAction.OnLoadSingleServer(
+//                    serverUi = selectedServerUi,
+//                    apiURL = apiURL,
+//                    apiTOKEN = apiTOKEN,
+//                    interval = interval
+//                )
+//            )
+//            delay(interval.toLong())
+//        }
+//    }
     DisposableEffect(lifecycleOwner) {
         onDispose{
             onAction(
@@ -112,7 +118,7 @@ fun ServerDetailScreen(
     }
 
     AnimatedVisibility(
-        visible = (state.serverUi == null || state.ipAPIUi == null),
+        visible = (state.wsServerUi == null || state.ipAPIUi == null),
         enter = fadeIn(),
         exit = fadeOut()
     ) {
@@ -129,7 +135,7 @@ fun ServerDetailScreen(
     }
 
     AnimatedVisibility(
-        visible = (state.serverUi != null && state.ipAPIUi != null),
+        visible = (state.wsServerUi != null && state.ipAPIUi != null),
         enter = slideInVertically(
             spring(
                 stiffness = Spring.StiffnessLow,
@@ -153,7 +159,7 @@ fun ServerDetailScreen(
                 Spacer(Modifier.height(8.dp))
             }
             InstanceInfo(
-                serverUi = state.serverUi,
+                serverUi = state.wsServerUi!!,
                 ipAPIUi = state.ipAPIUi!!,
                 modifier = modifier
             )
@@ -172,7 +178,7 @@ fun ServerDetailScreen(
             )
             Spacer(Modifier.height(8.dp))
             ServerStatus(
-                serverUi = state.serverUi,
+                serverUi = state.wsServerUi,
                 modifier = modifier
             )
         }
@@ -181,7 +187,7 @@ fun ServerDetailScreen(
 
 @Composable
 fun ServerStatus(
-    serverUi: ServerUi,
+    serverUi: WSServerUi,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -239,7 +245,7 @@ fun ServerStatus(
 fun ServerDetailScreenPreviewOnline() {
     MDPingsTheme {
         ServerDetailScreen(
-            selectedServerUi = previewServerUi0,
+            selectedServerUi = previewWSServerUi0,
             modifier = Modifier,
             state = ServerDetailState(
                 isLoading = false,
@@ -258,7 +264,7 @@ fun ServerDetailScreenPreviewOnline() {
 fun ServerDetailScreenPreviewOffline() {
     MDPingsTheme {
         ServerDetailScreen(
-            selectedServerUi = previewServerUi1,
+            selectedServerUi = previewWSServerUi1,
             modifier = Modifier,
             state = ServerDetailState(
                 isLoading = false,

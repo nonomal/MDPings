@@ -54,6 +54,9 @@ import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
 import com.sekusarisu.mdpings.vpings.presentation.models.HostUi
 import com.sekusarisu.mdpings.vpings.presentation.models.ServerUi
 import com.sekusarisu.mdpings.vpings.presentation.models.StatusUi
+import com.sekusarisu.mdpings.vpings.presentation.models.WSHostUi
+import com.sekusarisu.mdpings.vpings.presentation.models.WSServerUi
+import com.sekusarisu.mdpings.vpings.presentation.models.WSStateUi
 import com.sekusarisu.mdpings.vpings.presentation.models.countryCodeCheck
 import com.sekusarisu.mdpings.vpings.presentation.models.toCountryCodeToEmojiFlag
 import com.sekusarisu.mdpings.vpings.presentation.models.toDisplayableNumber
@@ -83,7 +86,7 @@ private fun String.toLetterSpacing() = when(this) {
 fun ServerListCard(
     isExpanded: Boolean,
     onNavigateToDetail: () -> Unit,
-    serverUi: ServerUi,
+    serverUi: WSServerUi,
     onAction: (ServerListAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -156,7 +159,7 @@ fun ServerListCard(
 
 @Composable
 fun ServerTitle(
-    serverUi: ServerUi,
+    serverUi: WSServerUi,
     onAction: (ServerListAction) -> Unit,
     onNavigateToDetail: () -> Unit
 ) {
@@ -175,7 +178,7 @@ fun ServerTitle(
         modifier = Modifier
             .padding(horizontal = 12.dp),
         leadingIcon = {
-            if (serverUi.isOnline) Text(text = serverUi.host.countryCode)
+            if (serverUi.isOnline) Text(text = serverUi.countryCode)
             else Icon(
                 imageVector = Icons.Rounded.Warning,
                 contentDescription = null,
@@ -204,7 +207,7 @@ fun ServerTitle(
         onClick = {
             scope.launch {
                 onAction(
-                    ServerListAction.OnServerClick(
+                    ServerListAction.OnWSServerClick(
                         serverUi = serverUi
                     )
                 )
@@ -229,7 +232,7 @@ fun ServerTitle(
 }
 
 @Composable
-fun Status(server: ServerUi) {
+fun Status(server: WSServerUi) {
     ProgressBar(
         text = stringResource(R.string.server_list_card_cpu),
         total = 100F,
@@ -316,7 +319,7 @@ fun ProgressBar(text: String, total: Float, used: Float) {
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun LoadAndUptime(server: ServerUi) {
+fun LoadAndUptime(server: WSServerUi) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -374,7 +377,7 @@ fun LoadAndUptime(server: ServerUi) {
 }
 
 @Composable
-fun NetworkTransfer(server: ServerUi) {
+fun NetworkTransfer(server: WSServerUi) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -424,7 +427,7 @@ fun NetworkTransfer(server: ServerUi) {
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun NetworkIO(server: ServerUi) {
+fun NetworkIO(server: WSServerUi) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -516,7 +519,7 @@ fun ServerCardPreview() {
     MDPingsTheme {
         Column {
             ServerListCard(
-                serverUi = previewServerUi0,
+                serverUi = previewWSServerUi0,
                 onAction = {},
                 modifier = Modifier,
                 onNavigateToDetail = {},
@@ -524,7 +527,7 @@ fun ServerCardPreview() {
             )
             Spacer(Modifier.height(8.dp))
             ServerListCard(
-                serverUi = previewServerUi1,
+                serverUi = previewWSServerUi1,
                 onAction = {},
                 modifier = Modifier,
                 onNavigateToDetail = {},
@@ -532,7 +535,7 @@ fun ServerCardPreview() {
             )
             Spacer(Modifier.height(8.dp))
             ServerListCard(
-                serverUi = previewServerUi0,
+                serverUi = previewWSServerUi0,
                 onAction = {},
                 modifier = Modifier,
                 onNavigateToDetail = {},
@@ -561,6 +564,21 @@ private fun previewHostUi(): HostUi {
     )
 }
 
+private fun previewWSHostUi(): WSHostUi {
+    return WSHostUi(
+        platform = "ubuntu",
+        platformVersion = "22.04",
+        cpu = "Cortex-A55 8 Physical Core\nCortex-A76 8 Physical Core",
+        memTotal = 8323002368,
+        diskTotal = 2164154892288,
+        swapTotal = 267362304,
+        arch = "x86_64",
+        virtualization = "kvm",
+        bootTime = 1725353936,
+        version = "0.20.3"
+    )
+}
+
 private fun previewStatusUi(): StatusUi {
     return StatusUi(
         cpu = Random.nextDouble(from = 0.0, until = 10.0),
@@ -581,6 +599,66 @@ private fun previewStatusUi(): StatusUi {
         gpu = 0
     )
 }
+
+private fun previewWSStatusUi(): WSStateUi {
+    return WSStateUi(
+        cpu = Random.nextFloat(),
+        memUsed = Random.nextLong(until = 8323002368),
+        swapUsed = Random.nextLong(until = 267362304),
+        diskUsed = Random.nextLong(until = 2164154892288),
+        netInTransfer = Random.nextLong(from = 0, until = 1024000000000000).toNetTRLongDisplayableString(),
+        netOutTransfer = Random.nextLong(from = 0, until = 1024000000000000000).toNetTRLongDisplayableString(),
+        netInSpeed = Random.nextLong(until = 1024000000).toNetIOSpeedDisplayableString(),
+        netOutSpeed = Random.nextLong(until = 1024000000).toNetIOSpeedDisplayableString(),
+        uptime = Random.nextLong(until = 102400000),
+        load1 = Random.nextDouble(until = 200.0).toDisplayableNumber(),
+        load5 = Random.nextDouble(until = 200.0).toDisplayableNumber(),
+        load15 = Random.nextDouble(until = 200.0).toDisplayableNumber(),
+        tcpConnCount = 63,
+        udpConnCount = 97,
+        processCount = 296
+    )
+}
+
+internal val previewWSServerUi0 = WSServerUi(
+    id = 0,
+    name = "Server0",
+    host = previewWSHostUi(),
+    status = previewWSStatusUi(),
+    countryCode = "cn",
+    lastActive = "2024-12-02T08:39:18.976038437Z",
+    isOnline = true
+)
+
+internal val previewWSServerUi1 = WSServerUi(
+    id = 1,
+    name = "Server1",
+    host = previewWSHostUi(),
+    status = previewWSStatusUi(),
+    countryCode = "cn",
+    lastActive = "2024-12-02T08:39:18.976038437Z",
+    isOnline = true
+)
+
+internal val previewWSServerUi2 = WSServerUi(
+    id = 2,
+    name = "Server2",
+    host = previewWSHostUi(),
+    status = previewWSStatusUi(),
+    countryCode = "cn",
+    lastActive = "2024-12-02T08:39:18.976038437Z",
+    isOnline = true
+)
+
+internal val previewWSServerUi3 = WSServerUi(
+    id = 3,
+    name = "Server3",
+    host = previewWSHostUi(),
+    status = previewWSStatusUi(),
+    countryCode = "cn",
+    lastActive = "2024-12-02T08:39:18.976038437Z",
+    isOnline = true
+)
 
 internal val previewServerUi0 = ServerUi(
     id = 0,
@@ -644,4 +722,8 @@ internal val previewServerUi3 = ServerUi(
 
 internal val previewListServers = listOf<ServerUi>(
     previewServerUi0, previewServerUi1, previewServerUi2, previewServerUi3
+)
+
+internal val previewListWSServers = listOf<WSServerUi>(
+    previewWSServerUi0, previewWSServerUi1, previewWSServerUi2, previewWSServerUi3
 )

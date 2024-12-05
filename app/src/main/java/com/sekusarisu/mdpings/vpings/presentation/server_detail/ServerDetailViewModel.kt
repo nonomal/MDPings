@@ -9,6 +9,7 @@ import com.sekusarisu.mdpings.vpings.domain.Monitor
 import com.sekusarisu.mdpings.vpings.domain.ServerDataSource
 import com.sekusarisu.mdpings.vpings.presentation.models.MonitorUi
 import com.sekusarisu.mdpings.vpings.presentation.models.ServerUi
+import com.sekusarisu.mdpings.vpings.presentation.models.WSServerUi
 import com.sekusarisu.mdpings.vpings.presentation.models.toIpAPIUi
 import com.sekusarisu.mdpings.vpings.presentation.models.toMonitorUi
 import com.sekusarisu.mdpings.vpings.presentation.models.toServerUi
@@ -81,7 +82,7 @@ class ServerDetailViewModel(
         ) }
     }
 
-    private fun loadSingleServerDetail(serverUi: ServerUi, apiURL: String, apiTOKEN: String) {
+    private fun loadSingleServerDetail(serverUi: WSServerUi, apiURL: String, apiTOKEN: String) {
         _state.update { it.copy(isLoading = true) }
 
         viewModelScope.launch {
@@ -130,7 +131,7 @@ class ServerDetailViewModel(
     }
 
     private fun loadSelectServerInfoAndMonitors(
-        serverUi: ServerUi,
+        serverUi: WSServerUi,
         monitorsTimeSlice: String,
         apiURL: String,
         apiTOKEN: String
@@ -143,26 +144,26 @@ class ServerDetailViewModel(
 
         viewModelScope.launch {
             // 并行执行两个网络请求
-            val ipApiDeferred = async {
-                serverDataSource.getIpAPI(serverIp = serverUi.ipv4)
-            }
+//            val ipApiDeferred = async {
+//                serverDataSource.getIpAPI(serverIp = serverUi.ipv4)
+//            }
             val monitorsDeferred = async {
                 serverDataSource.getMonitors(apiURL, apiTOKEN, serverUi.id)
             }
 
             // 处理 IP API 结果
-            ipApiDeferred.await()
-                .onSuccess { result ->
-                    _state.update {
-                        it.copy(
-                            ipAPIUi = result.toIpAPIUi(),
-                            isLoading = false
-                        )
-                    }
-                }
-                .onError {
-                    _state.update { it.copy(isLoading = false) }
-                }
+//            ipApiDeferred.await()
+//                .onSuccess { result ->
+//                    _state.update {
+//                        it.copy(
+//                            ipAPIUi = result.toIpAPIUi(),
+//                            isLoading = false
+//                        )
+//                    }
+//                }
+//                .onError {
+//                    _state.update { it.copy(isLoading = false) }
+//                }
 
             // 处理 Monitors 结果
             monitorsDeferred.await()
