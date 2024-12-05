@@ -12,6 +12,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.webSocketSession
 import io.ktor.client.request.header
 import io.ktor.client.request.url
+import io.ktor.websocket.CloseReason
 import io.ktor.websocket.Frame
 import io.ktor.websocket.WebSocketSession
 import io.ktor.websocket.close
@@ -70,7 +71,7 @@ class RemoteRealtimeServerDataClient(
     }
 
     override suspend fun close() {
-        session?.close()
+        session?.close(CloseReason(CloseReason.Codes.NORMAL, "User requested close"))
         session = null
     }
 

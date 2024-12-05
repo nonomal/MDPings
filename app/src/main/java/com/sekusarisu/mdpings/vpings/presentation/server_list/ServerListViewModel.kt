@@ -13,6 +13,7 @@ import com.sekusarisu.mdpings.vpings.domain.ServerSortField
 import com.sekusarisu.mdpings.vpings.presentation.models.ServerUi
 import com.sekusarisu.mdpings.vpings.presentation.models.toServerUi
 import com.sekusarisu.mdpings.vpings.presentation.models.toWSServerUi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onEach
@@ -39,6 +40,8 @@ class ServerListViewModel(
             SharingStarted.WhileSubscribed(5000L),
             ServerListState()
         )
+
+    private var webSocketJob: Job? = null
 
 //    init {
 //        // 在 ViewModel 中订阅数据变化
@@ -109,7 +112,8 @@ class ServerListViewModel(
     }
 
     private fun loadWSServers(baseUrl: String) {
-        viewModelScope.launch{
+        webSocketJob?.cancel()
+        webSocketJob = viewModelScope.launch{
             realtimeServerDataClient
                 .getServerListStateStream(baseUrl)
                 .onStart {
@@ -132,6 +136,7 @@ class ServerListViewModel(
     }
 
     private fun closeSession() {
+        webSocketJob?.cancel()
         viewModelScope.launch{
             realtimeServerDataClient
                 .close()
