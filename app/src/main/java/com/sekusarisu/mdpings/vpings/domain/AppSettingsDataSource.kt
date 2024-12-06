@@ -12,8 +12,8 @@ interface AppSettingsDataSource {
     suspend fun getActiveInstance(): Instance?
     suspend fun getActiveInstanceIndex(): Int?
     suspend fun setActiveInstanceIndex(index: Int)
-    suspend fun putInstance(name: String, apiUrl: String, apiToken: String)
-    suspend fun editInstance(index: Int, name: String, apiUrl: String, apiToken: String)
+    suspend fun putInstance(name: String, baseUrl: String, username: String, password: String)
+    suspend fun editInstance(index: Int, name: String, baseUrl: String, username: String, password: String)
     suspend fun removeInstance(index: Int)
     // Refresh Interval
     suspend fun getInterval(): Int?

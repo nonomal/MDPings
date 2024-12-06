@@ -150,7 +150,7 @@ class LocalAppSettingsDataSource(
         }
     }
 
-    override suspend fun putInstance(name: String, apiUrl: String, apiToken: String) {
+    override suspend fun putInstance(name: String, baseUrl: String, username: String, password: String) {
         try {
             Log.d("InstanceManager", "Starting to put instance: $name")
             context.dataStore.updateData { currentData ->
@@ -160,8 +160,10 @@ class LocalAppSettingsDataSource(
                         mutableList.add(
                             Instance(
                                 name = name,
-                                apiUrl = apiUrl,
-                                apiToken = apiToken
+                                baseUrl = baseUrl,
+                                username = username,
+                                password = password,
+                                token = ""
                             )
                         )
                     }
@@ -175,7 +177,7 @@ class LocalAppSettingsDataSource(
 
     }
 
-    override suspend fun editInstance(index: Int, name: String, apiUrl: String, apiToken: String) {
+    override suspend fun editInstance(index: Int, name: String, baseUrl: String, username: String, password: String) {
         try {
             Log.d("InstanceManager", "Starting to put instance: $name")
             context.dataStore.updateData { currentData ->
@@ -184,8 +186,10 @@ class LocalAppSettingsDataSource(
                 val oldInstance = newInstances[index]
                 newInstances[index] = oldInstance.copy(
                     name = name,
-                    apiUrl = apiUrl,
-                    apiToken = apiToken
+                    baseUrl = baseUrl,
+                    username = username,
+                    password = password,
+                    token = ""
                 )
                 val updatedData = currentData.copy(instances = newInstances.toPersistentList())
                 Log.d("InstanceManager", "Updated data: $updatedData")

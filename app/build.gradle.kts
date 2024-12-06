@@ -13,8 +13,8 @@ android {
         applicationId = "com.sekusarisu.mdpings"
         minSdk = 26
         targetSdk = 35
-        versionCode = 5
-        versionName = "1.0.4"
+        versionCode = 7
+        versionName = "1.1.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -30,7 +30,7 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix = ".debug"
-            isDebuggable = false
+            isDebuggable = true
         }
         release {
             isMinifyEnabled = false
@@ -73,6 +73,9 @@ dependencies {
     implementation(libs.bundles.koin)
     implementation(libs.bundles.ktor)
     implementation(libs.ktor.client.okhttp)
+    implementation(libs.ktor.client.websockets)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json)
 
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
     implementation(libs.androidx.compose.material3.adaptive.navigation)
@@ -93,19 +96,20 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.jetbrains.kotlinx.collections.immutable)
 
-    implementation("androidx.compose.foundation:foundation:1.7.5")
+    implementation(libs.androidx.foundation)
 
     dependencies {
+        val vico_version = "2.0.0-beta.2"
         // For Jetpack Compose.
-        implementation("com.patrykandpatrick.vico:compose:2.0.0-beta.2")
+        implementation("com.patrykandpatrick.vico:compose:$vico_version")
         // For `compose`. Creates a `ChartStyle` based on an M2 Material Theme.
-        implementation("com.patrykandpatrick.vico:compose-m2:2.0.0-beta.2")
+        implementation("com.patrykandpatrick.vico:compose-m2:$vico_version")
         // For `compose`. Creates a `ChartStyle` based on an M3 Material Theme.
-        implementation("com.patrykandpatrick.vico:compose-m3:2.0.0-beta.2")
+        implementation("com.patrykandpatrick.vico:compose-m3:$vico_version")
         // Houses the core logic for charts and other elements. Included in all other modules.
-        implementation("com.patrykandpatrick.vico:core:2.0.0-beta.2")
+        implementation("com.patrykandpatrick.vico:core:$vico_version")
         // For the view system.
-        implementation("com.patrykandpatrick.vico:views:2.0.0-beta.2")
+        implementation("com.patrykandpatrick.vico:views:$vico_version")
     }
 
     dependencies {
@@ -119,13 +123,12 @@ dependencies {
         implementation("androidx.navigation:navigation-dynamic-features-fragment:$nav_version")
         // Testing Navigation
         androidTestImplementation("androidx.navigation:navigation-testing:$nav_version")
-
     }
 
     implementation(libs.androidx.material3.windowsizeclass)
 
-    implementation ("androidx.appcompat:appcompat:1.7.0")
-    implementation ("androidx.core:core:1.15.0")
+    implementation (libs.androidx.appcompat)
+    implementation (libs.androidx.core)
 
 
     implementation(libs.gson)

@@ -60,6 +60,7 @@ import kotlinx.coroutines.withContext
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun NetworkMonitor(
+    serverId: Int,
     appSettingsState: AppSettingsState,
     state: ServerDetailState,
     onAction: (ServerDetailAction) -> Unit,
@@ -68,7 +69,7 @@ fun NetworkMonitor(
 
     val modelProducer = remember { CartesianChartModelProducer() }
     val monitors = state.monitors
-    val serverId = state.serverUi!!.id
+    val serverId = serverId
     val isChartLoading = state.isChartLoading
 
     if (monitors.isNotEmpty()) {
@@ -125,10 +126,10 @@ fun NetworkMonitor(
                 )
                 IconButton(
                     onClick = {
-                        val apiUrl = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiUrl
-                        val apiToken = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].apiToken
+                        val baseUrl = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].baseUrl
+                        val token = appSettingsState.appSettings.instances[appSettingsState.appSettings.activeInstance].token
                         onAction(
-                            ServerDetailAction.OnMonitorsRefresh(serverId, state.monitorsTimeSlice, apiUrl, apiToken)
+                            ServerDetailAction.OnMonitorsRefresh(serverId, state.monitorsTimeSlice, baseUrl, token)
                         )
                     },
                     modifier = Modifier
@@ -358,7 +359,8 @@ private fun NetworkMonitorPreview() {
                     monitors = mockMonitors
                 ),
                 onAction = {},
-                appSettingsState = AppSettingsState(AppSettings())
+                appSettingsState = AppSettingsState(AppSettings()),
+                serverId = 0
             )
         }
     }

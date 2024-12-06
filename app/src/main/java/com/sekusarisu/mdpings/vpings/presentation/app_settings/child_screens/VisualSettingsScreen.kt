@@ -51,15 +51,15 @@ import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsState
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.components.AppSettingsSwitchWithDivider
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.components.SelectorDialog
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.ServerListCard
-import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewServerUi0
-import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewServerUi1
-import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewServerUi2
 import android.net.Uri
 import android.provider.Settings
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.platform.LocalContext
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.components.AppSettingsSwitch
+import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewWSServerUi0
+import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewWSServerUi1
+import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewWSServerUi2
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -171,7 +171,7 @@ fun VisualSettingsScreen(
             modifier = Modifier.padding(horizontal = 8.dp)
         ) {
             ServerListCard(
-                serverUi = previewServerUi0,
+                serverUi = previewWSServerUi0,
                 onAction = {},
                 modifier = Modifier,
                 onNavigateToDetail = {},
@@ -179,7 +179,7 @@ fun VisualSettingsScreen(
             )
             Spacer(Modifier.height(8.dp))
             ServerListCard(
-                serverUi = previewServerUi1,
+                serverUi = previewWSServerUi1,
                 onAction = {},
                 modifier = Modifier,
                 onNavigateToDetail = {},
@@ -187,7 +187,7 @@ fun VisualSettingsScreen(
             )
             Spacer(Modifier.height(8.dp))
             ServerListCard(
-                serverUi = previewServerUi2,
+                serverUi = previewWSServerUi2,
                 onAction = {},
                 modifier = Modifier,
                 onNavigateToDetail = {},
