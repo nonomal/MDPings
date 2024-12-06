@@ -12,13 +12,25 @@ import com.sekusarisu.mdpings.vpings.presentation.server_detail.ServerDetailView
 import com.sekusarisu.mdpings.vpings.presentation.server_list.ServerListViewModel
 import com.sekusarisu.mdpings.vpings.presentation.user_login.LoginViewModel
 import io.ktor.client.engine.okhttp.*
+import okhttp3.OkHttpClient
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import java.util.concurrent.TimeUnit
 
 val appModule = module {
-    single { HttpClientFactory.create(OkHttp.create()) }
+    single {
+        HttpClientFactory.create(
+            OkHttp.create {
+                config {
+                    preconfigured = OkHttpClient.Builder()
+                        .pingInterval(20, TimeUnit.SECONDS)
+                        .build()
+                }
+            }
+        )
+    }
     singleOf(::RemoteServerDataSource).bind<ServerDataSource>()
     singleOf(::LocalAppSettingsDataSource).bind<AppSettingsDataSource>()
     singleOf(::RemoteRealtimeServerDataClient).bind<RealtimeServerDataClient>()

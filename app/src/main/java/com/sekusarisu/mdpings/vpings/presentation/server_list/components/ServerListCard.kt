@@ -625,7 +625,10 @@ internal val previewWSServerUi0 = WSServerUi(
     name = "Server0",
     host = previewWSHostUi(),
     status = previewWSStatusUi(),
-    countryCode = "cn",
+    countryCode = listOf<String>(
+        "hk", "nl", "us", "cn", "jp", "tw"
+    )[Random.nextInt(until = 6)]
+        .countryCodeCheck().toCountryCodeToEmojiFlag(),
     lastActive = "2024-12-02T08:39:18.976038437Z",
     isOnline = true
 )
@@ -635,9 +638,12 @@ internal val previewWSServerUi1 = WSServerUi(
     name = "Server1",
     host = previewWSHostUi(),
     status = previewWSStatusUi(),
-    countryCode = "cn",
+    countryCode = listOf<String>(
+        "hk", "nl", "us", "cn", "jp", "tw"
+    )[Random.nextInt(until = 6)]
+        .countryCodeCheck().toCountryCodeToEmojiFlag(),
     lastActive = "2024-12-02T08:39:18.976038437Z",
-    isOnline = true
+    isOnline = false
 )
 
 internal val previewWSServerUi2 = WSServerUi(
@@ -645,7 +651,10 @@ internal val previewWSServerUi2 = WSServerUi(
     name = "Server2",
     host = previewWSHostUi(),
     status = previewWSStatusUi(),
-    countryCode = "cn",
+    countryCode = listOf<String>(
+        "hk", "nl", "us", "cn", "jp", "tw"
+    )[Random.nextInt(until = 6)]
+        .countryCodeCheck().toCountryCodeToEmojiFlag(),
     lastActive = "2024-12-02T08:39:18.976038437Z",
     isOnline = true
 )

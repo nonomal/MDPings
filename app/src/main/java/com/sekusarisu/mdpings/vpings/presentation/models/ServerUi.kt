@@ -72,7 +72,7 @@ fun Server.toServerUi(): ServerUi {
         host = host.toHostUi(),
         status = status.toStatusUi(),
         // 上次汇报时间>=120s -> Server Offline
-        isOnline = lastActive.toISOnline(),
+        isOnline = lastActive.toIsOnline(),
     )
 }
 
@@ -194,12 +194,12 @@ fun Long.toMemDiskLongDisplayableString(): String {
     return transfer
 }
 
-fun Long.toISOnline(): Boolean {
+fun String.toEpochMilli(): Long {
+    return Instant.parse(this).toEpochMilli()
+}
+
+fun Long.toIsOnline(): Boolean {
     val current = System.currentTimeMillis()
     val timeDifference = kotlin.math.abs(current - this)
     return timeDifference <= 120000
-}
-
-fun String.toEpochMilli(): Long {
-    return Instant.parse(this).toEpochMilli()
 }

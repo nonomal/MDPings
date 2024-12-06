@@ -1,4 +1,10 @@
 
+### v1.1.1
+
+- Fix: Httpclient AcceptAllCookiesStorage.
+
+- Fix: Unknown nezha version, arch, system load...
+
 ### v1.1.0
 
 - Init: Nezha V1 support.

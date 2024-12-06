@@ -11,21 +11,18 @@ data class MonitorUi(
     val avgDelay: List<Double>,
     val pktLoss24h: String,
     val avgDelay24h: String,
-//    val avgDelay6h: String,
-//    val avgDelay3h: String,
-//    val avgDelay1h: String,
     val pktLoss30mins: String,
     val avgDelay30mins: String
 )
 
 fun Monitor.toMonitorUi(): MonitorUi {
     // 计算丢包率
-    val timeoutCount = avgDelay.count { it == 1000.0 }
+    val timeoutCount = avgDelay.count { it >= 1000.0 }
     val pktLoss24h = "%.2f".format(timeoutCount.toDouble() / avgDelay.size * 100) + "%"
 
     // 过滤超时数据并将时间戳和延迟配对
     val filtered = createdAt.zip(avgDelay)
-//        .filter { (_, delay) -> delay != 1000.0 }
+        .filter { (_, delay) -> delay <= 1000.0 }
         .takeIf { it.isNotEmpty() } // 确保有数据
 
     // 如果没有有效数据，返回所有统计数据为N/A的对象
@@ -63,7 +60,7 @@ fun Monitor.toMonitorUi(): MonitorUi {
             .map { it.second }
         val timeoutCount = slice
             .takeIf { it.isNotEmpty() }
-            ?.count { it == 1000.0 }
+            ?.count { it >= 1000.0 }
             ?: 0
         return "%.2f".format(timeoutCount.toDouble() / slice.size) + "%"
     }

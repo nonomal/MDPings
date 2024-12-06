@@ -51,9 +51,6 @@ import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsState
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.components.AppSettingsSwitchWithDivider
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.components.SelectorDialog
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.ServerListCard
-import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewServerUi0
-import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewServerUi1
-import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewServerUi2
 import android.net.Uri
 import android.provider.Settings
 import android.widget.Toast

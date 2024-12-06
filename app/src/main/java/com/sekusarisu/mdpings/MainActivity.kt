@@ -71,7 +71,6 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import com.sekusarisu.mdpings.vpings.domain.Instance
 
 
 class MainActivity : ComponentActivity() {
@@ -139,7 +138,7 @@ class MainActivity : ComponentActivity() {
                     if (currentRoute == Screen.Login.route) stringResource(R.string.appbar_title_login)
                     else if (currentRoute == Screen.AppSettings.route) stringResource(R.string.appbar_title_appsettings)
                     else if (currentRoute == Screen.About.route) stringResource(R.string.appbar_title_about)
-                    else if (currentRoute == Screen.ServerListDetailPane.route && serverDetailState.serverUi != null)
+                    else if (currentRoute == Screen.ServerListDetailPane.route && serverDetailState.wsServerUi != null)
                         "${serverListState.selectedServer!!.countryCode} ${serverListState.selectedServer!!.name}"
                     else stringResource(R.string.app_name)
 
@@ -211,15 +210,25 @@ class MainActivity : ComponentActivity() {
                             val instance = appSettingsViewModel.getInstances()
                             if (instance!!.isNotEmpty()) {
                                 val activeInstance = instance[appSettingsViewModel.getActiveInstanceIndex() ?: 0]
-                                loginViewModel.testConnection(
-                                    activeInstance.baseUrl, activeInstance.username, activeInstance.password
+                                val testResult = loginViewModel.testConnectionToBoolean(
+                                    activeInstance.baseUrl,
+                                    activeInstance.username,
+                                    activeInstance.password
                                 )
-                            }
-                            navController.navigate(
-                                if (instance.isNotEmpty()) Screen.ServerListDetailPane.route else Screen.Login.route
-                            ) {
-                                popUpTo(Screen.Loading.route) {
-                                    inclusive = true  // 这会移除 Loading 屏幕
+                                navController.navigate(
+                                    if (testResult) Screen.ServerListDetailPane.route else Screen.Login.route
+                                ) {
+                                    popUpTo(Screen.Loading.route) {
+                                        inclusive = true
+                                    }
+                                }
+                            } else {
+                                navController.navigate(
+                                    Screen.Login.route
+                                ) {
+                                    popUpTo(Screen.Loading.route) {
+                                        inclusive = true
+                                    }
                                 }
                             }
                         }

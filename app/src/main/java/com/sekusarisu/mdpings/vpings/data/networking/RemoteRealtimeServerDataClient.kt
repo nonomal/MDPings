@@ -9,6 +9,7 @@ import com.sekusarisu.mdpings.vpings.domain.RealtimeServerDataClient
 import com.sekusarisu.mdpings.vpings.domain.Server
 import com.sekusarisu.mdpings.vpings.domain.WSServer
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.websocket.webSocket
 import io.ktor.client.plugins.websocket.webSocketSession
 import io.ktor.client.request.header
 import io.ktor.client.request.url
@@ -18,6 +19,7 @@ import io.ktor.websocket.WebSocketSession
 import io.ktor.websocket.close
 import io.ktor.websocket.readText
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterIsInstance
@@ -33,40 +35,38 @@ class RemoteRealtimeServerDataClient(
 
     override suspend fun getServerListStateStream(
         baseUrl: String
-    ): Flow<List<WSServer>> {
-        return flow {
-            session = client.webSocketSession {
-                url(constructWSUrl(
-                    baseURL = baseUrl,
-                    url = "/api/v1/ws/server"
-                ))
-//                header("Cookie", jwt)
-            }
-            val servers = session!!
-                .incoming
-                .consumeAsFlow()
-                .filterIsInstance<Frame.Text>()
-                .mapNotNull { frame ->
-                    try {
-                        val frameText = frame.readText()
-//                        println("Received WebSocket frame: $frameText")
+    ): Flow<List<WSServer>> = channelFlow {
+        val wsUrl = constructWSUrl(
+            baseURL = baseUrl,
+            url = "/api/v1/ws/server"
+        )
 
-                        val decoded = Json.decodeFromString<WSServersResponsesDto>(frameText)
-                        println("Decoded servers count: ${decoded.servers.size}")
+        try {
+            client.webSocket(wsUrl) {
+                for (frame in incoming) {
+                    when (frame) {
+                        is Frame.Text -> {
+                            try {
+                                val frameText = frame.readText()
+                                println("ReadText: $frameText")
+                                val decoded = Json.decodeFromString<WSServersResponsesDto>(frameText)
+                                val servers = decoded.servers
+                                    .sortedBy { it.id }
+                                    .map { it.toWSServer() }
 
-                        decoded.servers
-                            .sortedBy { it.id }
-                            .map { it.toWSServer() }
-                            .also {
-                                println("Mapped servers: $it")
+                                send(servers)
+                            } catch (e: Exception) {
+                                println("Error processing WebSocket frame: ${e.message}")
+                                e.printStackTrace()
                             }
-                    } catch (e: Exception) {
-                        println("Error processing WebSocket frame: ${e.message}")
-                        e.printStackTrace()
-                        null
+                        }
+                        else -> {}
                     }
                 }
-            emitAll(servers)
+            }
+        } catch (e: Exception) {
+            println("WebSocket connection error: ${e.message}")
+            e.printStackTrace()
         }
     }
 

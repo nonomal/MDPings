@@ -1,6 +1,5 @@
 package com.sekusarisu.mdpings.vpings.presentation.server_detail
 
-import com.sekusarisu.mdpings.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sekusarisu.mdpings.core.domain.util.onError
@@ -8,7 +7,6 @@ import com.sekusarisu.mdpings.core.domain.util.onSuccess
 import com.sekusarisu.mdpings.vpings.domain.Monitor
 import com.sekusarisu.mdpings.vpings.domain.ServerDataSource
 import com.sekusarisu.mdpings.vpings.presentation.models.MonitorUi
-import com.sekusarisu.mdpings.vpings.presentation.models.ServerUi
 import com.sekusarisu.mdpings.vpings.presentation.models.WSServerUi
 import com.sekusarisu.mdpings.vpings.presentation.models.toIpAPIUi
 import com.sekusarisu.mdpings.vpings.presentation.models.toMonitorUi
@@ -75,6 +73,7 @@ class ServerDetailViewModel(
         _state.update { it.copy(
             isLoading = false,
             isChartLoading = false,
+            wsServerUi = null,
             serverUi = null,
             ipAPIUi = null,
             monitors = emptyList(),

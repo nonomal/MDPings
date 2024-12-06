@@ -2,15 +2,20 @@ package com.sekusarisu.mdpings.vpings.presentation.user_login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sekusarisu.mdpings.core.domain.util.Error
+import com.sekusarisu.mdpings.core.domain.util.NetworkError
+import com.sekusarisu.mdpings.core.domain.util.Result
 import com.sekusarisu.mdpings.core.domain.util.onError
 import com.sekusarisu.mdpings.core.domain.util.onSuccess
 import com.sekusarisu.mdpings.vpings.domain.AppSettingsDataSource
+import com.sekusarisu.mdpings.vpings.domain.LoginData
 import com.sekusarisu.mdpings.vpings.domain.ServerDataSource
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.fold
 
 class LoginViewModel(
     private val serverDataSource: ServerDataSource,
@@ -72,6 +77,35 @@ class LoginViewModel(
                     _events.send(LoginEvent.Error(error))
                 }
         }
+    }
+
+    suspend fun testConnectionToBoolean(baseUrl: String, username: String, password: String): Boolean {
+        _state.update { it.copy(
+            isLoading = true,
+            isTestSucceed = false,
+        ) }
+        return serverDataSource
+            .getLoginData(baseUrl, username, password)
+            .let { result ->
+                when (result) {
+                    is Result.Success -> {
+                        val loginData = result.data
+                        val isSuccess = loginData.token.isNotEmpty()
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                isTestSucceed = isSuccess
+                            )
+                        }
+                        isSuccess
+                    }
+                    is Result.Error -> {
+                        _state.update { it.copy(isLoading = false) }
+                        _events.send(LoginEvent.Error(result.error))
+                        false
+                    }
+                }
+            }
     }
 
     fun getInstances() {

@@ -60,6 +60,7 @@ import com.sekusarisu.mdpings.vpings.presentation.server_list.components.Network
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.NetworkTransfer
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.OnlineStatusIndicator
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.Status
+import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewListServers
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewServerUi0
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewServerUi1
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewWSServerUi0
@@ -156,7 +157,7 @@ fun ServerDetailScreen(
                 state = state,
                 onAction = onAction,
                 modifier = modifier,
-                serverId = serverListState.selectedServer!!.id
+                serverId = selectedServerUi.id
             )
             Spacer(Modifier.height(8.dp))
             PktLostAndAvgLatencyCard(
@@ -243,12 +244,20 @@ fun ServerDetailScreenPreviewOnline() {
             state = ServerDetailState(
                 isLoading = false,
                 serverUi = previewServerUi0,
+                wsServerUi = previewWSServerUi0,
                 ipAPIUi = mockIpAPIUi,
                 monitors = mockMonitors
             ),
             onAction = {},
             appSettingsState = AppSettingsState(AppSettings()),
-            serverListState = ServerListState()
+            serverListState = ServerListState(
+                isLoading = false,
+                selectedServer = previewWSServerUi1,
+                servers = previewListServers,
+                wsServers = listOf(previewWSServerUi0, previewWSServerUi1),
+                ipAPIUi = mockIpAPIUi,
+                monitors = mockMonitors
+            )
         )
     }
 }
@@ -263,12 +272,20 @@ fun ServerDetailScreenPreviewOffline() {
             state = ServerDetailState(
                 isLoading = false,
                 serverUi = previewServerUi1,
+                wsServerUi = previewWSServerUi1,
                 ipAPIUi = mockIpAPIUi,
                 monitors = mockMonitors
             ),
             onAction = {},
             appSettingsState = AppSettingsState(AppSettings()),
-            serverListState = ServerListState()
+            serverListState = ServerListState(
+                isLoading = false,
+                selectedServer = previewWSServerUi1,
+                servers = previewListServers,
+                wsServers = listOf(previewWSServerUi0, previewWSServerUi1),
+                ipAPIUi = mockIpAPIUi,
+                monitors = mockMonitors
+            )
         )
     }
 }
