@@ -37,7 +37,6 @@ class RemoteServerDataSource(
             baseURL = baseUrl,
             url = "/api/v1/login"
         )
-        println("url: $url")
         return safeCall<LoginResponsesDto> {
             httpClient.post(
                 urlString = url
@@ -47,7 +46,9 @@ class RemoteServerDataSource(
                     mapOf(
                         "username" to username,
                         "password" to password
-                    )
+                    ).also {
+                        println("getLoginData: Request body - $it")
+                    }
                 )
             }
         }.map { response ->

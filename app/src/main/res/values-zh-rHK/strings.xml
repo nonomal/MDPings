@@ -133,4 +133,12 @@
     <string name="login_password_title">密碼</string>
     <string name="login_password_content">輸入密碼</string>
 
+    // Terminal
+    <string name="terminal_command_input">輸入命令</string>
+    <string name="terminal_command_send">發送</string>
+    <string name="terminal_connect">連接</string>
+    <string name="terminal_disconnect">斷開</string>
+    <string name="terminal_clean_screen">清屏</string>
+    <string name="terminal_command_ctrl_c">Ctrl+C</string>
+
 </resources>

@@ -53,7 +53,8 @@ fun ListDetailLayoutScreen(
     appSettingsState: AppSettingsState,
     onServerListAction: (ServerListAction) -> Unit,
     onServerDetailAction: (ServerDetailAction) -> Unit,
-    onAppSettingsAction: (AppSettingsAction) -> Unit
+    onAppSettingsAction: (AppSettingsAction) -> Unit,
+    onNavigateToTerminal: (Int) -> Unit,
 ) {
 
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -95,6 +96,7 @@ fun ListDetailLayoutScreen(
                         onAction = onServerDetailAction,
                         appSettingsState = appSettingsState,
                         serverListState = serverListState,
+                        onNavigateToTerminal = onNavigateToTerminal
                     )
                 } else {
                     Box(
@@ -146,6 +148,7 @@ private fun ListDetailLayoutScreenPreview() {
                             WindowWidthSizeClass.Expanded -> 2
                             else -> 2
                         }
+
                         else -> 2
                     },
                     horizontalPartitionSpacerSize = 0.dp,
@@ -166,18 +169,23 @@ private fun ListDetailLayoutScreenPreview() {
                 ipAPIUi = mockIpAPIUi,
                 monitors = mockMonitors
             ),
-            appSettingsState = AppSettingsState(AppSettings().copy(
-                instances = persistentListOf(Instance(
-                    name = "TODO()",
-                    baseUrl = "TODO()",
-                    username = "TODO()",
-                    password = "TODO()",
-                    token = "TODO()"
-                ))
-            )),
+            appSettingsState = AppSettingsState(
+                AppSettings().copy(
+                    instances = persistentListOf(
+                        Instance(
+                            name = "TODO()",
+                            baseUrl = "TODO()",
+                            username = "TODO()",
+                            password = "TODO()",
+                            token = "TODO()"
+                        )
+                    )
+                )
+            ),
             onServerListAction = {},
             onServerDetailAction = {},
-            onAppSettingsAction = {}
+            onAppSettingsAction = {},
+            onNavigateToTerminal = {}
         )
     }
 }

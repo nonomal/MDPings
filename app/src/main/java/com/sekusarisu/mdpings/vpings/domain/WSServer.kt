@@ -4,6 +4,7 @@ data class WSServer(
     val id: Int,
     val name: String,
     val host: WSHost,
+    val displayIndex: Int?,
     val status: WSState,
     val countryCode: String?,
     val lastActive: String?

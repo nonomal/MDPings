@@ -10,6 +10,8 @@ import com.sekusarisu.mdpings.vpings.domain.ServerDataSource
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsViewModel
 import com.sekusarisu.mdpings.vpings.presentation.server_detail.ServerDetailViewModel
 import com.sekusarisu.mdpings.vpings.presentation.server_list.ServerListViewModel
+import com.sekusarisu.mdpings.vpings.presentation.server_terminal.ServerTerminalAction
+import com.sekusarisu.mdpings.vpings.presentation.server_terminal.ServerTerminalViewModel
 import com.sekusarisu.mdpings.vpings.presentation.user_login.LoginViewModel
 import io.ktor.client.engine.okhttp.*
 import okhttp3.OkHttpClient
@@ -38,5 +40,7 @@ val appModule = module {
     viewModelOf(::LoginViewModel)
     viewModelOf(::ServerListViewModel)
     viewModelOf(::ServerDetailViewModel)
+    viewModelOf(::ServerTerminalViewModel)
     viewModelOf(::AppSettingsViewModel)
+
 }

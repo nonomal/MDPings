@@ -71,6 +71,8 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import com.sekusarisu.mdpings.vpings.presentation.server_terminal.ServerTerminalScreen
+import com.sekusarisu.mdpings.vpings.presentation.server_terminal.ServerTerminalViewModel
 
 
 class MainActivity : ComponentActivity() {
@@ -108,6 +110,8 @@ class MainActivity : ComponentActivity() {
                 val serverListState by serverListViewModel.state.collectAsStateWithLifecycle()
                 val serverDetailViewModel = koinViewModel<ServerDetailViewModel>()
                 val serverDetailState by serverDetailViewModel.state.collectAsStateWithLifecycle()
+                val serverTerminalViewModel = koinViewModel<ServerTerminalViewModel>()
+                val serverTerminalState by serverTerminalViewModel.state.collectAsStateWithLifecycle()
 
 
                 // Error Handle
@@ -135,12 +139,22 @@ class MainActivity : ComponentActivity() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
                 val topAppBarTitle =
-                    if (currentRoute == Screen.Login.route) stringResource(R.string.appbar_title_login)
-                    else if (currentRoute == Screen.AppSettings.route) stringResource(R.string.appbar_title_appsettings)
-                    else if (currentRoute == Screen.About.route) stringResource(R.string.appbar_title_about)
-                    else if (currentRoute == Screen.ServerListDetailPane.route && serverDetailState.wsServerUi != null)
-                        "${serverListState.selectedServer!!.countryCode} ${serverListState.selectedServer!!.name}"
-                    else stringResource(R.string.app_name)
+                    when {
+                        currentRoute == Screen.Login.route ->
+                            stringResource(R.string.appbar_title_login)
+                        currentRoute == Screen.AppSettings.route ->
+                            stringResource(R.string.appbar_title_appsettings)
+                        currentRoute == Screen.About.route ->
+                            stringResource(R.string.appbar_title_about)
+                        currentRoute?.startsWith(Screen.ServerListDetailPane.route) == true -> {
+                            if (serverDetailState.wsServerUi != null) {
+                                "${serverListState.selectedServer!!.countryCode} ${serverListState.selectedServer!!.name}"
+                            } else {
+                                stringResource(R.string.app_name)
+                            }
+                        }
+                        else -> stringResource(R.string.app_name)
+                    }
 
                 // Orientation && windowSizeClass -> ListDetailPane Navigator's maxHorizontalPartitions
                 val configuration = LocalConfiguration.current
@@ -308,9 +322,28 @@ class MainActivity : ComponentActivity() {
                                         appSettingsState = appSettingsState,
                                         onServerListAction = serverListViewModel::onAction,
                                         onServerDetailAction = serverDetailViewModel::onAction,
-                                        onAppSettingsAction = appSettingsViewModel::onAction
+                                        onAppSettingsAction = appSettingsViewModel::onAction,
+                                        onNavigateToTerminal = { serverId ->
+                                            navController.navigate("${Screen.ServerListDetailPane.route}/$serverId")
+                                        }
                                     )
                                 }
+
+                                composable(
+                                    route = "${Screen.ServerListDetailPane.route}/{serverId}",
+                                    arguments = listOf(navArgument("serverId") { type = NavType.StringType })
+                                ) { backStackEntry ->
+                                    val serverId = backStackEntry.arguments?.getString("serverId")?.toIntOrNull() ?: 0
+                                    ServerTerminalScreen(
+                                        state = serverTerminalState,
+                                        serverListState = serverListState,
+                                        selectedServerId = serverId,
+                                        appSettingsState = appSettingsState,
+                                        onAction = serverTerminalViewModel::onAction,
+                                        modifier = Modifier
+                                    )
+                                }
+
                             }
 
                             // Settings navigation graph
@@ -362,7 +395,9 @@ sealed class Screen(val route: String) {
     object ServerDetail : Screen("main/servers/{serverId}") {
         fun createRoute(serverId: String) = "main/servers/$serverId"
     }
-    object ServerListDetailPane : Screen("main/serverListDetail")
+    object ServerListDetailPane : Screen("main/serverListDetail/{serverId}") {
+        fun createRoute(serverId: String) = "main/serverListDetail/$serverId"
+    }
 
     // Settings graph
     object Settings : Screen("settings")

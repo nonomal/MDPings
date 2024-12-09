@@ -13,8 +13,8 @@ android {
         applicationId = "com.sekusarisu.mdpings"
         minSdk = 26
         targetSdk = 35
-        versionCode = 7
-        versionName = "1.1.1"
+        versionCode = 8
+        versionName = "1.1.2"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -97,6 +97,9 @@ dependencies {
     implementation(libs.jetbrains.kotlinx.collections.immutable)
 
     implementation(libs.androidx.foundation)
+
+    implementation(libs.jline.terminal)
+    implementation(libs.jline.reader)
 
     dependencies {
         val vico_version = "2.0.0-beta.2"

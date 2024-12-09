@@ -11,6 +11,7 @@ fun WSServerDto.toWSServer(): WSServer {
     return WSServer(
         id = id,
         name = name,
+        displayIndex = displayIndex,
         host = host.toWSHost(),
         status = state.toWSState(),
         countryCode = countryCode,

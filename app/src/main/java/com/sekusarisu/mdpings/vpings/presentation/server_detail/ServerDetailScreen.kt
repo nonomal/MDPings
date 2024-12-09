@@ -16,16 +16,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Functions
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.MonitorHeart
+import androidx.compose.material.icons.rounded.Terminal
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
@@ -75,7 +81,8 @@ fun ServerDetailScreen(
     appSettingsState: AppSettingsState,
     selectedServerUi: WSServerUi,
     onAction: (ServerDetailAction) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNavigateToTerminal: (Int) -> Unit,
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -136,7 +143,7 @@ fun ServerDetailScreen(
         )
     ) {
         Column(
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier
                 .verticalScroll(rememberScrollState())
@@ -146,6 +153,54 @@ fun ServerDetailScreen(
                 OfflineCard()
                 Spacer(Modifier.height(8.dp))
             }
+            Card(
+                modifier = Modifier.wrapContentHeight(),
+                shape = ShapeDefaults.Medium,
+                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    // Title
+                    Row(
+                        modifier = Modifier
+                            .alpha(0.8f)
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Functions,
+                            contentDescription = null,
+                            modifier = Modifier
+                        )
+                        Text(
+                            text = "功能区",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier
+                                .padding(horizontal = 4.dp)
+                        )
+                    }
+                    Button(
+                        onClick = {
+                            onNavigateToTerminal(selectedServerUi.id)
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Terminal,
+                            contentDescription = null
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        Text("启动终端")
+                    }
+                }
+            }
+            Spacer(Modifier.height(8.dp))
             InstanceInfo(
                 serverUi = state.wsServerUi!!,
                 ipAPIUi = state.ipAPIUi!!,
@@ -257,7 +312,8 @@ fun ServerDetailScreenPreviewOnline() {
                 wsServers = listOf(previewWSServerUi0, previewWSServerUi1),
                 ipAPIUi = mockIpAPIUi,
                 monitors = mockMonitors
-            )
+            ),
+            onNavigateToTerminal = {}
         )
     }
 }
@@ -285,7 +341,8 @@ fun ServerDetailScreenPreviewOffline() {
                 wsServers = listOf(previewWSServerUi0, previewWSServerUi1),
                 ipAPIUi = mockIpAPIUi,
                 monitors = mockMonitors
-            )
+            ),
+            onNavigateToTerminal = {}
         )
     }
 }

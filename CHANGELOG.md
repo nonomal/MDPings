@@ -1,4 +1,10 @@
 
+### v1.1.2
+
+- Fix: Loading server loop.
+
+- Init: Terminal websocket API support.
+
 ### v1.1.1
 
 - Fix: Httpclient AcceptAllCookiesStorage.

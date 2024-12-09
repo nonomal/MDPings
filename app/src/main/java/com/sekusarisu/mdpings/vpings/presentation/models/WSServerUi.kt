@@ -7,6 +7,7 @@ import com.sekusarisu.mdpings.vpings.domain.WSState
 data class WSServerUi(
     val id: Int,
     val name: String,
+    val displayIndex: Int,
     val host: WSHostUi,
     val status: WSStateUi,
     val countryCode: String,
@@ -49,6 +50,7 @@ fun WSServer.toWSServerUi(): WSServerUi {
     return WSServerUi(
         id = id,
         name = name,
+        displayIndex = displayIndex ?: 0,
         host = host.toWSHostUi(),
         status = status.toWSStatusUi(),
         countryCode = (countryCode ?: "un").countryCodeCheck().toCountryCodeToEmojiFlag(),
