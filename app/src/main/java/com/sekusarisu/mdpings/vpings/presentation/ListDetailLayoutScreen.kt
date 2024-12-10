@@ -14,12 +14,15 @@ import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaf
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.sekusarisu.mdpings.R
 import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
 import com.sekusarisu.mdpings.vpings.domain.AppSettings
@@ -36,6 +39,7 @@ import com.sekusarisu.mdpings.vpings.presentation.server_list.ServerListScreen
 import com.sekusarisu.mdpings.vpings.presentation.server_list.ServerListState
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewListServers
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewServerUi0
+import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewWSServerUi0
 import kotlinx.collections.immutable.persistentListOf
 import kotlin.Any
 
@@ -49,8 +53,20 @@ fun ListDetailLayoutScreen(
     appSettingsState: AppSettingsState,
     onServerListAction: (ServerListAction) -> Unit,
     onServerDetailAction: (ServerDetailAction) -> Unit,
-    onAppSettingsAction: (AppSettingsAction) -> Unit
+    onAppSettingsAction: (AppSettingsAction) -> Unit,
+    onNavigateToTerminal: (Int) -> Unit,
 ) {
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        onDispose{
+            onServerListAction(
+                ServerListAction.OnCloseSession
+            )
+        }
+    }
+
     NavigableListDetailPaneScaffold(
         modifier = modifier,
         navigator = navigator,
@@ -79,6 +95,8 @@ fun ListDetailLayoutScreen(
                         selectedServerUi = serverListState.selectedServer,
                         onAction = onServerDetailAction,
                         appSettingsState = appSettingsState,
+                        serverListState = serverListState,
+                        onNavigateToTerminal = onNavigateToTerminal
                     )
                 } else {
                     Box(
@@ -99,12 +117,12 @@ fun ListDetailLayoutScreen(
 @Composable
 @Preview(showBackground = true, device = "spec:width=2560px,height=1600px,dpi=320,isRound=true",
     fontScale = 1.5f, showSystemUi = false,
-    wallpaper = androidx.compose.ui.tooling.preview.Wallpapers.NONE
+    wallpaper = Wallpapers.NONE
 )
 @Preview(showBackground = true,
     device = "spec:width=2560px,height=1600px,dpi=320,isRound=true,orientation=portrait",
     fontScale = 1.5f, showSystemUi = false,
-    wallpaper = androidx.compose.ui.tooling.preview.Wallpapers.NONE
+    wallpaper = Wallpapers.NONE
 )
 @Preview
 @Preview(device = "spec:parent=pixel_5,orientation=landscape")
@@ -130,6 +148,7 @@ private fun ListDetailLayoutScreenPreview() {
                             WindowWidthSizeClass.Expanded -> 2
                             else -> 2
                         }
+
                         else -> 2
                     },
                     horizontalPartitionSpacerSize = 0.dp,
@@ -142,7 +161,7 @@ private fun ListDetailLayoutScreenPreview() {
             serverListState = ServerListState(
                 isLoading = false,
                 servers = previewListServers,
-                selectedServer = previewServerUi0
+                selectedServer = previewWSServerUi0
             ),
             serverDetailState = ServerDetailState(
                 isLoading = false,
@@ -150,16 +169,23 @@ private fun ListDetailLayoutScreenPreview() {
                 ipAPIUi = mockIpAPIUi,
                 monitors = mockMonitors
             ),
-            appSettingsState = AppSettingsState(AppSettings().copy(
-                instances = persistentListOf(Instance(
-                    name = "TODO()",
-                    apiUrl = "TODO()",
-                    apiToken = "TODO()"
-                ))
-            )),
+            appSettingsState = AppSettingsState(
+                AppSettings().copy(
+                    instances = persistentListOf(
+                        Instance(
+                            name = "TODO()",
+                            baseUrl = "TODO()",
+                            username = "TODO()",
+                            password = "TODO()",
+                            token = "TODO()"
+                        )
+                    )
+                )
+            ),
             onServerListAction = {},
             onServerDetailAction = {},
-            onAppSettingsAction = {}
+            onAppSettingsAction = {},
+            onNavigateToTerminal = {}
         )
     }
 }

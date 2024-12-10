@@ -28,13 +28,15 @@ import com.sekusarisu.mdpings.R
 import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
 import com.sekusarisu.mdpings.vpings.presentation.models.IpAPIUi
 import com.sekusarisu.mdpings.vpings.presentation.models.ServerUi
+import com.sekusarisu.mdpings.vpings.presentation.models.WSServerUi
 import com.sekusarisu.mdpings.vpings.presentation.models.toMemDiskLongDisplayableString
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewServerUi0
+import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewWSServerUi0
 
 @Composable
 fun InstanceInfo(
     ipAPIUi: IpAPIUi,
-    serverUi: ServerUi,
+    serverUi: WSServerUi,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -143,7 +145,7 @@ fun InfoRow(
 private fun InstanceInfoPreview() {
     MDPingsTheme {
         InstanceInfo(
-            serverUi = previewServerUi0,
+            serverUi = previewWSServerUi0,
             ipAPIUi = mockIpAPIUi ,
             modifier = Modifier.padding(16.dp)
         )

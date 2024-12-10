@@ -6,22 +6,72 @@ import com.sekusarisu.mdpings.core.domain.util.NetworkError
 import com.sekusarisu.mdpings.core.domain.util.Result
 import com.sekusarisu.mdpings.core.domain.util.map
 import com.sekusarisu.mdpings.vpings.data.mappers.toIpAPI
+import com.sekusarisu.mdpings.vpings.data.mappers.toLoginData
 import com.sekusarisu.mdpings.vpings.data.mappers.toMonitor
 import com.sekusarisu.mdpings.vpings.data.mappers.toServer
+import com.sekusarisu.mdpings.vpings.data.networking.dto.DashboardServersResponsesDto
 import com.sekusarisu.mdpings.vpings.data.networking.dto.IpAPIDto
+import com.sekusarisu.mdpings.vpings.data.networking.dto.LoginResponsesDto
 import com.sekusarisu.mdpings.vpings.data.networking.dto.MonitorsResponsesDto
 import com.sekusarisu.mdpings.vpings.data.networking.dto.ServersResponsesDto
 import com.sekusarisu.mdpings.vpings.domain.IpAPI
+import com.sekusarisu.mdpings.vpings.domain.LoginData
+import com.sekusarisu.mdpings.vpings.domain.LoginRequestData
 import com.sekusarisu.mdpings.vpings.domain.Monitor
 import com.sekusarisu.mdpings.vpings.domain.Server
 import com.sekusarisu.mdpings.vpings.domain.ServerDataSource
 import io.ktor.client.HttpClient
-import io.ktor.client.request.get
-import io.ktor.client.request.header
+import io.ktor.client.request.*
+import io.ktor.http.*
 
 class RemoteServerDataSource(
     private val httpClient: HttpClient
 ): ServerDataSource {
+
+    override suspend fun getLoginData(
+        baseUrl: String,
+        username: String,
+        password: String
+    ): Result<LoginData, NetworkError> {
+        val url = constructUrl(
+            baseURL = baseUrl,
+            url = "/api/v1/login"
+        )
+        return safeCall<LoginResponsesDto> {
+            httpClient.post(
+                urlString = url
+            ) {
+                contentType(ContentType.Application.Json)
+                setBody(
+                    mapOf(
+                        "username" to username,
+                        "password" to password
+                    ).also {
+                        println("getLoginData: Request body - $it")
+                    }
+                )
+            }
+        }.map { response ->
+            response.data
+                ?.toLoginData() ?: LoginData("","")
+        }
+    }
+
+    override suspend fun getSingleServerIP(
+        baseUrl: String,
+        serverId: Int
+    ): Result<String, NetworkError> {
+        return safeCall<DashboardServersResponsesDto> {
+            httpClient.get(
+                urlString = constructUrl(
+                    baseURL = baseUrl,
+                    url = "/api/v1/server"
+                )
+            )
+        }.map { response ->
+            response.data.first { it.id == serverId }.geoip.ip.ipv4Addr
+        }
+    }
 
     override suspend fun getServers(apiUrl: String, token: String): Result<List<Server>, NetworkError> {
         return safeCall<ServersResponsesDto> {
@@ -60,13 +110,11 @@ class RemoteServerDataSource(
             httpClient.get(
                 urlString = constructUrl(
                     baseURL = apiUrl,
-                    url = "/api/v1/monitor/$serverId"
+                    url = "/api/v1/service/$serverId"
                 )
-            ) {
-                header("Authorization", token)
-            }
+            )
         }.map { response ->
-            response.result
+            response.data
                 ?.sortedBy { it.monitorId }
                 ?.map { it.toMonitor() } ?: emptyList()
         }

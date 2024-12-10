@@ -123,4 +123,22 @@
     <string name="app_settings_visual_language_title">介面語言</string>
     <string name="app_settings_visual_language_content">變更介面語言</string>
 
+    // Login
+    <string name="login_instance_name_title">實例名稱</string>
+    <string name="login_instance_name_content">取一個好記的名字吧~</string>
+    <string name="login_dashboard_url_title">面板地址</string>
+    <string name="login_dashboard_url_content">https://nezha.dashboard.url/</string>
+    <string name="login_username_title">使用者名稱</string>
+    <string name="login_username_content">輸入在後台建立的使用者名稱</string>
+    <string name="login_password_title">密碼</string>
+    <string name="login_password_content">輸入密碼</string>
+
+    // Terminal
+    <string name="terminal_command_input">輸入命令</string>
+    <string name="terminal_command_send">發送</string>
+    <string name="terminal_connect">連接</string>
+    <string name="terminal_disconnect">斷開</string>
+    <string name="terminal_clean_screen">清屏</string>
+    <string name="terminal_command_ctrl_c">Ctrl+C</string>
+
 </resources>

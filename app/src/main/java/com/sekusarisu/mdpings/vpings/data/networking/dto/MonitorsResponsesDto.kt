@@ -4,5 +4,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class MonitorsResponsesDto(
-    val result: List<MonitorDto>? = emptyList<MonitorDto>()
+    val data: List<MonitorDto>? = emptyList<MonitorDto>()
 )

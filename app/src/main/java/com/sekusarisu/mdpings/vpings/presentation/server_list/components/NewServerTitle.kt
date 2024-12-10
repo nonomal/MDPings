@@ -22,12 +22,13 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
 import com.sekusarisu.mdpings.vpings.presentation.models.ServerUi
+import com.sekusarisu.mdpings.vpings.presentation.models.WSServerUi
 import com.sekusarisu.mdpings.vpings.presentation.server_list.ServerListAction
 import kotlinx.coroutines.launch
 
 @Composable
 fun NewServerTitle(
-    serverUi: ServerUi,
+    serverUi: WSServerUi,
     onAction: (ServerListAction) -> Unit,
     onNavigateToDetail: () -> Unit
 ) {
@@ -48,7 +49,7 @@ fun NewServerTitle(
         leadingIcon = {
             if (serverUi.isOnline)
                 Text(
-                    text = serverUi.host.countryCode
+                    text = serverUi.countryCode
                 )
             else Icon(
                 imageVector = Icons.Rounded.Warning,
@@ -68,7 +69,7 @@ fun NewServerTitle(
         onClick = {
             scope.launch {
                 onAction(
-                    ServerListAction.OnServerClick(
+                    ServerListAction.OnWSServerClick(
                         serverUi = serverUi
                     )
                 )
@@ -97,7 +98,7 @@ fun NewServerTitle(
 fun NewServerTitlePreview() {
     MDPingsTheme {
         NewServerTitle(
-            serverUi = previewServerUi0,
+            serverUi = previewWSServerUi0,
             onAction = {},
             onNavigateToDetail = {}
         )
@@ -109,7 +110,7 @@ fun NewServerTitlePreview() {
 fun NewServerTitlePreview1() {
     MDPingsTheme {
         NewServerTitle(
-            serverUi = previewServerUi1,
+            serverUi = previewWSServerUi1,
             onAction = {},
             onNavigateToDetail = {}
         )

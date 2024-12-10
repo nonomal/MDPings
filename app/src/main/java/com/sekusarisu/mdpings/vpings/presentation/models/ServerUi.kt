@@ -4,6 +4,7 @@ import android.icu.text.NumberFormat
 import com.sekusarisu.mdpings.vpings.domain.Host
 import com.sekusarisu.mdpings.vpings.domain.Server
 import com.sekusarisu.mdpings.vpings.domain.Status
+import java.time.Instant
 import java.util.Locale
 import kotlin.math.pow
 
@@ -71,7 +72,7 @@ fun Server.toServerUi(): ServerUi {
         host = host.toHostUi(),
         status = status.toStatusUi(),
         // 上次汇报时间>=120s -> Server Offline
-        isOnline = lastActive.toISOnline(),
+        isOnline = lastActive.toIsOnline(),
     )
 }
 
@@ -193,9 +194,12 @@ fun Long.toMemDiskLongDisplayableString(): String {
     return transfer
 }
 
-fun Long.toISOnline(): Boolean {
-    val current = System.currentTimeMillis() / 1000
-    val timeDifference = kotlin.math.abs(current - this)
-    return timeDifference <= 600
+fun String.toEpochMilli(): Long {
+    return Instant.parse(this).toEpochMilli()
 }
 
+fun Long.toIsOnline(): Boolean {
+    val current = System.currentTimeMillis()
+    val timeDifference = kotlin.math.abs(current - this)
+    return timeDifference <= 120000
+}

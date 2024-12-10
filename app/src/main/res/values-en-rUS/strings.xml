@@ -123,4 +123,22 @@
     <string name="app_settings_visual_language_title">Interface Language</string>
     <string name="app_settings_visual_language_content">Change interface language</string>
 
+    // Login
+    <string name="login_instance_name_title">Instance Name</string>
+    <string name="login_instance_name_content">Choose a memorable name</string>
+    <string name="login_dashboard_url_title">Dashboard URL</string>
+    <string name="login_dashboard_url_content">https://nezha.dashboard.url/</string>
+    <string name="login_username_title">Username</string>
+    <string name="login_username_content">Enter the username created in the backend</string>
+    <string name="login_password_title">Password</string>
+    <string name="login_password_content">Enter password</string>
+
+    // Terminal
+    <string name="terminal_command_input">Input Command</string>
+    <string name="terminal_command_send">Send</string>
+    <string name="terminal_connect">Connect</string>
+    <string name="terminal_disconnect">Disconnect</string>
+    <string name="terminal_clean_screen">Clean Screen</string>
+    <string name="terminal_command_ctrl_c">Ctrl+C</string>
+
 </resources>
