@@ -1,7 +1,13 @@
 
+### v1.1.3
+
+- Fix: Loading server loop (gpu, publicNote, temperatures).
+
+- Fix: Bottom Navigation Bar layout problem.
+
 ### v1.1.2
 
-- Fix: Loading server loop.
+- Fix: Loading server loop (host ip).
 
 - Init: Terminal websocket API support.
 

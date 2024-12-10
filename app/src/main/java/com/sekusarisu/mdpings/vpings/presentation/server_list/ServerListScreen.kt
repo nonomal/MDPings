@@ -127,6 +127,7 @@ fun ServerListScreen(
     ) {
         LazyColumn(
             modifier = Modifier
+                .navigationBarsPadding()
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {

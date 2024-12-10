@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -130,7 +131,6 @@ fun ServerDetailScreen(
 
     AnimatedVisibility(
         visible = (state.wsServerUi != null && state.ipAPIUi != null),
-//        visible = (state.wsServerUi != null),
         enter = slideInVertically(
             spring(
                 stiffness = Spring.StiffnessLow,
@@ -146,6 +146,7 @@ fun ServerDetailScreen(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier
+                .navigationBarsPadding()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
@@ -201,26 +202,46 @@ fun ServerDetailScreen(
                 }
             }
             Spacer(Modifier.height(8.dp))
+            // TODO 转屏的时候触发了清空wsServerUi -> java.lang.NullPointerException
             InstanceInfo(
                 serverUi = state.wsServerUi!!,
                 ipAPIUi = state.ipAPIUi!!,
                 modifier = modifier
             )
             Spacer(Modifier.height(8.dp))
-            NetworkMonitor(
-                appSettingsState = appSettingsState,
-                state = state,
-                onAction = onAction,
-                modifier = modifier,
-                serverId = selectedServerUi.id
-            )
-            Spacer(Modifier.height(8.dp))
-            PktLostAndAvgLatencyCard(
-                monitors = state.monitors,
-                modifier = modifier,
-                state = state
-            )
-            Spacer(Modifier.height(8.dp))
+
+            // monitors 没数据就不显示 NetworkMonitor 跟 PktLostAndAvgLatencyCard
+            AnimatedVisibility(
+                visible = state.monitors.isNotEmpty(),
+                enter = slideInVertically(
+                    spring(
+                        stiffness = Spring.StiffnessLow,
+                        visibilityThreshold = IntOffset.VisibilityThreshold
+                    )
+                ) + expandVertically(
+                    expandFrom = Alignment.Top
+                ) + fadeIn(
+                    initialAlpha = 0.3f
+                )
+            ) {
+                Column {
+                    NetworkMonitor(
+                        appSettingsState = appSettingsState,
+                        state = state,
+                        onAction = onAction,
+                        modifier = modifier,
+                        serverId = selectedServerUi.id
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    PktLostAndAvgLatencyCard(
+                        monitors = state.monitors,
+                        modifier = modifier,
+                        state = state
+                    )
+                    Spacer(Modifier.height(8.dp))
+                }
+            }
+
             ServerStatus(
                 state = serverListState,
                 selectedServerUi = selectedServerUi,

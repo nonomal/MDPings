@@ -15,6 +15,7 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -24,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.sekusarisu.mdpings.R
+import com.sekusarisu.mdpings.Screen
 import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
 import com.sekusarisu.mdpings.vpings.domain.AppSettings
 import com.sekusarisu.mdpings.vpings.domain.Instance
@@ -40,6 +42,7 @@ import com.sekusarisu.mdpings.vpings.presentation.server_list.ServerListState
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewListServers
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewServerUi0
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewWSServerUi0
+import com.sekusarisu.mdpings.vpings.presentation.user_login.LoginAction
 import kotlinx.collections.immutable.persistentListOf
 import kotlin.Any
 
@@ -54,11 +57,23 @@ fun ListDetailLayoutScreen(
     onServerListAction: (ServerListAction) -> Unit,
     onServerDetailAction: (ServerDetailAction) -> Unit,
     onAppSettingsAction: (AppSettingsAction) -> Unit,
+    onLoginAction: (LoginAction) -> Unit,
     onNavigateToTerminal: (Int) -> Unit,
 ) {
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
+    // 切换实例时刷新token
+    LaunchedEffect(appSettingsState.appSettings.activeInstance) {
+        val instances = appSettingsState.appSettings.instances
+        if (instances.isNotEmpty()) {
+            val instance = instances[appSettingsState.appSettings.activeInstance]
+            onLoginAction(
+                LoginAction.OnTestClick(instance.baseUrl, instance.username, instance.password)
+            )
+        }
+    }
+    // 切换到其他screen的时候关闭websocket
     DisposableEffect(lifecycleOwner) {
         onDispose{
             onServerListAction(
@@ -185,7 +200,8 @@ private fun ListDetailLayoutScreenPreview() {
             onServerListAction = {},
             onServerDetailAction = {},
             onAppSettingsAction = {},
-            onNavigateToTerminal = {}
+            onNavigateToTerminal = {},
+            onLoginAction = {}
         )
     }
 }

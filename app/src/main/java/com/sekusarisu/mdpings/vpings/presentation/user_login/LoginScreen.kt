@@ -65,6 +65,7 @@ import com.sekusarisu.mdpings.vpings.domain.Instance
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsAction
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsState
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -152,8 +153,12 @@ fun LoginScreen(
                         modifier = Modifier
                             .animateItem()
                             .clickable(
+                                // TODO 切换实例的时候应该重新拿token，目前是变成游客模式了
                                 onClick = {
                                     scope.launch {
+                                        onAction(
+                                            LoginAction.OnTestClick(instance.baseUrl, instance.username, instance.password)
+                                        )
                                         onLoad(
                                             AppSettingsAction.OnChangeActiveInstance(index)
                                         )
@@ -561,22 +566,6 @@ private fun LoginScreenPreview() {
         )
     }
 }
-
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Preview(showBackground = true)
-//@Composable
-//private fun LoginScreenPreview2() {
-//    MDPingsTheme {
-//        LoginScreen(
-//            modifier = Modifier.background(MaterialTheme.colorScheme.background),
-//            state = LoginState(),
-//            onAction = {},
-//            onNavigateToServer = {},
-//            appSettingsState = mockAppSettingsState2,
-//            onLoad = {}
-//        )
-//    }
-//}
 
 @Preview(showBackground = true)
 @Composable

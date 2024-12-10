@@ -3,9 +3,11 @@ package com.sekusarisu.mdpings.vpings.data.mappers
 import com.sekusarisu.mdpings.vpings.data.networking.dto.WSHostDto
 import com.sekusarisu.mdpings.vpings.data.networking.dto.WSServerDto
 import com.sekusarisu.mdpings.vpings.data.networking.dto.WSStateDto
+import com.sekusarisu.mdpings.vpings.data.networking.dto.WSTemperatureDto
 import com.sekusarisu.mdpings.vpings.domain.WSHost
 import com.sekusarisu.mdpings.vpings.domain.WSServer
 import com.sekusarisu.mdpings.vpings.domain.WSState
+import com.sekusarisu.mdpings.vpings.domain.WSTemperatures
 
 fun WSServerDto.toWSServer(): WSServer {
     return WSServer(
@@ -15,7 +17,8 @@ fun WSServerDto.toWSServer(): WSServer {
         host = host.toWSHost(),
         status = state.toWSState(),
         countryCode = countryCode,
-        lastActive = lastActive
+        lastActive = lastActive,
+        publicNote = publicNote
     )
 }
 
@@ -30,7 +33,8 @@ fun WSHostDto.toWSHost(): WSHost {
         arch = arch,
         virtualization = virtualization,
         bootTime = bootTime,
-        version = version
+        version = version,
+        gpu = gpu
     )
 }
 
@@ -50,6 +54,15 @@ fun WSStateDto.toWSState(): WSState {
         uptime = uptime,
         tcpConnCount = tcpConnCount,
         udpConnCount = udpConnCount,
-        processCount = processCount
+        processCount = processCount,
+        gpu = gpu,
+        temperatures = temperatures.map { it.toWSTemperatures() }
+    )
+}
+
+fun WSTemperatureDto.toWSTemperatures(): WSTemperatures {
+    return WSTemperatures(
+        name = name,
+        temperature = temperature
     )
 }

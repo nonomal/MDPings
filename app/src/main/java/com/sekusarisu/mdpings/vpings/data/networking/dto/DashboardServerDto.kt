@@ -5,45 +5,60 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class DashboardServerDto(
-    val id: Int,
     @SerialName(value = "created_at") val createdAt: String,
-    @SerialName(value = "updated_at") val updatedAt: String,
-    val name: String,
-    val uuid: String,
     @SerialName(value = "display_index") val displayIndex: Int,
-    val host: Host,
-    val state: State,
     val geoip: Geoip,
-    @SerialName(value = "last_active") val lastActive: String
+    val host: Host,
+    val id: Int,
+    @SerialName(value = "last_active") val lastActive: String,
+    val name: String,
+    val note: String = "N/A",
+    @SerialName(value = "public_note") val publicNote: String = "N/A",
+    val state: State,
+    @SerialName(value = "updated_at") val updatedAt: String,
+    val uuid: String,
 )
 
 @Serializable
 data class Host(
+    val arch: String = "unknown",
+    @SerialName(value = "boot_time") val bootTime: Long = 0,
+    val cpu: List<String> = listOf<String>("unknown"),
+    @SerialName(value = "disk_total") val diskTotal: Long = 0,
+    val gpu: List<String> = listOf<String>("N/A"),
+    @SerialName(value = "mem_total") val memTotal: Long = 0,
     val platform: String = "unknown",
     @SerialName(value = "platform_version") val platformVersion: String = "unknown",
-    val cpu: List<String> = listOf<String>("unknown"),
-    @SerialName(value = "mem_total") val memTotal: Long = 0,
-    @SerialName(value = "disk_total") val diskTotal: Long = 0,
     @SerialName(value = "swap_total") val swapTotal: Long = 0,
-    val arch: String = "unknown",
+    val version: String = "unknown",
     val virtualization: String = "unknown",
-    @SerialName(value = "boot_time") val bootTime: Long = 0,
-    val version: String = "unknown"
 )
 
 @Serializable
 data class State(
     val cpu: Double = 0.0,
-    @SerialName(value = "mem_used") val memUsed: Long = 0,
     @SerialName(value = "disk_used") val diskUsed: Long = 0,
+    val gpu: List<Float> = listOf<Float>(0F),
+    @SerialName(value = "load_1") val load1: Double = 0.0,
+    @SerialName(value = "load_5") val load5: Double = 0.0,
+    @SerialName(value = "load_15") val load15: Double = 0.0,
+    @SerialName(value = "mem_used") val memUsed: Long = 0,
     @SerialName(value = "net_in_transfer") val netInTransfer: Long = 0,
     @SerialName(value = "net_out_transfer") val netOutTransfer: Long = 0,
     @SerialName(value = "net_in_speed") val netInSpeed: Long = 0,
     @SerialName(value = "net_out_speed") val netOutSpeed: Long = 0,
-    val uptime: Long = 0,
+    @SerialName(value = "process_count") val processCount: Long = 0,
+    @SerialName(value = "swap_used") val swapUsed: Long = 0,
     @SerialName(value = "tcp_conn_count") val tcpConnCount: Long = 0,
     @SerialName(value = "udp_conn_count") val udpConnCount: Long = 0,
-    @SerialName(value = "process_count") val processCount: Long = 0
+    val temperatures: List<Temperature> = emptyList(),
+    val uptime: Long = 0,
+)
+
+@Serializable
+data class Temperature(
+    val name: String = "N/A",
+    val temperature: Double = 0.0
 )
 
 @Serializable

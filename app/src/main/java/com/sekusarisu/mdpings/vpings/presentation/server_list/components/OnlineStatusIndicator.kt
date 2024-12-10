@@ -34,6 +34,7 @@ import kotlin.random.Random
 @Composable
 fun OnlineStatusIndicator(
     isOnline: Boolean,
+    showLightSpot: Boolean = true,
     showOnlineOrDays: String = "Days",
     uptime: Long,
     modifier: Modifier = Modifier
@@ -68,28 +69,30 @@ fun OnlineStatusIndicator(
             Box(
                 contentAlignment = Alignment.Center
             ) {
-                Canvas(
-                    modifier = Modifier
-                        .size(8.dp),
-                    onDraw = {
-                        drawCircle(
-                            color = Color.Green,
-                            alpha = 0.7f
-                        )
-                    }
-                )
-                Canvas(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .scale(animatedPointSizeScale)
-                        .alpha(animatedAlpha),
-                    onDraw = {
-                        drawCircle(
-                            color = Color.Green,
-                            alpha = 0.2f
-                        )
-                    }
-                )
+                if (showLightSpot) {
+                    Canvas(
+                        modifier = Modifier
+                            .size(8.dp),
+                        onDraw = {
+                            drawCircle(
+                                color = Color.Green,
+                                alpha = 0.7f
+                            )
+                        }
+                    )
+                    Canvas(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .scale(animatedPointSizeScale)
+                            .alpha(animatedAlpha),
+                        onDraw = {
+                            drawCircle(
+                                color = Color.Green,
+                                alpha = 0.2f
+                            )
+                        }
+                    )
+                }
             }
             Spacer(Modifier.width(4.dp))
             Text(
@@ -102,33 +105,35 @@ fun OnlineStatusIndicator(
                 modifier = Modifier
             )
         } else {
-            Box(
-                contentAlignment = Alignment.Center
-            ) {
-                Canvas(
-                    modifier = Modifier
-                        .size(8.dp),
-                    onDraw = {
-                        drawCircle(
-                            color = Color.Red,
-                            alpha = 0.7f
-                        )
-                    }
-                )
-                Canvas(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .scale(animatedPointSizeScale)
-                        .alpha(animatedAlpha),
-                    onDraw = {
-                        drawCircle(
-                            color = Color.Red,
-                            alpha = 0.2f
-                        )
-                    }
-                )
+            if (showLightSpot) {
+                Box(
+                    contentAlignment = Alignment.Center
+                ) {
+                    Canvas(
+                        modifier = Modifier
+                            .size(8.dp),
+                        onDraw = {
+                            drawCircle(
+                                color = Color.Red,
+                                alpha = 0.7f
+                            )
+                        }
+                    )
+                    Canvas(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .scale(animatedPointSizeScale)
+                            .alpha(animatedAlpha),
+                        onDraw = {
+                            drawCircle(
+                                color = Color.Red,
+                                alpha = 0.2f
+                            )
+                        }
+                    )
+                }
+                Spacer(Modifier.width(4.dp))
             }
-            Spacer(Modifier.width(4.dp))
             Text(
                 textAlign = TextAlign.Center,
                 text = "OFFLINE",

@@ -7,7 +7,8 @@ data class WSServer(
     val displayIndex: Int?,
     val status: WSState,
     val countryCode: String?,
-    val lastActive: String?
+    val lastActive: String?,
+    val publicNote: String?
 )
 
 data class WSHost(
@@ -20,7 +21,8 @@ data class WSHost(
     val arch: String?,
     val virtualization: String?,
     val bootTime: Long?,
-    val version: String?
+    val version: String?,
+    val gpu: List<String>?
 )
 
 data class WSState(
@@ -38,5 +40,12 @@ data class WSState(
     val uptime: Long?,
     val tcpConnCount: Int?,
     val udpConnCount: Int?,
-    val processCount: Int?
+    val processCount: Int?,
+    val gpu: List<Float>?,
+    val temperatures: List<WSTemperatures>?
+)
+
+data class WSTemperatures(
+    val name: String?,
+    val temperature: Double?
 )

@@ -575,7 +575,8 @@ private fun previewWSHostUi(): WSHostUi {
         arch = "x86_64",
         virtualization = "kvm",
         bootTime = 1725353936,
-        version = "0.20.3"
+        version = "0.20.3",
+        gpu = "OrayIddDriver Device\nVirtual Display with HDR\nNVIDIA GeForce RTX 2060\nGameViewer Virtual Display Adapter"
     )
 }
 
@@ -606,8 +607,10 @@ private fun previewWSStatusUi(): WSStateUi {
         memUsed = Random.nextLong(until = 8323002368),
         swapUsed = Random.nextLong(until = 267362304),
         diskUsed = Random.nextLong(until = 2164154892288),
-        netInTransfer = Random.nextLong(from = 0, until = 1024000000000000).toNetTRLongDisplayableString(),
-        netOutTransfer = Random.nextLong(from = 0, until = 1024000000000000000).toNetTRLongDisplayableString(),
+        netInTransfer = Random.nextLong(from = 0, until = 1024000000000000)
+            .toNetTRLongDisplayableString(),
+        netOutTransfer = Random.nextLong(from = 0, until = 1024000000000000000)
+            .toNetTRLongDisplayableString(),
         netInSpeed = Random.nextLong(until = 1024000000).toNetIOSpeedDisplayableString(),
         netOutSpeed = Random.nextLong(until = 1024000000).toNetIOSpeedDisplayableString(),
         uptime = Random.nextLong(until = 102400000),
@@ -616,7 +619,9 @@ private fun previewWSStatusUi(): WSStateUi {
         load15 = Random.nextDouble(until = 200.0).toDisplayableNumber(),
         tcpConnCount = 63,
         udpConnCount = 97,
-        processCount = 296
+        processCount = 296,
+        gpu = "0F|0F",
+        temperatures = emptyList()
     )
 }
 

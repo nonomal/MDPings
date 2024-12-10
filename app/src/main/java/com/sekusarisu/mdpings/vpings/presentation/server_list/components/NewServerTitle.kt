@@ -61,7 +61,8 @@ fun NewServerTitle(
         trailingIcon = {
             OnlineStatusIndicator(
                 isOnline = serverUi.isOnline,
-                uptime = serverUi.status.uptime
+                uptime = serverUi.status.uptime,
+                showLightSpot = false
             )
         },
         shape = ShapeDefaults.Large,

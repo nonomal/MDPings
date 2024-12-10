@@ -3,6 +3,7 @@ package com.sekusarisu.mdpings.vpings.presentation.models
 import com.sekusarisu.mdpings.vpings.domain.WSHost
 import com.sekusarisu.mdpings.vpings.domain.WSServer
 import com.sekusarisu.mdpings.vpings.domain.WSState
+import com.sekusarisu.mdpings.vpings.domain.WSTemperatures
 
 data class WSServerUi(
     val id: Int,
@@ -25,7 +26,8 @@ data class WSHostUi(
     val arch: String,
     val virtualization: String,
     val bootTime: Long,
-    val version: String
+    val version: String,
+    val gpu: String
 )
 
 data class WSStateUi(
@@ -43,7 +45,14 @@ data class WSStateUi(
     val uptime: Long,
     val tcpConnCount: Int,
     val udpConnCount: Int,
-    val processCount: Int
+    val processCount: Int,
+    val gpu: String,
+    val temperatures: List<WSTemperaturesUi>
+)
+
+data class WSTemperaturesUi(
+    val name: String,
+    val temperature: Double
 )
 
 fun WSServer.toWSServerUi(): WSServerUi {
@@ -70,7 +79,8 @@ private fun WSHost.toWSHostUi(): WSHostUi {
         bootTime = bootTime ?: 0,
         version = version ?: "unknown",
         swapTotal = swapTotal ?: 0,
-        virtualization = virtualization ?: "unknown"
+        virtualization = virtualization ?: "unknown",
+        gpu = gpu?.joinToString("\n") ?: "N/A"
     )
 }
 
@@ -90,6 +100,15 @@ private fun WSState.toWSStatusUi(): WSStateUi {
         cpu = cpu ?: 0f,
         load1 = (load1 ?: 0.0).toDisplayableNumber(),
         load5 = (load5 ?: 0.0).toDisplayableNumber(),
-        load15 = (load15 ?: 0.0).toDisplayableNumber()
+        load15 = (load15 ?: 0.0).toDisplayableNumber(),
+        gpu = gpu?.joinToString("|") ?: "N/A",
+        temperatures = temperatures?.map { it.toWSTemperaturesUi() } ?: emptyList()
+    )
+}
+
+private fun WSTemperatures.toWSTemperaturesUi(): WSTemperaturesUi {
+    return WSTemperaturesUi(
+        name = name ?: "N/A",
+        temperature = temperature ?: 0.0
     )
 }

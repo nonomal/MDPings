@@ -222,7 +222,7 @@ class MainActivity : ComponentActivity() {
 
                         LaunchedEffect(Unit) {
                             val instance = appSettingsViewModel.getInstances()
-                            if (instance!!.isNotEmpty()) {
+                            if (!instance.isNullOrEmpty()) {
                                 val activeInstance = instance[appSettingsViewModel.getActiveInstanceIndex() ?: 0]
                                 val testResult = loginViewModel.testConnectionToBoolean(
                                     activeInstance.baseUrl,
@@ -325,7 +325,8 @@ class MainActivity : ComponentActivity() {
                                         onAppSettingsAction = appSettingsViewModel::onAction,
                                         onNavigateToTerminal = { serverId ->
                                             navController.navigate("${Screen.ServerListDetailPane.route}/$serverId")
-                                        }
+                                        },
+                                        onLoginAction = loginViewModel::onAction
                                     )
                                 }
 

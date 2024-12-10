@@ -55,6 +55,7 @@ import android.net.Uri
 import android.provider.Settings
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.ui.platform.LocalContext
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.components.AppSettingsSwitch
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewWSServerUi0
@@ -141,6 +142,7 @@ fun VisualSettingsScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start,
         modifier = modifier
+            .navigationBarsPadding()
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .alpha(0.8f)
