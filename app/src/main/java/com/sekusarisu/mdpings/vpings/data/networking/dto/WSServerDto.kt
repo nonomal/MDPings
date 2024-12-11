@@ -1,9 +1,7 @@
 package com.sekusarisu.mdpings.vpings.data.networking.dto
 
-import android.health.connect.datatypes.units.Temperature
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-
 
 @Serializable
 data class WSServerDto(
@@ -55,7 +53,7 @@ data class WSStateDto(
 
 @Serializable
 data class WSTemperatureDto(
-    val name: String = "unknown",
-    val temperature: Double = 0.0
+    @SerialName(value = "Name") val name: String? = "unknown",
+    @SerialName(value = "Temperature") val temperature: Float? = 0F
 )
 

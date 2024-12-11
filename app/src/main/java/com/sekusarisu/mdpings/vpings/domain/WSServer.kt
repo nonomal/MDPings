@@ -47,5 +47,5 @@ data class WSState(
 
 data class WSTemperatures(
     val name: String?,
-    val temperature: Double?
+    val temperature: Float?
 )

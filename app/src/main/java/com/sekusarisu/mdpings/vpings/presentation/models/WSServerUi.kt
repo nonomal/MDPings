@@ -52,7 +52,7 @@ data class WSStateUi(
 
 data class WSTemperaturesUi(
     val name: String,
-    val temperature: Double
+    val temperature: Float
 )
 
 fun WSServer.toWSServerUi(): WSServerUi {
@@ -109,6 +109,6 @@ private fun WSState.toWSStatusUi(): WSStateUi {
 private fun WSTemperatures.toWSTemperaturesUi(): WSTemperaturesUi {
     return WSTemperaturesUi(
         name = name ?: "N/A",
-        temperature = temperature ?: 0.0
+        temperature = temperature ?: 0F
     )
 }

@@ -57,8 +57,8 @@ data class State(
 
 @Serializable
 data class Temperature(
-    val name: String = "N/A",
-    val temperature: Double = 0.0
+    @SerialName(value = "Name") val name: String = "N/A",
+    @SerialName(value = "Temperature") val temperature: Float = 0F
 )
 
 @Serializable

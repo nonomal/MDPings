@@ -31,6 +31,7 @@ data class Instance(
 @Serializable
 enum class ServerSortField {
     ID,
+    DISPLAY_INDEX,
     ONLINE
 }
 

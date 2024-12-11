@@ -43,12 +43,14 @@ private fun List<WSServerUi>.sortByField(serverSortField: ServerSortField, serve
     return if (serverOrder.ordinal == 0) {
         when (serverSortField) {
             ServerSortField.ID -> sortedBy { it.id }
+            ServerSortField.DISPLAY_INDEX -> sortedBy { it.displayIndex }
             ServerSortField.ONLINE -> sortedBy { it.isOnline }
             else -> sortedBy { it.id }
         }
     } else {
         when (serverSortField) {
             ServerSortField.ID -> sortedByDescending { it.id }
+            ServerSortField.DISPLAY_INDEX -> sortedByDescending { it.displayIndex }
             ServerSortField.ONLINE -> sortedByDescending { it.isOnline }
             else -> sortedBy { it.id }
         }

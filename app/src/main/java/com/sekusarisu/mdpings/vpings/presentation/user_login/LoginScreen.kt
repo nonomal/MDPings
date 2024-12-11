@@ -1,6 +1,5 @@
 package com.sekusarisu.mdpings.vpings.presentation.user_login
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -65,7 +64,6 @@ import com.sekusarisu.mdpings.vpings.domain.Instance
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsAction
 import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsState
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable

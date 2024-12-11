@@ -72,7 +72,7 @@ fun MDAppTopBar(
     val scope = rememberCoroutineScope()
     var isDropDownExpanded by remember { mutableStateOf(false) }
     // ServerSortField -> serverSortFieldString
-    val serverSortFieldString = listOf("ServerID", "Online")
+    val serverSortFieldString = listOf("ServerID", "Index", "Online")
     val selectedServerSortField = appSettingsState.appSettings.serverSortField.ordinal
     val serverOrder = appSettingsState.appSettings.serverOrder.ordinal
     val isExpanded = appSettingsState.appSettings.expandedServerListCard
