@@ -140,4 +140,9 @@
     <string name="terminal_clean_screen">清屏</string>
     <string name="terminal_command_ctrl_c">Ctrl+C</string>
 
+    // Sort
+    <string name="sort_field_string_serverid">默认</string>
+    <string name="sort_field_string_index">权重</string>
+    <string name="sort_field_string_online">在线</string>
+
 </resources>

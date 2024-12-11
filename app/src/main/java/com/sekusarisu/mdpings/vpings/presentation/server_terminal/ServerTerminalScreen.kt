@@ -31,8 +31,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.sekusarisu.mdpings.R
 import com.sekusarisu.mdpings.ui.theme.MDPingsTheme
@@ -97,16 +100,34 @@ fun ServerTerminalScreen(
                     )
             ) {
                 SelectionContainer {
-                    Text(
-                        text = state.terminal,
-                        color = Color.White,
-                        style = MaterialTheme.typography.bodySmall,
+//                    Text(
+//                        text = state.terminal,
+//                        color = Color.White,
+//                        style = MaterialTheme.typography.bodySmall,
+//                        modifier = Modifier
+//                            .padding(4.dp)
+//                            .horizontalScroll(horizontalScrollState)
+//                            .verticalScroll(verticalScrollState)
+//                            .alpha(0.7f)
+//                    )
+                    Column(
                         modifier = Modifier
                             .padding(4.dp)
                             .horizontalScroll(horizontalScrollState)
                             .verticalScroll(verticalScrollState)
                             .alpha(0.7f)
-                    )
+                    ) {
+                        state.terminal.forEach { attributedLine ->
+                            if (attributedLine.text.isNotBlank()) {
+                                Text(
+                                    text = attributedLine,
+                                    style = TextStyle(
+                                        fontSize = 12.sp
+                                    )
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -191,7 +212,8 @@ fun ServerTerminalScreenPreview() {
             state = ServerTerminalState(
                 isLoading = false,
                 selectedServerId = 0,
-                terminal = "已和 \uD83C\uDDFA\uD83C\uDDF8五角大楼 建立终端连接\nroot@s123445 /opt/nezha/agent #"
+//                terminal = "已和 \uD83C\uDDFA\uD83C\uDDF8五角大楼 建立终端连接\nroot@s123445 /opt/nezha/agent #"
+                terminal = emptyList()
             ),
             serverListState = ServerListState(
                 isLoading = false,

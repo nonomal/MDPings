@@ -1,4 +1,10 @@
 
+### v1.1.4
+
+- Fix: Loading server loop (temperature -> Temperature).
+
+- Add: Sort by server index.
+
 ### v1.1.3
 
 - Fix: Loading server loop (gpu, publicNote, temperatures).

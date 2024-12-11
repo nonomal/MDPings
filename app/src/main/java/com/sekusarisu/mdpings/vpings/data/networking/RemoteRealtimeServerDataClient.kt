@@ -1,5 +1,6 @@
 package com.sekusarisu.mdpings.vpings.data.networking
 
+import androidx.compose.ui.text.AnnotatedString
 import com.sekusarisu.mdpings.core.data.networking.constructUrl
 import com.sekusarisu.mdpings.core.data.networking.constructWSUrl
 import com.sekusarisu.mdpings.core.data.networking.safeCall
@@ -49,8 +50,8 @@ class RemoteRealtimeServerDataClient(
 
             // 去除 ANSI 转义序列
             rawString
-                .replace(Regex("\\x1B\\[[0-9;]*[a-zA-Z]"), "")
-                .replace(Regex("\\x1B\\[\\??[0-9;]*[a-zA-Z]"), "")
+//                .replace(Regex("\\x1B\\[[0-9;]*[a-zA-Z]"), "")
+//                .replace(Regex("\\x1B\\[\\??[0-9;]*[a-zA-Z]"), "")
         } catch (e: Exception) {
             "解码错误: ${e.message}"
         }
@@ -98,7 +99,7 @@ class RemoteRealtimeServerDataClient(
     override suspend fun getServerTerminalStream(
         baseUrl: String,
         sessionId: String
-    ): Flow<String> = channelFlow {
+    ): Flow<AnnotatedString> = channelFlow {
         val wsUrl = constructWSUrl(
             baseURL = baseUrl,
             url = "/api/v1/ws/terminal/${sessionId}"
@@ -112,7 +113,7 @@ class RemoteRealtimeServerDataClient(
                 when (frame) {
                     is Frame.Binary -> {
                         try {
-                            val frameText = frame.decodeToString()
+                            val frameText = frame.decodeToString().toAnsiAnnotatedString()
                             println("ReadText (Binary): $frameText")
                             send(frameText)
                         } catch (e: Exception) {
@@ -121,7 +122,7 @@ class RemoteRealtimeServerDataClient(
                         }
                     }
                     is Frame.Text -> {
-                        val textMessage = frame.readText()
+                        val textMessage = frame.readText().toAnsiAnnotatedString()
                         println("Received Text Message: $textMessage")
                         send(textMessage)
                     }

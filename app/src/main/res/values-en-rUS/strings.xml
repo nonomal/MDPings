@@ -141,4 +141,9 @@
     <string name="terminal_clean_screen">Clean Screen</string>
     <string name="terminal_command_ctrl_c">Ctrl+C</string>
 
+    // Sort
+    <string name="sort_field_string_serverid">ServerID</string>
+    <string name="sort_field_string_index">Index</string>
+    <string name="sort_field_string_online">Online</string>
+
 </resources>

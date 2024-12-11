@@ -1,10 +1,12 @@
 package com.sekusarisu.mdpings.vpings.presentation.server_terminal
 
+import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sekusarisu.mdpings.core.domain.util.Result
 import com.sekusarisu.mdpings.core.domain.util.onError
 import com.sekusarisu.mdpings.core.domain.util.onSuccess
+import com.sekusarisu.mdpings.vpings.data.networking.toAnsiAnnotatedString
 import com.sekusarisu.mdpings.vpings.domain.RealtimeServerDataClient
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,7 +53,7 @@ class ServerTerminalViewModel(
     private fun cleanScreen() {
         _state.update {
             it.copy(
-                terminal = ""
+                terminal = emptyList<AnnotatedString>()
             )
         }
         sendCommand("\n")
@@ -66,7 +68,6 @@ class ServerTerminalViewModel(
 
     private fun initConnection(baseUrl: String, selectedServerId: Int, connectTo: String) {
         viewModelScope.launch{
-            println("${baseUrl}, ${selectedServerId}")
             realtimeServerDataClient
                 .getSession(baseUrl, selectedServerId)
                 .onSuccess { result ->
@@ -80,9 +81,9 @@ class ServerTerminalViewModel(
 
     private fun connectToTerminal(baseUrl: String, sessionId: String, connectTo: String) {
         webSocketJob?.cancel()
-        _state.update {
-            it.copy(
-                terminal = "已和" + connectTo + "建立终端连接\n"
+        _state.update { currentState ->
+            currentState.copy(
+                terminal = listOf<AnnotatedString>(AnnotatedString("已和" + connectTo + "建立终端连接\n"))
             )
         }
         webSocketJob = viewModelScope.launch{
@@ -113,7 +114,7 @@ class ServerTerminalViewModel(
         webSocketJob?.cancel()
         _state.update { currentState ->
             currentState.copy(
-                terminal = currentState.terminal + "\n" + "已断开终端连接"
+                terminal = currentState.terminal + listOf<AnnotatedString>(AnnotatedString("\n" + "已断开终端连接"))
             )
         }
         viewModelScope.launch{
