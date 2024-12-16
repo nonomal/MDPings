@@ -20,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -118,7 +119,7 @@ fun ServerListScreen(
     }
 
     AnimatedVisibility(
-        visible = state.wsServers == emptyList<WSServerUi>() && state.isLoading,
+        visible = state.wsServers == emptyList<WSServerUi>(),
         enter = fadeIn(),
         exit = fadeOut()
     ) {
@@ -156,10 +157,27 @@ fun ServerListScreen(
                 .background(MaterialTheme.colorScheme.background)
         ) {
 
-            // if Group Filter -> ScrollableTabRow
-            if (titles.size > 1) {
+            // if Group Filter -> TabRow || ScrollableTabRow
+            if (titles.size > 1 && titles.size <= 4) {
                 item(
-                    key = "FilterRow"
+                    key = "FilterTabRow"
+                ) {
+                    TabRow(
+                        selectedTabIndex = rowFilterState,
+                    ) {
+                        titles.forEachIndexed { index, title ->
+                            Tab(
+                                selected = rowFilterState == index,
+                                onClick = { rowFilterState = index },
+                                text = { Text(text = title, maxLines = 2, overflow = TextOverflow.Ellipsis) }
+                            )
+                        }
+                    }
+                    Spacer(Modifier.height(4.dp))
+                }
+            } else if (titles.size > 4) {
+                item(
+                    key = "FilterScrollableTabRow"
                 ) {
                     ScrollableTabRow(
                         selectedTabIndex = rowFilterState,

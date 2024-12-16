@@ -202,7 +202,7 @@ fun ServerDetailScreen(
                 }
             }
             Spacer(Modifier.height(8.dp))
-            // TODO 转屏的时候触发了清空wsServerUi -> java.lang.NullPointerException
+            // TODO 转屏的时候触发了清空wsServerUi -> java.lang.NullPointerException?
             InstanceInfo(
                 serverUi = state.wsServerUi!!,
                 ipAPIUi = state.ipAPIUi!!,

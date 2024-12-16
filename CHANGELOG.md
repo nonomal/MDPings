@@ -1,4 +1,10 @@
 
+### v1.1.5
+
+- Fix: ISO TimeZone serialization.
+
+- Add: ServerGroup filter.
+
 ### v1.1.4
 
 - Fix: Loading server loop (temperature -> Temperature).
