@@ -13,5 +13,6 @@ data class ServerListState(
     val servers: List<ServerUi> = emptyList(),
     val wsServers: List<WSServerUi> = emptyList(),
     val ipAPIUi: IpAPIUi? = null,
-    val monitors: List<MonitorUi> = emptyList()
+    val monitors: List<MonitorUi> = emptyList(),
+    val groups: Map<String, List<Int>> = emptyMap()
 )

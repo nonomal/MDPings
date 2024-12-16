@@ -84,6 +84,9 @@ class ServerListViewModel(
             is ServerListAction.OnLoadWSServer -> {
                 loadWSServers(baseUrl = action.baseUrl)
             }
+            is ServerListAction.OnLoadServerGroup -> {
+                loadServerGroup(baseUrl = action.baseUrl)
+            }
             is ServerListAction.OnInitCleanSelectedServer -> {
                 _state.update { it.copy(selectedServer = null) }
             }
@@ -107,6 +110,20 @@ class ServerListViewModel(
                 }
                 .onError { error ->
                     _state.update { it.copy(isLoading = false) }
+                }
+        }
+    }
+
+    private fun loadServerGroup(baseUrl: String) {
+        viewModelScope.launch{
+            realtimeServerDataClient
+                .getServerGroup(baseUrl)
+                .onSuccess { groups ->
+                    _state.update { it.copy(
+                        groups = groups.associate {
+                            it.group.name to it.servers
+                        }
+                    ) }
                 }
         }
     }

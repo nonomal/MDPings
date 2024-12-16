@@ -5,6 +5,7 @@ import com.sekusarisu.mdpings.vpings.domain.Host
 import com.sekusarisu.mdpings.vpings.domain.Server
 import com.sekusarisu.mdpings.vpings.domain.Status
 import java.time.Instant
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.math.pow
 
@@ -195,7 +196,12 @@ fun Long.toMemDiskLongDisplayableString(): String {
 }
 
 fun String.toEpochMilli(): Long {
-    return Instant.parse(this).toEpochMilli()
+    return try {
+        Instant.from(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(this))
+    } catch (e: Exception) {
+        // 如果标准解析失败，可以尝试回退到默认的 Instant.parse()
+        Instant.parse(this)
+    }.toEpochMilli()
 }
 
 fun Long.toIsOnline(): Boolean {

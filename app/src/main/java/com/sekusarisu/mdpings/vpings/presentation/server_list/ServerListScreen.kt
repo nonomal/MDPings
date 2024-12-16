@@ -18,11 +18,14 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -36,7 +39,7 @@ import com.sekusarisu.mdpings.vpings.presentation.app_settings.AppSettingsState
 import com.sekusarisu.mdpings.vpings.presentation.models.WSServerUi
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.ServerListCard
 import com.sekusarisu.mdpings.vpings.presentation.server_list.components.ServerSummaryCard
-import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewListServers
+import com.sekusarisu.mdpings.vpings.presentation.server_list.components.previewListWSServers
 import kotlinx.coroutines.delay
 
 private fun List<WSServerUi>.sortByField(serverSortField: ServerSortField, serverOrder: ServerOrder): List<WSServerUi> {
@@ -54,6 +57,14 @@ private fun List<WSServerUi>.sortByField(serverSortField: ServerSortField, serve
             ServerSortField.ONLINE -> sortedByDescending { it.isOnline }
             else -> sortedBy { it.id }
         }
+    }
+}
+
+private fun List<WSServerUi>.filterByGroup(servers: List<Int>): List<WSServerUi> {
+    return if (servers.isEmpty()) {
+        filter { it -> true }
+    } else {
+        filter { it -> it.id in servers }
     }
 }
 
@@ -75,8 +86,18 @@ fun ServerListScreen(
             onAction(
                 ServerListAction.OnLoadWSServer(baseUrl = baseUrl)
             )
+            onAction(
+                ServerListAction.OnLoadServerGroup(baseUrl = baseUrl)
+            )
         }
     }
+
+    var rowFilterState by remember { mutableIntStateOf(0) }
+    val titles = listOf<String>("All") + state.groups.keys.toList()
+    var selectedServerGroup = state.groups.keys.toList()
+        .getOrNull(rowFilterState - 1)
+        ?.let { state.groups[it] }
+        ?: emptyList() // 如果索引不存在，返回空列表
 
     AnimatedVisibility(
         visible = appSettingsState.appSettings.instances.isEmpty()
@@ -128,27 +149,64 @@ fun ServerListScreen(
         )
     ) {
         LazyColumn(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .navigationBarsPadding()
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
+
+            // if Group Filter -> ScrollableTabRow
+            if (titles.size > 1) {
+                item(
+                    key = "FilterRow"
+                ) {
+                    ScrollableTabRow(
+                        selectedTabIndex = rowFilterState,
+                        edgePadding = 0.dp
+                    ) {
+                        titles.forEachIndexed { index, title ->
+                            Tab(
+                                selected = rowFilterState == index,
+                                onClick = { rowFilterState = index },
+                                text = { Text(text = title, maxLines = 2, overflow = TextOverflow.Ellipsis) }
+                            )
+                        }
+                    }
+                    Spacer(Modifier.height(4.dp))
+                }
+            }
+
+            // Summary Card
             item(
                 key = "Summary"
             ) {
                 ServerSummaryCard(
                     isExpanded = true,
-                    servers = state.wsServers,
+                    servers = state.wsServers
+                        .sortByField(
+                            appSettingsState.appSettings.serverSortField,
+                            appSettingsState.appSettings.serverOrder
+                        )
+                        .filterByGroup(
+                            selectedServerGroup
+                        ),
                     onAction = {},
                     modifier = Modifier
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 )
             }
+
+            // Servers Cards
             items(
-                items = state.wsServers.sortByField(
-                    appSettingsState.appSettings.serverSortField,
-                    appSettingsState.appSettings.serverOrder
-                ),
+                items = state.wsServers
+                    .sortByField(
+                        appSettingsState.appSettings.serverSortField,
+                        appSettingsState.appSettings.serverOrder
+                    )
+                    .filterByGroup(
+                        selectedServerGroup
+                    ),
                 key = { it.id }
             ) { serverUi ->
                 ServerListCard(
@@ -168,6 +226,7 @@ fun ServerListScreen(
                         .fillMaxWidth()
                 )
             }
+
         }
     }
 }
@@ -182,7 +241,7 @@ fun ServerListScreenPreview() {
             onNavigateToDetail = {},
             state = ServerListState(
                 isLoading = false,
-                servers = previewListServers,
+                wsServers = previewListWSServers,
             ),
             onLoad = {},
             appSettingsState = AppSettingsState(AppSettings())

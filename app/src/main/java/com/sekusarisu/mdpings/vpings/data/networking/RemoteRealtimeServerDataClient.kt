@@ -7,12 +7,15 @@ import com.sekusarisu.mdpings.core.data.networking.safeCall
 import com.sekusarisu.mdpings.core.domain.util.NetworkError
 import com.sekusarisu.mdpings.core.domain.util.Result
 import com.sekusarisu.mdpings.core.domain.util.map
+import com.sekusarisu.mdpings.vpings.data.mappers.toServerGroup
 import com.sekusarisu.mdpings.vpings.data.mappers.toSessionData
 import com.sekusarisu.mdpings.vpings.data.mappers.toWSServer
+import com.sekusarisu.mdpings.vpings.data.networking.dto.ServerGroupResponsesDto
 import com.sekusarisu.mdpings.vpings.data.networking.dto.SessionResponsesDto
 import com.sekusarisu.mdpings.vpings.data.networking.dto.TerminalSessionRequest
 import com.sekusarisu.mdpings.vpings.data.networking.dto.WSServersResponsesDto
 import com.sekusarisu.mdpings.vpings.domain.RealtimeServerDataClient
+import com.sekusarisu.mdpings.vpings.domain.ServerGroup
 import com.sekusarisu.mdpings.vpings.domain.SessionData
 import com.sekusarisu.mdpings.vpings.domain.WSServer
 import io.ktor.client.HttpClient
@@ -93,6 +96,22 @@ class RemoteRealtimeServerDataClient(
             }
         }.map { response ->
             response.data.toSessionData()
+        }
+    }
+
+    override suspend fun getServerGroup(
+        baseUrl: String
+    ): Result<List<ServerGroup>, NetworkError> {
+        val url = constructUrl(
+            baseURL = baseUrl,
+            url = "/api/v1/server-group"
+        )
+        return safeCall<ServerGroupResponsesDto> {
+            httpClient.get(
+                urlString = url
+            )
+        }.map { response ->
+            response.data.map { it.toServerGroup() }
         }
     }
 
