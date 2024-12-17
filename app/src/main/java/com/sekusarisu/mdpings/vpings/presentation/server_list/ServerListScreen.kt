@@ -12,6 +12,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.RunningWithErrors
 import androidx.compose.material3.CircularProgressIndicator
@@ -99,6 +101,27 @@ fun ServerListScreen(
         .getOrNull(rowFilterState - 1)
         ?.let { state.groups[it] }
         ?: emptyList() // 如果索引不存在，返回空列表
+    var pageState = rememberPagerState {
+        titles.size
+    }
+    val items = state.wsServers
+        .sortByField(
+            appSettingsState.appSettings.serverSortField,
+            appSettingsState.appSettings.serverOrder
+        )
+        .filterByGroup(
+            selectedServerGroup
+        )
+
+    // tabrow跟pager双向绑定
+    LaunchedEffect(rowFilterState) {
+        pageState.animateScrollToPage(rowFilterState)
+    }
+    LaunchedEffect(pageState.currentPage, pageState.isScrollInProgress) {
+        if (!pageState.isScrollInProgress) {
+            rowFilterState = pageState.currentPage
+        }
+    }
 
     AnimatedVisibility(
         visible = appSettingsState.appSettings.instances.isEmpty()
@@ -149,8 +172,8 @@ fun ServerListScreen(
             initialAlpha = 0.3f
         )
     ) {
-        LazyColumn(
-            horizontalAlignment = Alignment.CenterHorizontally,
+        Column(
+            horizontalAlignment = Alignment.Start,
             modifier = Modifier
                 .navigationBarsPadding()
                 .fillMaxSize()
@@ -159,90 +182,79 @@ fun ServerListScreen(
 
             // if Group Filter -> TabRow || ScrollableTabRow
             if (titles.size > 1 && titles.size <= 4) {
-                item(
-                    key = "FilterTabRow"
+                TabRow(
+                    selectedTabIndex = rowFilterState,
                 ) {
-                    TabRow(
-                        selectedTabIndex = rowFilterState,
-                    ) {
-                        titles.forEachIndexed { index, title ->
-                            Tab(
-                                selected = rowFilterState == index,
-                                onClick = { rowFilterState = index },
-                                text = { Text(text = title, maxLines = 2, overflow = TextOverflow.Ellipsis) }
-                            )
-                        }
+                    titles.forEachIndexed { index, title ->
+                        Tab(
+                            selected = rowFilterState == index,
+                            onClick = { rowFilterState = index },
+                            text = { Text(text = title, maxLines = 2, overflow = TextOverflow.Ellipsis) }
+                        )
                     }
-                    Spacer(Modifier.height(4.dp))
                 }
+                Spacer(Modifier.height(4.dp))
             } else if (titles.size > 4) {
-                item(
-                    key = "FilterScrollableTabRow"
+                ScrollableTabRow(
+                    selectedTabIndex = rowFilterState,
+                    edgePadding = 0.dp
                 ) {
-                    ScrollableTabRow(
-                        selectedTabIndex = rowFilterState,
-                        edgePadding = 0.dp
-                    ) {
-                        titles.forEachIndexed { index, title ->
-                            Tab(
-                                selected = rowFilterState == index,
-                                onClick = { rowFilterState = index },
-                                text = { Text(text = title, maxLines = 2, overflow = TextOverflow.Ellipsis) }
-                            )
-                        }
+                    titles.forEachIndexed { index, title ->
+                        Tab(
+                            selected = rowFilterState == index,
+                            onClick = { rowFilterState = index },
+                            text = { Text(text = title, maxLines = 2, overflow = TextOverflow.Ellipsis) }
+                        )
                     }
-                    Spacer(Modifier.height(4.dp))
                 }
+                Spacer(Modifier.height(4.dp))
             }
 
-            // Summary Card
-            item(
-                key = "Summary"
+            // Swipeable Pager
+            HorizontalPager(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                state = pageState
             ) {
-                ServerSummaryCard(
-                    isExpanded = true,
-                    servers = state.wsServers
-                        .sortByField(
-                            appSettingsState.appSettings.serverSortField,
-                            appSettingsState.appSettings.serverOrder
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    // Summary Card
+                    item(
+                        key = "ServerSummaryCard"
+                    ) {
+                        ServerSummaryCard(
+                            isExpanded = true,
+                            servers = items,
+                            onAction = {},
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
                         )
-                        .filterByGroup(
-                            selectedServerGroup
-                        ),
-                    onAction = {},
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                )
-            }
-
-            // Servers Cards
-            items(
-                items = state.wsServers
-                    .sortByField(
-                        appSettingsState.appSettings.serverSortField,
-                        appSettingsState.appSettings.serverOrder
-                    )
-                    .filterByGroup(
-                        selectedServerGroup
-                    ),
-                key = { it.id }
-            ) { serverUi ->
-                ServerListCard(
-                    isExpanded = appSettingsState.appSettings.expandedServerListCard,
-                    onNavigateToDetail = { onNavigateToDetail(serverUi.id) },
-                    serverUi = serverUi,
-                    onAction = onAction,
-                    modifier = Modifier
-                        .animateItem(
-                            placementSpec = spring(
-                                stiffness = Spring.StiffnessLow,
-                                dampingRatio = Spring.DampingRatioLowBouncy,
-                                visibilityThreshold = IntOffset.VisibilityThreshold
-                            ),
+                    }
+                    // Servers Cards
+                    items(
+                        items = items,
+                        key = { it.id }
+                    ) { serverUi ->
+                        ServerListCard(
+                            isExpanded = appSettingsState.appSettings.expandedServerListCard,
+                            onNavigateToDetail = { onNavigateToDetail(serverUi.id) },
+                            serverUi = serverUi,
+                            onAction = onAction,
+                            modifier = Modifier
+                                .animateItem(
+                                    placementSpec = spring(
+                                        stiffness = Spring.StiffnessLow,
+                                        dampingRatio = Spring.DampingRatioLowBouncy,
+                                        visibilityThreshold = IntOffset.VisibilityThreshold
+                                    ),
+                                )
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                                .fillMaxWidth()
                         )
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                        .fillMaxWidth()
-                )
+                    }
+                }
             }
 
         }
