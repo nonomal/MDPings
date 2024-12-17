@@ -1,6 +1,10 @@
 
 ### v1.1.5
 
+- Add: Swipeable TabRow.
+
+### v1.1.5
+
 - Fix: ISO TimeZone serialization.
 
 - Add: ServerGroup filter.

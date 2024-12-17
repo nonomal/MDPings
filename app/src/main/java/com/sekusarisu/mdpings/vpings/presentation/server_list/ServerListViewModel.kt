@@ -1,16 +1,11 @@
 package com.sekusarisu.mdpings.vpings.presentation.server_list
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sekusarisu.mdpings.core.domain.util.onError
 import com.sekusarisu.mdpings.core.domain.util.onSuccess
 import com.sekusarisu.mdpings.vpings.domain.RealtimeServerDataClient
-import com.sekusarisu.mdpings.vpings.domain.Server
 import com.sekusarisu.mdpings.vpings.domain.ServerDataSource
-import com.sekusarisu.mdpings.vpings.domain.ServerOrder
-import com.sekusarisu.mdpings.vpings.domain.ServerSortField
-import com.sekusarisu.mdpings.vpings.presentation.models.ServerUi
 import com.sekusarisu.mdpings.vpings.presentation.models.toServerUi
 import com.sekusarisu.mdpings.vpings.presentation.models.toWSServerUi
 import kotlinx.coroutines.Job
@@ -21,12 +16,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
-//data class AppSettings(
-//    val baseUrl: String,
-//    val token: String,
-//    val interval: Long
-//)
 
 class ServerListViewModel(
     private val serverDataSource: ServerDataSource,
@@ -56,8 +45,10 @@ class ServerListViewModel(
     fun onSwitchInstanceCleanUp() {
         viewModelScope.launch{
             _state.update { it.copy(
+                isLoading = false,
                 selectedServer = null,
                 servers = emptyList(),
+                wsServers = emptyList(),
                 ipAPIUi = null,
                 monitors = emptyList()
             ) }
